@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.env.*
+*.zip
+*.log
+班級資料備份/
+學生資料/

@@ -1,0 +1,301 @@
+{
+  "app": "lssh.classWorkspace.portable",
+  "builtAt": "2026-10-10T19:23:43.398632+08:00",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 87,
+      "sha256": "06af4d54690ec41670cf89a43698d2d0c9ba55c917664665f099bbe382b661c6"
+    },
+    {
+      "path": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3321,
+      "sha256": "5fa28c5cc7de16ee79830dfce00e981960a84fef0e5da13b7e78298c30b379b9"
+    },
+    {
+      "path": "docs/account.html",
+      "bytes": 12207,
+      "sha256": "9ecb4a37b11f60143ef26d2fd2939da30e1d47c242dc2bf87a5efbdf996d4a78"
+    },
+    {
+      "path": "docs/cleaning.html",
+      "bytes": 12462,
+      "sha256": "c1a494f88675a8f1c021b4474c620868fd0f2952a91c9c708f872d261c112a20"
+    },
+    {
+      "path": "docs/comments.html",
+      "bytes": 13708,
+      "sha256": "d3dca27deb4b7c2583e0d20f669c7d64aef543a71a92eef36d95c36e8950e32c"
+    },
+    {
+      "path": "docs/fair.html",
+      "bytes": 11774,
+      "sha256": "596980f6fdb83c4a211433b7d3090dd9822dcac810743b7453bbe68a82eddc36"
+    },
+    {
+      "path": "docs/roles.html",
+      "bytes": 12962,
+      "sha256": "cb23b6b7616f5b7f94b3b8135633fede84bf48d6cfb9f388db3a275f545875fa"
+    },
+    {
+      "path": "docs/seats.html",
+      "bytes": 11845,
+      "sha256": "b5871fb3f43bda1efc427118d6b0b087488cce8cfecb21d101de1b816730f95f"
+    },
+    {
+      "path": "docs/整合架構與資料說明.md",
+      "bytes": 1329,
+      "sha256": "a409b06f03d2b0b921470f437c9a9d99ffe59e59a312d7530b42efaea6b43bee"
+    },
+    {
+      "path": "index.html",
+      "bytes": 30493,
+      "sha256": "b6442ee61d9da158084dc9a10d0a4c0aeb2d6079e7c2cd386b1b1a8241d3fd77"
+    },
+    {
+      "path": "共享整合版/account.html",
+      "bytes": 87671,
+      "sha256": "b07e8124c03bd3742a6c8f79aa1afbd70f66b9b55d5d079de48fdedade4b035f"
+    },
+    {
+      "path": "共享整合版/adapter-account.js",
+      "bytes": 1403,
+      "sha256": "034e988952dfeb5363f14aaa21ba8855f61e0e6e75ec79d828530653d040472d"
+    },
+    {
+      "path": "共享整合版/adapter-cleaning.js",
+      "bytes": 1471,
+      "sha256": "ec318072e368a6e928a3bef2abf51019357e9f50570a6ff20c6e1fd2e97beeea"
+    },
+    {
+      "path": "共享整合版/adapter-comments.js",
+      "bytes": 4966,
+      "sha256": "caf65227a1c359feebcb3ce36ec91c8432126b35faad03e3ff505a73fd272b17"
+    },
+    {
+      "path": "共享整合版/adapter-fair.js",
+      "bytes": 1722,
+      "sha256": "b8ffe4d50abf88003bc8ba9a0cfed1ade09d4d2a193e68c6a2467801e00a6b8e"
+    },
+    {
+      "path": "共享整合版/adapter-roles.js",
+      "bytes": 9597,
+      "sha256": "4b27e479765509f893f31835767ccb96dcb8194db8f370310ee941e46004337b"
+    },
+    {
+      "path": "共享整合版/adapter-seats.js",
+      "bytes": 2434,
+      "sha256": "fdd3cd2127cc8dfbda1ee717112f5c96e7a724eac87dfaf477adf66b6206c7be"
+    },
+    {
+      "path": "共享整合版/bridge.js",
+      "bytes": 10369,
+      "sha256": "32aaea4f7c147aded0700165d5faafb38b4f28b1853f72b1a7ca0db4b4660b8a"
+    },
+    {
+      "path": "共享整合版/cleaning.html",
+      "bytes": 79207,
+      "sha256": "3d2d0b753b2a8129c8d94fc6c9cbc826d0bff48082d363ee0f5c17ba9cf34f3f"
+    },
+    {
+      "path": "共享整合版/comments.html",
+      "bytes": 131997,
+      "sha256": "af52ca59d7b7bfb9e3f00bd133cfcb9f9f1e3594966093dcacb874a6097b83fa"
+    },
+    {
+      "path": "共享整合版/core.js",
+      "bytes": 10955,
+      "sha256": "569268f8bf203e612b256af61e611d6781d6d62cfbfa9276afc46c29cbead94a"
+    },
+    {
+      "path": "共享整合版/entry-health.svg",
+      "bytes": 111,
+      "sha256": "cf4ef566fd7ea267a7ac0fed0e0aa1790c7f81ec77ec1c61803cdc77a4843acc"
+    },
+    {
+      "path": "共享整合版/entry.js",
+      "bytes": 6228,
+      "sha256": "b5233ad88ca34ed4e715005d9ea46784834bdf76cb9376f4c9620b9b60d3263a"
+    },
+    {
+      "path": "共享整合版/fair.html",
+      "bytes": 157597,
+      "sha256": "da997cbc2a74f722340043fc7696d8b9baccb2e020ec742b3c04dc841a95841d"
+    },
+    {
+      "path": "共享整合版/roles.html",
+      "bytes": 57862,
+      "sha256": "8a29f1de529dab393e039a639c096d0b10b503e1bcad8fc91129341b1e6ee6ab"
+    },
+    {
+      "path": "共享整合版/roster-import.js",
+      "bytes": 2913,
+      "sha256": "47ad744c6b25ee615b6c4605bc0ec0b78f9ba03f9cb704354f2695c23bf27e02"
+    },
+    {
+      "path": "共享整合版/roster.js",
+      "bytes": 15895,
+      "sha256": "6befea6428da9a956a77be119217390122a6e408422003c7744e62ef029b2d2c"
+    },
+    {
+      "path": "共享整合版/seats.html",
+      "bytes": 70340,
+      "sha256": "4385482cd11d7216f1f84cd2cf9e5f171868165d04ae32ed7a375e0fd2d1af74"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.fontawesome.txt",
+      "bytes": 7427,
+      "sha256": "de784a808496d49f5f80dd9d1d6e9a51cff712cfbc339e7c25155631ae3cdb5d"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.html2canvas.txt",
+      "bytes": 1061,
+      "sha256": "86200ce4e92d9a22c41c8647a55f7a5fddff304ff89b4d36ecc699ed8c123d2c"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.jspdf.txt",
+      "bytes": 1142,
+      "sha256": "2d26bfab8a36d2250602c7a7597237e180c5cd3517acc108126e3cb399f483c8"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.jszip.txt",
+      "bytes": 33753,
+      "sha256": "566c953c6090b1218ca6217dd7359d45dde46581968586dc607d59a78af6a9c4"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.normalize.txt",
+      "bytes": 1098,
+      "sha256": "89a9a9ace8be9e79bdc962823479bf980e4a14777ebe51b37e669f658e6f25ef"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.sheetjs.txt",
+      "bytes": 11355,
+      "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64"
+    },
+    {
+      "path": "共享整合版/vendor/LICENSE.tailwindcss.txt",
+      "bytes": 1071,
+      "sha256": "60e0b68c0f35c078eef3a5d29419d0b03ff84ec1df9c3f9d6e39a519a5ae7985"
+    },
+    {
+      "path": "共享整合版/vendor/README.md",
+      "bytes": 1224,
+      "sha256": "564c95523d474ed721c4dbe2e20c8045d27b4cefe7d1508318484fe6fdc86ee3"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/css/all.min.css",
+      "bytes": 89220,
+      "sha256": "8d321d88cb97fdedc3189506c25de9292c6e73a60ebaab496243346c6404480e"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-brands-400.ttf",
+      "bytes": 180148,
+      "sha256": "9e122861bc5f7d6190d580b22acc5b1c3f8cdba9f495593cccd3b47d2cbfa2fd"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-brands-400.woff2",
+      "bytes": 104544,
+      "sha256": "29bc44694c394921d1f00271128a2e4cd8293516216e24eac07a73fa821fc1f5"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-regular-400.ttf",
+      "bytes": 60380,
+      "sha256": "709034805d10429d24862ad685d561808328329debdbca4f70487b508320a3ff"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-regular-400.woff2",
+      "bytes": 23900,
+      "sha256": "fa79fc4f2559112ff3dd27cf5be216d9b5f88066ceef728264f5a3a1a195fc1e"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-solid-900.ttf",
+      "bytes": 303480,
+      "sha256": "1782156bfa2054db429277b42f143298a1ce03437c05e2779ca7875112b19d3c"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-solid-900.woff2",
+      "bytes": 126828,
+      "sha256": "1b099f88c06ed0869872561c157f0ec9cbe133a0939d9ece4ee1e1f54bd4683d"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-v4compatibility.ttf",
+      "bytes": 10556,
+      "sha256": "fde941c0964fab984f6af0697b3fec92e7df384eec9941babfd3e4cbbd6211c2"
+    },
+    {
+      "path": "共享整合版/vendor/fontawesome/webfonts/fa-v4compatibility.woff2",
+      "bytes": 4956,
+      "sha256": "b3abfccce275536beaaeba990e900a0c08ed2fefbabf4a8bcbb2e2ffe3f2431f"
+    },
+    {
+      "path": "共享整合版/vendor/html2canvas.min.js",
+      "bytes": 198689,
+      "sha256": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb"
+    },
+    {
+      "path": "共享整合版/vendor/jspdf.umd.min.js",
+      "bytes": 364463,
+      "sha256": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875"
+    },
+    {
+      "path": "共享整合版/vendor/jszip.min.js",
+      "bytes": 97630,
+      "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
+    },
+    {
+      "path": "共享整合版/vendor/normalize.css",
+      "bytes": 6138,
+      "sha256": "580818700724d42d7fcc4979b0197971fca1c6d2e0286769237a0ac897df5512"
+    },
+    {
+      "path": "共享整合版/vendor/tailwindcss.browser.js",
+      "bytes": 407279,
+      "sha256": "176e894661aa9cdc9a5cba6c720044cbbf7b8bd80d1c9a142a7c24b1b6c50d15"
+    },
+    {
+      "path": "共享整合版/vendor/third-party-sources.json",
+      "bytes": 4120,
+      "sha256": "d05f3d160945e7a07f5912dfc0aa70a614a581c1ebd8dff5d6e00855ada67ff3"
+    },
+    {
+      "path": "共享整合版/vendor/xlsx.full.min.js",
+      "bytes": 881727,
+      "sha256": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99"
+    },
+    {
+      "path": "共享整合版/workspace.css",
+      "bytes": 2777,
+      "sha256": "674bc827cba4c2f439e1302a5ec501e40a733f2716266f45f958f7fe12a0610c"
+    },
+    {
+      "path": "共享整合版/使用說明.html",
+      "bytes": 5219,
+      "sha256": "0b37ed90ba896a8caf36f962cd0039db2447578ad47fc6f4d08429ff86f6857e"
+    },
+    {
+      "path": "共享整合版/資料中心.html",
+      "bytes": 6426,
+      "sha256": "7b8284429e4c74612897f7bc31c6ad19b2340002833ad2a64169d3ff4e5272f6"
+    },
+    {
+      "path": "啟動班級經營工作站.command",
+      "bytes": 153,
+      "sha256": "06ee3137aaea68051ee5adbe3c640819fa9ff8750f88abc08c42c70c7f5de2a5"
+    },
+    {
+      "path": "班級工作站啟動器.py",
+      "bytes": 2082,
+      "sha256": "dd877ce963c274565eb53115e52d8f358fbc1b9d8cff01e32305bfde912ce03d"
+    },
+    {
+      "path": "班級經營整合工作站.html",
+      "bytes": 323,
+      "sha256": "b5261d6d5a4922421173c21f8a0dc62124636ab9cd3fb8ba0e5b3a2e99239844"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "file": "html2canvas.min.js",
+    "url": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+    "sha256": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb"
+  },
+  {
+    "file": "jspdf.umd.min.js",
+    "url": "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+    "sha256": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875"
+  },
+  {
+    "file": "jszip.min.js",
+    "url": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js",
+    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e"
+  },
+  {
+    "file": "normalize.css",
+    "url": "https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css",
+    "sha256": "580818700724d42d7fcc4979b0197971fca1c6d2e0286769237a0ac897df5512"
+  },
+  {
+    "file": "fontawesome/css/all.min.css",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css",
+    "sha256": "8d321d88cb97fdedc3189506c25de9292c6e73a60ebaab496243346c6404480e"
+  },
+  {
+    "file": "LICENSE.html2canvas.txt",
+    "url": "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/LICENSE",
+    "sha256": "86200ce4e92d9a22c41c8647a55f7a5fddff304ff89b4d36ecc699ed8c123d2c"
+  },
+  {
+    "file": "LICENSE.jspdf.txt",
+    "url": "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/LICENSE",
+    "sha256": "2d26bfab8a36d2250602c7a7597237e180c5cd3517acc108126e3cb399f483c8"
+  },
+  {
+    "file": "LICENSE.jszip.txt",
+    "url": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/LICENSE.markdown",
+    "sha256": "566c953c6090b1218ca6217dd7359d45dde46581968586dc607d59a78af6a9c4"
+  },
+  {
+    "file": "LICENSE.normalize.txt",
+    "url": "https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/LICENSE.md",
+    "sha256": "89a9a9ace8be9e79bdc962823479bf980e4a14777ebe51b37e669f658e6f25ef"
+  },
+  {
+    "file": "LICENSE.fontawesome.txt",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/LICENSE.txt",
+    "sha256": "de784a808496d49f5f80dd9d1d6e9a51cff712cfbc339e7c25155631ae3cdb5d"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-brands-400.ttf",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-brands-400.ttf",
+    "sha256": "9e122861bc5f7d6190d580b22acc5b1c3f8cdba9f495593cccd3b47d2cbfa2fd"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-solid-900.ttf",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-solid-900.ttf",
+    "sha256": "1782156bfa2054db429277b42f143298a1ce03437c05e2779ca7875112b19d3c"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-regular-400.woff2",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-regular-400.woff2",
+    "sha256": "fa79fc4f2559112ff3dd27cf5be216d9b5f88066ceef728264f5a3a1a195fc1e"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-v4compatibility.woff2",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-v4compatibility.woff2",
+    "sha256": "b3abfccce275536beaaeba990e900a0c08ed2fefbabf4a8bcbb2e2ffe3f2431f"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-v4compatibility.ttf",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-v4compatibility.ttf",
+    "sha256": "fde941c0964fab984f6af0697b3fec92e7df384eec9941babfd3e4cbbd6211c2"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-brands-400.woff2",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-brands-400.woff2",
+    "sha256": "29bc44694c394921d1f00271128a2e4cd8293516216e24eac07a73fa821fc1f5"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-regular-400.ttf",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-regular-400.ttf",
+    "sha256": "709034805d10429d24862ad685d561808328329debdbca4f70487b508320a3ff"
+  },
+  {
+    "file": "fontawesome/css/../webfonts/fa-solid-900.woff2",
+    "url": "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/webfonts/fa-solid-900.woff2",
+    "sha256": "1b099f88c06ed0869872561c157f0ec9cbe133a0939d9ece4ee1e1f54bd4683d"
+  }
+]
