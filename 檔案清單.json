@@ -1,6 +1,6 @@
 {
   "app": "lssh.classWorkspace.portable",
-  "builtAt": "2026-10-10T19:23:43.398632+08:00",
+  "builtAt": "2026-10-30T22:13:35.916522+08:00",
   "files": [
     {
       "path": ".gitignore",
@@ -34,8 +34,8 @@
     },
     {
       "path": "docs/fair.html",
-      "bytes": 11774,
-      "sha256": "596980f6fdb83c4a211433b7d3090dd9822dcac810743b7453bbe68a82eddc36"
+      "bytes": 10178,
+      "sha256": "36da29a45795b3aa986a33a828bc5c855c8061c98efe6e698bbd1dcadccacd41"
     },
     {
       "path": "docs/roles.html",
@@ -79,8 +79,8 @@
     },
     {
       "path": "共享整合版/adapter-fair.js",
-      "bytes": 1722,
-      "sha256": "b8ffe4d50abf88003bc8ba9a0cfed1ade09d4d2a193e68c6a2467801e00a6b8e"
+      "bytes": 1706,
+      "sha256": "3e896f499f5308ca82600e0dab597c71a4f790afdaab08e9e5136802f16e4562"
     },
     {
       "path": "共享整合版/adapter-roles.js",
@@ -94,8 +94,8 @@
     },
     {
       "path": "共享整合版/bridge.js",
-      "bytes": 10369,
-      "sha256": "32aaea4f7c147aded0700165d5faafb38b4f28b1853f72b1a7ca0db4b4660b8a"
+      "bytes": 10367,
+      "sha256": "51d3877d903533c3f79d7fcb1a052a5033f03ce6a257deaf13e99cc98453d8da"
     },
     {
       "path": "共享整合版/cleaning.html",
@@ -124,8 +124,8 @@
     },
     {
       "path": "共享整合版/fair.html",
-      "bytes": 157597,
-      "sha256": "da997cbc2a74f722340043fc7696d8b9baccb2e020ec742b3c04dc841a95841d"
+      "bytes": 133340,
+      "sha256": "c00dba2610002fa8154fe752a7071cccbff85ffe7313dd7805939287b21626e3"
     },
     {
       "path": "共享整合版/roles.html",
