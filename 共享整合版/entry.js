@@ -4,8 +4,11 @@
   const localFile = location.protocol === 'file:';
   const site = new URL('../', document.currentScript.src);
   const origin = localFile ? 'http://127.0.0.1:8766' : location.origin;
-  const root = localFile ? origin + '/' : site.href;
-  const home = root + 'index.html';
+  // 啟動器在「示範檔案」內時以上一層為根目錄（網址多一層工作站資料夾名稱），否則以工作站資料夾為根目錄。
+  const folderName = decodeURIComponent(site.pathname).replace(/\/$/, '').split('/').pop();
+  const roots = localFile ? [origin + '/' + encodeURIComponent(folderName) + '/', origin + '/'] : [site.href];
+  let root = roots[0];
+  let home = root + 'index.html';
   const token = new URLSearchParams(location.search).get('fromFileToken');
   window.WorkspaceEntry = { fileMode: localFile, receiving: !!token };
   if (!localFile && !token) return;
@@ -57,9 +60,14 @@
       action(box, '下載檔案模式完整備份', () => download(backup, '檔案模式班級經營完整備份.json'));
       action(box, '開啟工作站既有資料', openHome);
     } else action(box, '開啟共用工作站', openHome);
-    const image = new Image();
-    image.onload = () => { if (hasData) return; const path = decodeURIComponent(location.pathname), base = decodeURIComponent(site.pathname); const relative = path.startsWith(base) ? path.slice(base.length) : 'index.html'; location.replace(root + encodeURI(relative) + location.search + location.hash); };
-    image.onerror = () => { box.append(el('p', '本機服務尚未啟動。請到工作站資料夾雙擊「啟動班級經營工作站.command」，再按上方按鈕。以後從此啟動器進入，就能共用名冊。')); };
-    image.src = root + '共享整合版/entry-health.svg?check=' + Date.now();
+    const probe = base => new Promise(resolve => { const image = new Image(); image.onload = () => resolve(true); image.onerror = () => resolve(false); image.src = base + '共享整合版/entry-health.svg?check=' + Date.now(); });
+    let found = null;
+    for (const base of roots) if (await probe(base)) { found = base; break; }
+    if (!found) { box.append(el('p', '本機服務尚未啟動。請到工作站資料夾雙擊「啟動班級經營工作站.command」，再按上方按鈕。以後從此啟動器進入，就能共用名冊。')); return; }
+    root = found; home = root + 'index.html';
+    if (hasData) return;
+    const path = decodeURIComponent(location.pathname), base = decodeURIComponent(site.pathname);
+    const relative = path.startsWith(base) ? path.slice(base.length) : 'index.html';
+    location.replace(root + relative.split('/').map(encodeURIComponent).join('/') + location.search + location.hash);
   });
 })();
