@@ -364,7 +364,7 @@ footer{margin-top:30px;font-size:12.5px;color:var(--muted);display:flex;flex-wra
     else if (/\.pdf$/i.test(t.path)) badges.push('<span class="badge mute">PDF 文件</span>');
     else badges.push('<span class="badge mute">獨立資料</span>');
     if (t.integrated && scope && modules[t.integrated] > 0) badges.push('<span class="badge">本學期有資料</span>');
-    if (a.ok === false) badges.push(t.online ? '<span class="badge warn">本機無檔，改開線上版</span>' : '<span class="badge err">此網址找不到檔案</span>');
+    if (a.ok === false) badges.push(t.online ? '<span class="badge warn">此網址開啟線上版</span>' : '<span class="badge mute" title="此程式放在「示範檔案」資料夾，請用本機啟動器開啟">僅限本機使用</span>');
     else if (a.modified) badges.push(`<span class="badge mute">更新 ${esc(fmtDay(a.modified))}</span>`);
     if (t.integrated && a.stale) badges.push('<span class="badge warn" title="獨立版比整合版新，新功能請先用獨立版">整合版待同步</span>');
     const acts = [];
