@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校慶園遊會攤位規劃程式（codex優化版）使用說明</title>
+<style>
+body {
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  color: #22302c;
+  line-height: 1.8;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 36px 24px 64px;
+  background: #faf6ee;
+}
+h1, h2, h3 {
+  line-height: 1.35;
+}
+h1 {
+  font-size: 2rem;
+  border-bottom: 4px solid #0f6b5c;
+  padding-bottom: 12px;
+}
+h2 {
+  font-size: 1.35rem;
+  margin-top: 36px;
+  border-left: 6px solid #d9482f;
+  padding-left: 12px;
+}
+h3 {
+  font-size: 1.08rem;
+  margin-top: 22px;
+  color: #3f4d48;
+}
+a { color: #0f6b5c; text-decoration: none; font-weight: bold; }
+a:hover { text-decoration: underline; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  background: white;
+}
+th, td {
+  border: 1px solid #e6dfd1;
+  padding: 8px 10px;
+  vertical-align: top;
+}
+th {
+  background: #e3f1ed;
+  text-align: left;
+}
+.note {
+  background: #e3f1ed;
+  border-left: 5px solid #0f6b5c;
+  padding: 12px 16px;
+  margin: 14px 0;
+}
+.warning {
+  background: #fdf3dc;
+  border-left: 5px solid #b97a00;
+  padding: 12px 16px;
+  margin: 14px 0;
+}
+@media print {
+  body { background: white; padding: 0; }
+  a { color: #22302c; text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<h1>校慶園遊會攤位規劃程式（codex優化版）使用說明</h1>
+
+<p>本程式協助導師與班級幹部完成園遊會攤位的菜單、分工與當天輪班。依畫面上方四個步驟往下走即可，所有內容都會<strong>自動儲存</strong>，不需要另外按儲存鍵。</p>
+
+<p><strong>程式線上版網址：</strong><br>
+<a href="https://froglssh.github.io/school-fair-booth-planner-online/" target="_blank">https://froglssh.github.io/school-fair-booth-planner-online/</a></p>
+
+<div class="note">
+  <strong>2026-10-30 介面改版重點</strong>
+  <ul>
+    <li>四個分頁改為「攤位與菜單 → 分組工作 → 當天輪班 → 完成輸出」四步驟，每步會顯示完成進度。</li>
+    <li>取消各區的「儲存資料」按鈕，改為全程自動儲存；舊版已儲存的資料會自動帶入。</li>
+    <li>名單只要輸入一次，輪班自動沿用，也可另外調整。</li>
+    <li>隨機補滿、清空等動作，都可按提示訊息上的「復原」還原。</li>
+    <li>隨機補滿會保留已指定的同學，且不會把已有安排的同學重複排入；願意多做的同學可加入「可重複名單」。</li>
+  </ul>
+</div>
+
+<h2>一、開啟程式</h2>
+<ol>
+  <li>使用 Chrome、Edge、Safari 等現代瀏覽器開啟線上版網址或本 HTML 檔。</li>
+  <li>電腦、平板、手機都可操作；輸出與大量調整建議使用電腦或平板。</li>
+  <li>Excel 匯入、下載圖片與 PDF 需要網路連線以載入相關套件。</li>
+</ol>
+
+<h2>二、步驟一：攤位與菜單</h2>
+<ol>
+  <li><strong>攤位名稱：</strong>輸入主題，例如「盛夏芒果冰沙店」。</li>
+  <li><strong>挑選食物：</strong>點選食物卡片加入「我的菜單」，可用搜尋框或熱食、甜點、飲料分類篩選。點菜單中的品項可展開特色、材料、流程、衛生與販售建議。</li>
+  <li><strong>自訂食物：</strong>按「自訂食物」輸入名稱、類別與介紹。搜尋不到時也可直接按「新增」。自訂食物會保留，下次開啟仍在。</li>
+  <li><strong>移除食物：</strong>滑到卡片右上角按 ×，可從清單移除；按「還原已移除的食物」可恢復內建品項。</li>
+  <li><strong>菜單方案：</strong>想比較不同菜單時，按「存成方案」保存，之後從下拉選單選取即可套用。</li>
+  <li><strong>AI 輔助：</strong>
+    <ul>
+      <li><strong>請 ChatGPT 規劃：</strong>自動複製完整提示詞並開啟 ChatGPT，貼上（Ctrl+V 或 Cmd+V）即可。</li>
+      <li><strong>複製提示詞：</strong>可貼到其他 AI 工具使用。</li>
+      <li><strong>查資料：</strong>以已選食物開啟 Google 搜尋，查找食材、設備與成本。</li>
+      <li><strong>貼上 AI 規劃結果：</strong>把 AI 回覆貼入後會自動保存。</li>
+    </ul>
+  </li>
+</ol>
+
+<h2>三、步驟二：分組工作</h2>
+<ol>
+  <li><strong>建立名單：</strong>按「匯入 Excel 名單」選擇檔案，再選班級分頁並確認預覽；或直接貼上，一行一人。系統會辨識「座號」「姓名」欄位，名單只要建立一次，輪班會自動沿用。</li>
+  <li><strong>先指定、再隨機：</strong>有特定人選時，先按該組「選人」勾選。按「隨機補滿全部」會保留已指定的同學，只補其餘名額，也只會選尚未分組的同學，不會重複。勾選「多出來的人也平均分到各組」，全班都會有工作；取消勾選則只補滿所需人數，其餘同學列在「尚未分配」。要全部重排時，先按「清空指派」。</li>
+  <li><strong>可重複名單：</strong>願意兼組或能力較強的同學，按「可重複名單」勾選。未分組的同學用完後，隨機分配才會讓名單內的同學擔任第二組以上，姓名前會有循環圖示。</li>
+  <li><strong>微調：</strong>每組可用 − / + 調整人數，按「補滿」只補該組缺額，按姓名旁的 × 移除。用「選人」手動勾選時可直接選任何同學，視窗會標示該生已在哪一組。</li>
+  <li><strong>工作項目：</strong>可新增工作，也可用鉛筆圖示編輯、垃圾桶圖示刪除。</li>
+</ol>
+<p>姓名以刪除線顯示，代表此人已不在名單中，可按 × 移除。</p>
+
+<h2>四、步驟三：當天輪班</h2>
+<ol>
+  <li><strong>設定時間：</strong>選擇開始時間、結束時間、每班長度與每班人數，班表會自動產生。若已有排班，改設定後需按「重新產生班表」才會套用。</li>
+  <li><strong>輪值名單：</strong>預設與分組名單相同。若要加入家長或支援人員，按「另外調整」。</li>
+  <li><strong>先指定、再隨機：</strong>先用各班的「選人」指定同學，再按「隨機補滿全部」。系統保留已指定的同學，其餘名額只選尚未排班的同學，並盡量避開連續兩班。要全部重排時，先按「清空排班」。</li>
+  <li><strong>可重複名單：</strong>願意多輪班的同學請加入此名單，名單內同學的班數會盡量平均。班次總名額多於人數時，可在名單視窗按「全選」讓全班輪值多班，否則會顯示還缺幾個名額。</li>
+  <li><strong>微調：</strong>每班同樣可調整人數、選人、補滿或移除。一個人是否已有工作，與他能否排班互不影響，兩頁各自計算。</li>
+</ol>
+
+<div class="note">
+  <strong>實用排班建議：</strong><br>
+  每班人數可多留 1～2 人作為預備人力。若班級人數較多，可縮短每班長度（例如 45 分鐘），讓每位同學都有參與感又不過於勞累。
+</div>
+
+<h2>五、步驟四：完成輸出</h2>
+<p>可預覽四份文件，每份都能下載圖片、PDF 或列印，也可按「列印全部」一次印出。</p>
+<table>
+  <thead>
+    <tr><th>文件</th><th>內容</th><th>適合用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>菜單與準備指南</td><td>品項、材料、流程、衛生與販售建議</td><td>各組備料參考</td></tr>
+    <tr><td>工作分配表</td><td>各組負責人員</td><td>貼在教室公告</td></tr>
+    <tr><td>輪值表</td><td>各班次時間與人員</td><td>當天攤位張貼</td></tr>
+    <tr><td>個人工作總表</td><td>每人的組別與值班時段</td><td>學生查詢自己的任務</td></tr>
+  </tbody>
+</table>
+
+<h2>六、資料保存與備份</h2>
+<ul>
+  <li>內容會自動存在目前瀏覽器，畫面右上方會顯示最後儲存時間。</li>
+  <li>換電腦或換瀏覽器前，請按右上角「更多 → 下載完整備份」，到新環境再按「從備份還原」。圖片與 PDF 是報表，無法用來還原資料。</li>
+  <li>「更多 → 清除全部攤位資料」只會清除本工具的資料，不影響幹部、座位、班費、評語等其他工具。</li>
+</ul>
+<div class="warning">
+  備份檔內含學生名單，請存放在個人裝置或校內雲端，不要公開分享。
+</div>
+
+<h2>七、常見問題</h2>
+<h3>為什麼按「請 ChatGPT 規劃」或「查資料」沒有反應？</h3>
+<p>請檢查瀏覽器是否阻擋了彈出式視窗，通常在網址列右側會出現圖示，設定為允許後重試。使用 ChatGPT 需先登入帳號。</p>
+
+<h3>匯入 Excel 時沒有偵測到名單？</h3>
+<p>請確認工作表有「座號」「姓名」欄位，並在匯入視窗選對班級分頁。支援 .xlsx、.xls、.csv 格式。</p>
+
+<h3>按錯隨機補滿怎麼辦？</h3>
+<p>提示訊息出現時按「復原」即可，訊息約顯示 8 秒。</p>
+
+<h3>舊版的資料還在嗎？</h3>
+<p>在同一個瀏覽器開啟時，名單、工作分配、輪值表與菜單方案都會自動帶入。舊版尚未存成主題的食物選取不會保留，請從「已存的菜單方案」套用。</p>
+
+<h2>八、資料與隱私提醒</h2>
+<ul>
+  <li>本程式為純前端網頁，攤位資料與學生名單只儲存在您的瀏覽器，不會上傳到任何伺服器。</li>
+  <li>使用 ChatGPT 或查資料時，只會帶出攤位名稱與已選食物，不包含學生名單。提示詞貼到 ChatGPT 後，資料處理依該平台規範。</li>
+</ul>
+
+</body>
+</html>

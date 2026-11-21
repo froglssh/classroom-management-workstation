@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 學習歷程檔案輔助程式 2.0 使用說明與指南</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #0d9488;
+      --teal-dark: #0f766e;
+      --teal-light: #f0fdfa;
+      --ink: #1f2937;
+      --ink-light: #4b5563;
+      --border: #e5e7eb;
+      --bg: #f8fafc;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.8;
+      padding-bottom: 80px;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 100%);
+      color: #fff;
+      padding: 60px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--bg);
+      clip-path: ellipse(60% 40px at 50% 40px);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto 24px;
+    }
+
+    .btn-online {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--teal-dark);
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+
+    .btn-online:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      background: var(--teal-light);
+    }
+
+    /* ---------- Main Layout ---------- */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      margin-top: 30px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .card h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--teal-dark);
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--teal-light);
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ---------- Sections ---------- */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .btn-explain-box {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: var(--bg);
+      transition: all 0.2s;
+    }
+
+    .btn-explain-box:hover {
+      border-color: var(--teal);
+      transform: translateY(-2px);
+    }
+
+    .btn-tag {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .bg-teal { background-color: var(--teal); }
+    .bg-amber { background-color: #d97706; }
+    .bg-violet { background-color: #7c3aed; }
+    .bg-ghost { background-color: #6b7280; }
+
+    .btn-explain-box h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-explain-box p {
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      line-height: 1.6;
+    }
+
+    /* ---------- Portfolio List ---------- */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .portfolio-item {
+      background: var(--teal-light);
+      border-left: 5px solid var(--teal);
+      border-radius: 0 12px 12px 0;
+      padding: 24px;
+    }
+
+    .portfolio-item h3 {
+      font-size: 1.25rem;
+      color: var(--teal-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .portfolio-item .desc {
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .portfolio-item ul {
+      margin-left: 20px;
+      font-size: 0.95rem;
+      color: var(--ink-light);
+    }
+
+    .portfolio-item ul li {
+      margin-bottom: 6px;
+    }
+
+    .highlight-tip {
+      background: #fef3c7;
+      border-left: 4px solid #d97706;
+      padding: 10px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: #92400e;
+    }
+
+    /* ---------- AI Mode Explanation ---------- */
+    .ai-modes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .ai-mode-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      background: #fff;
+    }
+
+    .ai-mode-card h4 {
+      font-size: 1.1rem;
+      color: var(--ink);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .badge-local { background: #0d9488; }
+    .badge-copy { background: #7c3aed; }
+    .badge-api { background: #2563eb; }
+
+    /* ---------- Footer ---------- */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 0.9rem;
+      color: var(--ink-light);
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <h1>🎓 學習歷程檔案輔助程式 2.0 使用說明與指南</h1>
+      <p>輔助高中生高效撰寫符合 108 課綱與升學指南規格的備審資料、多元表現與學習歷程自述。</p>
+      <a href="https://froglssh.github.io/learning-portfolio-assistant-online/" class="btn-online" target="_blank">🔗 開啟線上版程式</a>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- 1. 基本資料與核心架構 -->
+    <div class="card">
+      <h2>👤 1. 基礎設定與基本資料</h2>
+      <p>在使用程式填寫任何內容前，建議先在左側邊欄的 **👤 基本資料** 中填入以下欄位，這將會大幅優化 AI 自動寫作的客製化效果：</p>
+      <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
+          <strong style="color: var(--teal-dark)">👤 學生姓名</strong>
+          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">用以生成個人化的成果報告與 Word/PDF 檔中的署名資訊。</p>
+        </div>
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
+          <strong style="color: var(--teal-dark)">🎯 目標校系</strong>
+          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">如「台大資工系」、「師大生科系」。AI 優化時會主動以此校系特質做連結，調整論述深度。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 四大控制按鈕與資料存取 -->
+    <div class="card">
+      <h2>⚙️ 2. 主控制區功能操作</h2>
+      <p>頁首右上角的四大功能按鈕能有效管理您的所有寫作資料：</p>
+      <div class="btn-grid" style="margin-top: 20px;">
+        <div class="btn-explain-box">
+          <h3>⚙️ AI 設定</h3>
+          <p>設定 OpenAI/Gemini 的 API 金鑰與模型偏好。您可以輸入個人 API Key 進行直接串接，或者自訂 AI 提示詞架構，使 AI 輸出的風格最符合您的調性。</p>
+        </div>
+        <div class="btn-explain-box">
+          <h3>💾 儲存</h3>
+          <p>一鍵將目前**所有分頁的文字資料與佐證圖片欄位**儲存至您的瀏覽器本地暫存（LocalStorage）。即使不小心關閉瀏覽器，資料也不會遺失。</p>
+        </div>
+        <div class="btn-explain-box">
+          <h3>📂 讀取</h3>
+          <p>從本機瀏覽器中還原上一次儲存的所有輸入狀態，方便隨時繼續編輯。</p>
+        </div>
+        <div class="btn-explain-box">
+          <h3>🗑️ 刪除</h3>
+          <p>完全清空目前輸入的所有內容，並清除本地瀏覽器的暫存紀錄，重新開始撰寫新檔案。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 十大檔案類型功能詳解 -->
+    <div class="card">
+      <h2>📁 3. 十大學習歷程檔案類型詳解</h2>
+      <p style="margin-bottom: 20px;">本程式根據四份升學指南 PDF 精華，為十種學習歷程主要檔案類型設計了專用的引導欄位與撰寫原則：</p>
+      
+      <div class="portfolio-grid">
+        <!-- 1 -->
+        <div class="portfolio-item">
+          <h3>📘 課程學習成果 (Course)</h3>
+          <p class="desc">修課產出的作品（B 項）。學術能力的直接證據，重質不重量。</p>
+          <ul>
+            <li><strong>標題與主題</strong>：交代作品名稱與所屬課程。</li>
+            <li><strong>100字簡述</strong>：教授的預告片！使用「What＋How＋Result」黃金公式。</li>
+            <li><strong>摘要、作品說明、正文、心得反思</strong>：交代製作動機與核心能力成長。</li>
+          </ul>
+          <div class="highlight-tip">公式：以「大巨蛋對周邊房價影響」為題，透過實價登錄數據分析，發現正相關但有滯後效應，培養數據分析能力。</div>
+        </div>
+
+        <!-- 2 -->
+        <div class="portfolio-item">
+          <h3>🌟 多元表現 (Diverse)</h3>
+          <p class="desc">校內外非修課成果（C 項）：社團、幹部、競賽、檢定、志工等。</p>
+          <ul>
+            <li><strong>項目名稱與類型、擔任角色、投入歷程、具體成果、科系連結</strong>。</li>
+            <li>重點在於：戴上「科系濾鏡」，強調你「解決了什麼」「帶領了什麼」，用數據佐證。</li>
+          </ul>
+        </div>
+
+        <!-- 3 -->
+        <div class="portfolio-item">
+          <h3>🧩 多元表現綜整心得 (Diverse Summary)</h3>
+          <p class="desc">獨立上傳的 PDF（最多 800 字＋3 張圖片），為三年課外精華的去蕪存菁。</p>
+          <ul>
+            <li><strong>個人標籤、選材清單、三分段落、結論與圖片規劃</strong>。</li>
+            <li>設定一個「個人標籤」（例如：數據驅動的探究者）串聯不同活動，避免流水帳。</li>
+          </ul>
+        </div>
+
+        <!-- 4 -->
+        <div class="portfolio-item">
+          <h3>📖 學習歷程自述 (Self Statement)</h3>
+          <p class="desc">把三年零散片段串成完整故事的「自我行銷提案書」，採 N-O-P-Q 架構。</p>
+          <ul>
+            <li><strong>O.高中反思</strong>（STAR 原則描述關鍵學習事件）、<strong>P.就讀動機</strong>、<strong>校系特色打擊</strong>與<strong>Q.未來計畫</strong>。</li>
+            <li>前後必須緊密扣合，展現對該科系課程、實驗室的深入研究。</li>
+          </ul>
+        </div>
+
+        <!-- 5 -->
+        <div class="portfolio-item">
+          <h3>🔍 自主學習計畫與成果 (Self Directed)</h3>
+          <p class="desc">展現「自訂主題 → 找資源 → 執行 → 反思」的自主學習能力。</p>
+          <ul>
+            <li><strong>主題動機、可檢核目標、方法時程、執行歷程、成果與反思</strong>。</li>
+            <li>重點在於誠實記錄調整與卡關，展現科學韌性與解決問題的態度。</li>
+          </ul>
+        </div>
+
+        <!-- 6 -->
+        <div class="portfolio-item">
+          <h3>🧪 探究與實作成果 (Inquiry)</h3>
+          <p class="desc">大學教授最看重的項目之一，採用 IMRD（引言-方法-結果-討論）論證結構。</p>
+          <ul>
+            <li><strong>研究問題假設、動機背景、方法、結果數據、分析討論、結論與延伸探究</strong>。</li>
+            <li>自然科重「論證與建模」（需含誤差分析）；社會科重「多重觀點與社會關懷」。</li>
+          </ul>
+        </div>
+
+        <!-- 7 -->
+        <div class="portfolio-item">
+          <h3>🏆 競賽成果 (Competition)</h3>
+          <p class="desc">科展、學科競賽或專題競賽成果，展現抗壓力與問題解決力。</p>
+          <ul>
+            <li><strong>競賽名稱、背景難度、你的角色分工、準備歷程、量化成果、習得能力、科系連結</strong>。</li>
+            <li>重點不在於得名與否，而是遭遇瓶頸時的具體突破過程。</li>
+          </ul>
+        </div>
+
+        <!-- 8 -->
+        <div class="portfolio-item">
+          <h3>✍️ 個人自傳 (Autobiography)</h3>
+          <p class="desc">個人品牌白皮書。是「價值提案」而非單純的自我揭露（建議 800–1200 字）。</p>
+          <ul>
+            <li><strong>黃金開場、成長背景、求學歷程、社團活動、經歷亮點、未來展望</strong>。</li>
+            <li>開場請用 3–5 句「自我摘要」破題，並善用強動詞與數據呈現重要成就。</li>
+          </ul>
+        </div>
+
+        <!-- 9 -->
+        <div class="portfolio-item">
+          <h3>🗺️ 讀書計畫 (Study Plan)</h3>
+          <p class="desc">驗證就讀動機可行性的試金石，展示大學四年的執行藍圖。</p>
+          <ul>
+            <li><strong>近程（轉銜學習）、中程大一大二（奠基）、中程大三大四（深化）、遠程（生涯願景）</strong>。</li>
+            <li>切忌複製系網課表或流於大方向，要具體列出期望修讀的特殊課名、研究專題與目標實驗室。</li>
+          </ul>
+        </div>
+
+        <!-- 10 -->
+        <div class="portfolio-item">
+          <h3>🚀 未來發展 (Future)</h3>
+          <p class="desc">展現清晰的生涯規劃與成長心態，連結所學與社會貢獻。</p>
+          <ul>
+            <li><strong>大學研究所規劃、畢業後十年規劃、終生志業、科系連結、社會回饋</strong>。</li>
+            <li>讓教授看到你的遠見，以及你如何將所學回饋社會，提升思考格局。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 單一欄位輔助工具與 AI 優化 -->
+    <div class="card">
+      <h2>✨ 4. 欄位寫作與 AI 優化工具</h2>
+      <p>在每個輸入欄位的右下角，皆設有三個便捷的輔助按鈕：</p>
+      <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        <div style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; background: var(--bg);">
+          <strong style="font-size: 1.1rem; color: var(--teal-dark)">🎤 語音輸入</strong>
+          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">呼叫瀏覽器語音辨識 API，用說的也能快速打字，最適合靈感爆發時的隨筆記錄。</p>
+        </div>
+        <div style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; background: var(--bg);">
+          <strong style="font-size: 1.1rem; color: var(--teal-dark)">✨ AI 優化此欄</strong>
+          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">針對該特定輸入欄位進行內容升級，共支援三種靈活的工作模式：</p>
+          <div class="ai-modes-list">
+            <div class="ai-mode-card">
+              <h4>1. 本地系統優化 <span class="badge badge-local">離線・免金鑰</span></h4>
+              <p style="font-size: 0.85rem; color: var(--ink-light)">內建演算法自動修復常見錯別字、贅字清理、字數檢查，並自動提供台灣升學術語的校正建議。</p>
+            </div>
+            <div class="ai-mode-card">
+              <h4>2. 產生提示詞並複製 <span class="badge badge-copy">手動貼上</span></h4>
+              <p style="font-size: 0.85rem; color: var(--ink-light)">一鍵生成最精準的優化 Prompt 指令，包裝你的原文，直接複製後開啟網頁版 ChatGPT 或 Gemini 進行問答。</p>
+            </div>
+            <div class="ai-mode-card">
+              <h4>3. 直接呼叫 API <span class="badge badge-api">即時完成</span></h4>
+              <p style="font-size: 0.85rem; color: var(--ink-light)">直接在程式視窗內呼叫 AI API 進行流暢潤飾，滿意後即可一鍵套用回原欄位。</p>
+            </div>
+          </div>
+        </div>
+        <div style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; background: var(--bg);">
+          <strong style="font-size: 1.1rem; color: var(--teal-dark)">✕ 清除</strong>
+          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">快速清空該欄位的文字內容，方便重新填寫。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 佐證資料與下載/列印 -->
+    <div class="card">
+      <h2>📎 5. 佐證資料與成果匯出</h2>
+      <p style="margin-bottom: 20px;">當您完成各個欄位的填寫後，可以使用底部的匯出與佐證資料上傳卡：</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">📷 佐證資料上傳與圖說</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">您可多張上傳相關照片，並為每張照片填寫簡短圖說（圖說非常關鍵，務必寫明照片中的活動主題與你所在的具體位置）。所有上傳的圖片均會轉為本機編碼，保存於您當前的瀏覽器中，並能完美的整合輸出到 PDF。</p>
+        </div>
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">🔗 合併本檔內容</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">快速將這份學習歷程下所有的填寫欄位，依格式組裝成一篇結構分明、具易讀性的排版文章，供您預覽或直接複製全文。</p>
+        </div>
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">📝 下載 Word</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">將整篇學習歷程打包下載為 Word 格式的 `.doc` 文件，供您在 Microsoft Word 中進一步精修、調整格式或合併至其他大型文件中。</p>
+        </div>
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">🖨️ 列印／下載 PDF</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">觸發列印友善版面。在彈出的列印視窗中，將目的地設為「另存為 PDF」，即可輸出包含主題文字、摘要、完整段落，以及佐證圖片的排版學習歷程成果檔案！</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>學習歷程檔案輔助程式 © 2026</p>
+      <p style="margin-top: 8px; font-size: 0.8rem; opacity: 0.8;">製作者：臺北市立麗山高中 林獻升老師 | 聯絡信箱：frog@lssh.tp.edu.tw</p>
+    </div>
+  </footer>
+
+</body>
+</html>

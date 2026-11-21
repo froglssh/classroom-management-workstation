@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>學生選取、分組與紀錄程式使用說明</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0f172a; --ink-2: #334155; --muted: #64748b; --line: #e2e8f0;
+      --bg: #eef2f6; --card: #fff; --soft: #f8fafc;
+      --brand: #4f46e5; --brand-soft: #eef2ff; --brand-ink: #312e81;
+      --ok: #15803d; --ok-soft: #ecfdf3; --danger: #be123c; --danger-soft: #fff1f3;
+      --warn: #b45309; --warn-soft: #fff8eb;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+    body { margin: 0; color: var(--ink); background: var(--bg); line-height: 1.8;
+      font-family: "Noto Sans TC", system-ui, -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    header { background: #0f172a; color: #fff; padding: 40px 22px 34px; }
+    .brand { display: flex; gap: 14px; align-items: center; }
+    .logo { width: 54px; height: 54px; border-radius: 14px; background: var(--brand); display: grid; place-items: center; font-size: 1.7rem; flex: 0 0 auto; }
+    h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.5rem); line-height: 1.25; font-weight: 800; }
+    .ver { display: inline-block; margin-left: 8px; font-size: .9rem; background: var(--brand); border-radius: 999px; padding: 2px 10px; vertical-align: middle; }
+    header p { max-width: 820px; margin: 14px 0 0; color: #cbd5e1; font-size: 1.04rem; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .button { display: inline-flex; align-items: center; gap: 6px; border-radius: 10px; padding: 10px 16px; text-decoration: none; font-weight: 800; color: #fff; background: var(--brand); }
+    .button.ghost { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); }
+    main { padding: 22px 22px 52px; }
+    nav, section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 2px rgba(15,23,42,.05), 0 6px 20px rgba(15,23,42,.06); }
+    nav { padding: 14px 18px; margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: center; }
+    nav strong { margin-right: 6px; }
+    nav a { color: var(--brand); text-decoration: none; font-weight: 700; }
+    nav a:hover { text-decoration: underline; }
+    section { padding: 22px 24px; margin: 18px 0; }
+    h2 { margin: 0 0 12px; font-size: 1.4rem; line-height: 1.35; display: flex; gap: 10px; align-items: center; }
+    h2 .num { width: 34px; height: 34px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-size: 1rem; flex: 0 0 auto; }
+    h3 { margin: 20px 0 6px; font-size: 1.06rem; }
+    p { margin: 8px 0; }
+    ul, ol { padding-left: 1.35rem; margin: 8px 0; }
+    li { margin: 4px 0; }
+    .callout { border-left: 5px solid var(--brand); background: var(--brand-soft); padding: 10px 14px; margin: 12px 0; border-radius: 0 10px 10px 0; }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0 4px; padding: 0; list-style: none; counter-reset: s; }
+    .steps li { margin: 0; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; counter-increment: s; }
+    .steps li::before { content: counter(s); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 800; font-size: .85rem; margin-bottom: 6px; }
+    .steps b { display: block; }
+    .steps span { color: var(--muted); font-size: .88rem; line-height: 1.55; display: block; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    th, td { border-bottom: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: var(--ink-2); font-size: .9rem; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { white-space: nowrap; font-weight: 700; }
+    .ui { display: inline-block; background: #fff; border: 1px solid #cbd5e1; border-bottom-width: 2px; border-radius: 7px; padding: 0 7px; font-size: .9em; font-weight: 700; white-space: nowrap; }
+    code { background: #f1f5f9; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+    /* 畫面示意 */
+    .stage { border-radius: 14px; background: radial-gradient(circle at 20% 0%, #312e81, #0f172a 70%); color: #fff; padding: 14px 18px; margin: 12px 0; }
+    .stage small { color: #c7d2fe; font-weight: 700; font-size: .82rem; }
+    .stage .names { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; padding: 12px 0 6px; }
+    .stage .names span { background: #fff; color: var(--brand-ink); border-radius: 14px; padding: 6px 18px; font-weight: 800; font-size: 1.5rem; }
+    .stage .names em { font-style: normal; color: var(--muted); font-size: .9rem; margin-right: 6px; }
+    .rrow { display: grid; grid-template-columns: 110px 116px 1fr 120px 30px 30px; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; background: #fff; margin: 10px 0; font-size: .9rem; }
+    .rrow b { white-space: nowrap; }
+    .pts { display: grid; grid-template-columns: 30px 1fr 30px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; text-align: center; font-weight: 800; }
+    .pts i { font-style: normal; } .pts .m { background: var(--danger-soft); color: var(--danger); } .pts .p { background: var(--ok-soft); color: var(--ok); }
+    .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 9px; color: #94a3b8; white-space: nowrap; overflow: hidden; }
+    .ico { border: 1px solid var(--line); border-radius: 8px; text-align: center; }
+    .groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+    .g { border: 1px solid var(--line); border-top: 5px solid var(--brand); border-radius: 12px; padding: 10px 12px; background: #fff; }
+    .g:nth-child(2) { border-top-color: #0f766e; } .g:nth-child(3) { border-top-color: #c2410c; }
+    .g b { display: block; margin-bottom: 6px; }
+    .chip { display: inline-block; border: 1px solid #cbd5e1; border-radius: 999px; padding: 1px 10px; margin: 2px; font-weight: 700; font-size: .9rem; }
+    .chip.sel { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .cap { color: var(--muted); font-size: .85rem; margin-top: -4px; }
+    footer { padding: 18px 22px 42px; color: var(--muted); text-align: center; }
+    footer a { color: var(--brand); }
+    @media (max-width: 860px) { .steps { grid-template-columns: 1fr 1fr; } .groups { grid-template-columns: 1fr; } .rrow { grid-template-columns: 1fr 116px; } .rrow .hide-sm { display: none; } }
+    @media (max-width: 600px) {
+      header { padding: 30px 16px; } main { padding: 14px; } section { padding: 16px; }
+      .steps { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🎲</div>
+        <h1>學生選取、分組與紀錄程式使用說明<span class="ver">v3.0</span></h1>
+      </div>
+      <p>臺北市立麗山高中林獻升老師製作。上課隨機抽人回答、記錄加減分與表現備註、快速分組，並把每個班級的紀錄長期保存、匯出成 Excel／PDF。</p>
+      <div class="button-row">
+        <a class="button" href="學生選取與紀錄程式(codex優化版).html" target="_blank" rel="noopener">▶ 開啟程式</a>
+        <a class="button ghost" href="#storage">💾 資料怎麼保存？</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav aria-label="章節導覽">
+      <strong>快速導覽</strong>
+      <a href="#start">快速開始</a>
+      <a href="#s1">1 班級與名單</a>
+      <a href="#s2">2 課堂抽籤</a>
+      <a href="#s3">3 分組安排</a>
+      <a href="#s4">4 統計輸出</a>
+      <a href="#storage">5 資料與備份</a>
+      <a href="#faq">常見問題</a>
+    </nav>
+
+    <section id="start">
+      <h2>快速開始（第一次使用約 3 分鐘）</h2>
+      <ol class="steps">
+        <li><b>班級與名單</b><span>新增班級，貼上名單或匯入 Excel（可一次匯入多個班）。</span></li>
+        <li><b>課堂抽籤</b><span>按「🎲 抽籤」或直接點學生，當場加減分、寫備註。</span></li>
+        <li><b>分組安排</b><span>設定每組人數，按「隨機分組」，再拖曳微調。</span></li>
+        <li><b>統計輸出</b><span>看全班被抽次數與分數，下載 Excel／PDF 或列印。</span></li>
+        <li><b>資料與備份</b><span>選一個雲端硬碟資料夾，讓資料長期保存。</span></li>
+      </ol>
+      <p>畫面最上方一直顯示<strong>目前班級</strong>選單，換班上課時直接切換即可；每個班級的名單、紀錄與分組都分開保存。五個步驟標籤會顯示目前狀態，例如「本輪 12/30」。</p>
+      <div class="callout">每天上課只需要：頁首選班級 → 步驟 2 按 <span class="ui">🎲 抽 N 人</span> → 在紀錄上按 <span class="ui">＋</span>／<span class="ui">−</span> 給分。<strong>所有操作都會自動儲存</strong>，不用再按「儲存」。</div>
+    </section>
+
+    <section id="s1">
+      <h2><span class="num">1</span>班級與學生名單</h2>
+      <h3>我的班級</h3>
+      <ul>
+        <li><span class="ui">＋ 新增班級</span>：輸入班級名稱（例如「201」或「高二生物 A」）。頁首「目前班級」選單最下方也可以新增。</li>
+        <li>點班級卡片＝切換到這個班；<span class="ui">✎</span> 改名；<span class="ui">🗑</span> 刪除（會先確認、自動留還原點，6 秒內可按「復原」）。</li>
+        <li><span class="ui">✨ 載入兩個示範班級</span>：研習或第一次試用時使用。</li>
+      </ul>
+      <h3>方法一：貼上名單</h3>
+      <p>每行一位，格式「<code>01 王小明</code>」或只寫姓名；可以直接從 Excel 複製「座號、姓名」兩欄貼上。</p>
+      <table>
+        <tr><th>按鈕</th><th>作用</th></tr>
+        <tr><td>建立為新班級</td><td>用貼上的名單建立一個新班級（會詢問班級名稱）。</td></tr>
+        <tr><td>更新目前班級名單</td><td>換成新名單。<strong>同名學生的紀錄會保留</strong>；新名單沒有的學生從名冊移除，但過去紀錄仍留在統計中。</td></tr>
+      </table>
+      <h3>方法二：匯入 Excel／CSV</h3>
+      <ol>
+        <li>切到 <span class="ui">Excel 匯入</span>，點選或拖曳檔案進來。</li>
+        <li>程式會列出每個分頁、偵測到的人數與前幾位學生。<strong>一個分頁＝一個班級</strong>，分頁名稱就是班級名稱。</li>
+        <li>同一分頁裡若有好幾班（座號又從 1 開始），會自動拆成「分頁名-1」「分頁名-2」。</li>
+        <li>勾選要匯入的分頁，按 <span class="ui">匯入勾選的分頁為班級</span>。遇到同名班級時可選「更新名單（保留紀錄）」或「另建新班級」。</li>
+      </ol>
+      <p class="cap">「欄位判斷方式」通常用「自動判斷」即可；若座號姓名抓錯，改選「前兩欄為座號、姓名」或「只匯入姓名欄位」，列表會立即重新偵測。說明頁、封面等沒有學生的分頁會顯示「找不到學生」，不會被匯入。</p>
+      <h3>班級名冊</h3>
+      <ul>
+        <li>上方可一位一位新增（座號＋姓名，按 Enter），座號會自動往下遞增。</li>
+        <li><span class="ui">🚫</span> 標記今天<strong>缺席</strong>：不會被抽到，分組時也會排除；<span class="ui">全部出席</span> 一次恢復。</li>
+        <li><span class="ui">✕</span> 從名單移除（可復原）。每位學生下方小字顯示「被抽 N 次・累計分數」。</li>
+      </ul>
+    </section>
+
+    <section id="s2">
+      <h2><span class="num">2</span>課堂抽籤與表現紀錄</h2>
+      <h3>抽籤設定</h3>
+      <table>
+        <tr><th>設定</th><th>說明</th></tr>
+        <tr><td>每次抽 N 人</td><td>用 −／＋ 調整，抽籤按鈕會跟著顯示「🎲 抽 N 人」。</td></tr>
+        <tr><td>本輪不重複</td><td>抽過的人這一輪不會再被抽到；進度條顯示「本輪已抽 12 / 30 人」。全班抽完時會問要不要開新一輪，也可隨時按 <span class="ui">↻ 重新開始一輪</span>。</td></tr>
+        <tr><td>公平模式</td><td>依「歷來被抽次數」調整機率，次數越少越容易被抽到，一學期下來每人次數會比較平均。</td></tr>
+        <tr><td>抽籤動畫</td><td>名字快速輪播約 1 秒後停下，適合投影時營造氣氛；趕時間可關掉。</td></tr>
+      </table>
+      <div class="stage"><small>隨機抽籤・11/24 10:05</small><div class="names"><span><em>07</em>吳庭瑄</span><span><em>15</em>曾郁晴</span></div></div>
+      <p class="cap">↑ 抽中的學生以大字顯示在舞台區；按 <span class="ui">📺 投影</span> 可全螢幕顯示，投影時按空白鍵或 Enter 就能再抽，按 Esc 結束。</p>
+      <h3>手動點名</h3>
+      <p>直接點左側學生名冊上的名字，就會加入一筆「手動點名」紀錄；連續點好幾位會放在<strong>同一筆</strong>，再點一次可移出。名字旁的數字是歷來被抽次數，灰色＝本輪已抽過。</p>
+      <h3>加減分與備註</h3>
+      <div class="rrow"><b>07 吳庭瑄</b><div class="pts"><i class="m">−</i><i>2</i><i class="p">＋</i></div><span class="box">個人備註</span><span class="box hide-sm">快速備註…</span><span class="ico hide-sm">🎤</span><span class="ico hide-sm">✕</span></div>
+      <ul>
+        <li>每次抽籤或點名都會自動成為一筆紀錄，最新的在最上方並展開；較早的紀錄折疊成一行，點一下即可展開修改。</li>
+        <li><span class="ui">−</span>／<span class="ui">＋</span> 加減分，也可以直接輸入數字。</li>
+        <li>「快速備註」選單一選就填入（可疊加，例如「答得好、積極發言」）；<span class="ui">🎤</span> 語音輸入（建議用 Chrome）。</li>
+        <li>紀錄標題列的「本次說明」可寫題號或活動名稱，例如「第 3 題」。</li>
+        <li><span class="ui">✕</span> 從這筆移除某位學生；<span class="ui">🗑 刪除</span> 整筆紀錄。兩者都可在 6 秒內「復原」。</li>
+      </ul>
+      <p>快速備註清單在「資料與備份」頁管理，所有班級共用。</p>
+    </section>
+
+    <section id="s3">
+      <h2><span class="num">3</span>分組安排</h2>
+      <h3>分組設定（左側）</h3>
+      <table>
+        <tr><th>設定</th><th>說明</th></tr>
+        <tr><td>分組名稱</td><td>例如「第 3 課小組討論」；空白時自動以「隨機分組＋時間」命名。</td></tr>
+        <tr><td>分組方式</td><td>「每組人數」或「分成幾組」。下方會即時算出「共 30 人 → 8 組，每組 3～4 人」，人數會平均分配，不會剩一組只有 1～2 人。</td></tr>
+        <tr><td>分組對象</td><td>出席學生（預設，排除缺席）／全班／本輪抽到的學生。</td></tr>
+        <tr><td>盡量避開上次同組</td><td>參考最近一筆分組，盡量讓同學和不同的人同組。</td></tr>
+      </table>
+      <p><span class="ui">🎲 隨機分組</span> 立即產生一筆分組；<span class="ui">✍️ 建立空白分組</span> 則先建好空的組，學生都在「未分組」區，讓老師自己安排。</p>
+      <h3>調整組員</h3>
+      <div class="groups">
+        <div class="g"><b>第 1 組</b><span class="chip">01 王品安</span><span class="chip sel">04 張家睿</span><span class="chip">09 蔡昀珊</span></div>
+        <div class="g"><b>第 2 組</b><span class="chip">02 李承恩</span><span class="chip">05 陳怡臻</span></div>
+        <div class="g"><b>第 3 組</b><span class="chip">03 林佳穎</span><span class="chip">06 黃柏翰</span><span class="chip">10 楊子謙</span></div>
+      </div>
+      <ul>
+        <li><strong>拖曳</strong>學生到另一組；或<strong>先點學生</strong>（變成藍色）<strong>再點目標組</strong>。點「未分組」區＝移出。</li>
+        <li>組名可直接點一下修改；每組有組分數 −／＋ 與備註。</li>
+        <li>上方工具列：選擇過去的分組紀錄、<span class="ui">↻ 重新隨機</span>（保留組名與分數）、<span class="ui">＋ 加一組</span>、<span class="ui">📺 投影</span>、<span class="ui">🖨️ 列印名單</span>、<span class="ui">🗑️ 刪除</span>（可復原）。</li>
+      </ul>
+    </section>
+
+    <section id="s4">
+      <h2><span class="num">4</span>統計與輸出</h2>
+      <p>上方摘要卡顯示學生數、選取筆數、<strong>從未被抽到的人數</strong>與累計最高分。下方表格有三種檢視：</p>
+      <table>
+        <tr><th>檢視</th><th>內容</th></tr>
+        <tr><td>個人統計</td><td>列出<strong>全班</strong>（含 0 次的學生，以灰色顯示）：被抽次數、加分、扣分、總分、最近一次與最近備註。點欄位標題可依座號、次數、總分、時間排序。</td></tr>
+        <tr><td>選取紀錄</td><td>每次抽籤／點名的每位學生一列：時間、方式、加減分、個人備註、本次說明。</td></tr>
+        <tr><td>分組紀錄</td><td>每一組一列：分組名稱、組別、學生名單、人數、組分數、備註。</td></tr>
+      </table>
+      <ul>
+        <li><span class="ui">📊 下載 Excel（全部）</span>：一個檔案 4 個工作表（學生名單、個人統計、選取紀錄、分組紀錄）。</li>
+        <li><span class="ui">📄 下載 PDF</span>、<span class="ui">🖨️ 列印</span>：輸出<strong>目前顯示的那一種表</strong>（含搜尋篩選後的結果）；PDF 自動分頁，不會把一列切成兩半。</li>
+      </ul>
+    </section>
+
+    <section id="storage">
+      <h2><span class="num">5</span>資料與備份</h2>
+      <p>頁首的 <span class="ui">💾 已儲存</span> 標籤表示資料已寫入這台電腦的瀏覽器（IndexedDB）。每次修改 0.3 秒內自動儲存，關閉分頁時也會立即寫出。</p>
+      <div class="callout warn">只存在瀏覽器裡的資料，在<strong>清除瀏覽器資料、換電腦、換瀏覽器</strong>時會看不到。請務必設定下面的「長期存放資料夾」或定期下載 JSON 備份。</div>
+      <h3>建議：選擇長期存放的資料夾（Chrome／Edge 電腦版）</h3>
+      <ol>
+        <li>到「資料與備份」按 <span class="ui">📁 選擇資料存放資料夾</span>，選 Google 雲端硬碟裡的一個資料夾。</li>
+        <li>程式會建立 <code>學生選取分組資料.json</code>，之後每次修改約 2 秒內自動寫入，頁首顯示 <span class="ui">📁 已同步到資料夾</span>。</li>
+        <li>每天第一次寫入前，前一版會備份到 <code>學生選取分組資料_歷史</code> 資料夾（保留 14 份）。</li>
+        <li>下次開啟時會自動連回資料夾；若瀏覽器要求重新授權，頂端會出現黃色提示列，按 <span class="ui">連接資料夾</span> 即可。</li>
+      </ol>
+      <h3>學校、家裡兩台電腦共用</h3>
+      <ol>
+        <li>兩台電腦都安裝 Google 雲端硬碟電腦版，並用 Chrome 或 Edge 開啟本程式。</li>
+        <li>第二台電腦選<strong>同一個</strong>資料夾，程式會自動讀入資料。</li>
+        <li>回到頁面時若另一台電腦已更新，頂端會提示 <span class="ui">載入最新資料</span>。</li>
+        <li>兩邊都改過時會請你選擇要用哪一份；沒被選用的一份會另存成「衝突檔」或還原點，不會遺失。</li>
+      </ol>
+      <h3>自動還原點與 JSON 備份</h3>
+      <ul>
+        <li><strong>自動還原點</strong>：每天 1 份（留 7 天），另外在刪除班級、更新名單、Excel 匯入、匯入 JSON、還原、重設前各存 1 份（留 10 份）。可在本頁還原或下載。</li>
+        <li><span class="ui">下載 JSON 備份（全部班級）</span>／<span class="ui">匯入 JSON 備份…</span>：匯入 v3 備份會取代全部資料；匯入<strong>舊版（v2）</strong>的備份檔則會新增為一個班級，不影響其他班。</li>
+        <li><span class="ui">清除全部資料並重設</span>：清除前會自動留還原點。</li>
+      </ul>
+    </section>
+
+    <section id="faq">
+      <h2>常見問題</h2>
+      <h3>舊版的資料還在嗎？</h3>
+      <p>在。第一次開啟 v3 時，程式會自動把舊版存在瀏覽器裡的所有班級（名單、選取紀錄、加減分、分組、自訂快速備註）轉成新格式，並顯示「已將舊版資料搬到新版」。舊版資料本身不會被刪除。</p>
+      <h3>要按「儲存」嗎？</h3>
+      <p>不用。所有操作都會自動儲存；頁首的 <span class="ui">立即儲存</span> 只是讓你在關機前安心按一下。</p>
+      <h3>按錯了怎麼辦？</h3>
+      <p>刪除紀錄、移除學生、刪除分組或班級後，畫面下方會出現 <span class="ui">復原</span> 按鈕（6 秒內有效）。超過時間可到「資料與備份」用自動還原點回復。</p>
+      <h3>學生改名或座號打錯，紀錄會不見嗎？</h3>
+      <p>不會。v3 每位學生都有自己的內部編號，用「更新目前班級名單」或 Excel「更新名單」時，同名學生會沿用原本的紀錄。</p>
+      <h3>為什麼有些學生一直沒被抽到？</h3>
+      <p>請確認「本輪不重複」與「公平模式」都已勾選；到步驟 4 個人統計可以看到「從未被抽到」的人數，必要時直接點名他們。</p>
+      <h3>學校網路擋外部網站時？</h3>
+      <p>抽籤、分組、統計與儲存都能離線使用；Excel 匯入／匯出與 PDF 需要從網路載入元件，若無法使用請改到可上網的電腦操作。</p>
+    </section>
+  </main>
+
+  <footer>
+    臺北市立麗山高中 林獻升老師製作｜<a href="mailto:frog@lssh.tp.edu.tw">frog@lssh.tp.edu.tw</a>｜<a href="#">▲ 回到頂部</a>
+  </footer>
+</body>
+</html>

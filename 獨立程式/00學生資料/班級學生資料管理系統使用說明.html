@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班級學生資料管理系統使用說明</title>
+<style>
+:root{
+  --ink:#182033;
+  --muted:#5b6578;
+  --line:#dbe3ee;
+  --bg:#f5f7fb;
+  --panel:#ffffff;
+  --nav:#12213a;
+  --blue:#2563eb;
+  --green:#16835b;
+  --amber:#a15c00;
+  --red:#b42318;
+  --soft-blue:#eaf1ff;
+  --soft-green:#e9f8f1;
+  --soft-amber:#fff5df;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  color:var(--ink);
+  background:var(--bg);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",Arial,sans-serif;
+  line-height:1.78;
+}
+a{color:var(--blue);font-weight:700;text-decoration:none}
+a:hover{text-decoration:underline}
+.layout{
+  display:grid;
+  grid-template-columns:270px minmax(0,1fr);
+  min-height:100vh;
+}
+nav{
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
+  background:var(--nav);
+  color:#e8eef8;
+  padding:24px 18px;
+}
+nav .brand{
+  font-weight:900;
+  font-size:1.05rem;
+  line-height:1.45;
+  margin-bottom:8px;
+}
+nav .meta{
+  color:#aebbd0;
+  font-size:.86rem;
+  margin-bottom:20px;
+}
+nav a{
+  display:block;
+  color:#dce7f7;
+  font-weight:650;
+  font-size:.92rem;
+  padding:7px 8px;
+  border-radius:6px;
+}
+nav a:hover{background:rgba(255,255,255,.08);text-decoration:none}
+main{
+  width:min(1120px,100%);
+  margin:0 auto;
+  padding:36px 28px 72px;
+}
+.hero{
+  background:linear-gradient(135deg,#ffffff 0%,#eef4ff 100%);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:28px;
+  margin-bottom:24px;
+}
+h1,h2,h3{line-height:1.35;margin:0;color:#12192a}
+h1{font-size:2rem;margin-bottom:12px}
+h2{
+  margin-top:34px;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+  font-size:1.38rem;
+}
+h3{font-size:1.08rem;margin-top:22px}
+p{margin:10px 0}
+.lead{font-size:1.05rem;color:#354157;max-width:920px}
+.pillrow{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#eef2f8;
+  color:#2d384e;
+  font-size:.88rem;
+  font-weight:700;
+}
+.callout{
+  border-left:5px solid var(--blue);
+  background:var(--soft-blue);
+  padding:12px 16px;
+  margin:16px 0;
+  border-radius:0 8px 8px 0;
+}
+.callout.green{border-color:var(--green);background:var(--soft-green)}
+.callout.amber{border-color:var(--amber);background:var(--soft-amber)}
+.callout.red{border-color:var(--red);background:#fff0ee}
+.grid2{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.box{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px 16px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:14px 0;
+  background:var(--panel);
+  border:1px solid var(--line);
+}
+th,td{
+  border:1px solid var(--line);
+  padding:8px 10px;
+  vertical-align:top;
+}
+th{
+  background:#eef3fa;
+  color:#23304a;
+  text-align:left;
+  white-space:nowrap;
+}
+td:first-child{font-weight:700;color:#24314a}
+ol,ul{padding-left:1.45rem}
+li{margin:5px 0}
+code{
+  background:#eef2f7;
+  border:1px solid #d7deeb;
+  padding:1px 5px;
+  border-radius:4px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.kbd{
+  display:inline-block;
+  border:1px solid #b8c2d2;
+  border-bottom-width:2px;
+  background:white;
+  border-radius:4px;
+  padding:0 5px;
+  font-size:.86em;
+  font-weight:800;
+}
+.step-title{font-weight:900;color:#17233b}
+.small{color:var(--muted);font-size:.92rem}
+.section-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:16px;
+  margin:14px 0;
+}
+.section-card h3{margin-top:0}
+footer{
+  margin-top:42px;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  nav{position:relative;height:auto}
+  main{padding:24px 16px 56px}
+  .grid2{grid-template-columns:1fr}
+  th{white-space:normal}
+}
+@media print{
+  body{background:white}
+  .layout{display:block}
+  nav{display:none}
+  main{width:100%;padding:0}
+  .hero,.box,.section-card,table{break-inside:avoid}
+  a{color:var(--ink);text-decoration:none}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <div class="brand">班級學生資料管理系統<br>使用說明</div>
+  <div class="meta">導師班級資料、評語、成績與特殊表現整合工具</div>
+  <a href="#start">開始使用</a>
+  <a href="#workflow">建議流程</a>
+  <a href="#class-database">班級儲存與恢復</a>
+  <a href="#layout">畫面區域</a>
+  <a href="#buttons">全部按鈕</a>
+  <a href="#sections">九大資料分頁</a>
+  <a href="#import">匯入資料</a>
+  <a href="#draft">評語草稿與 AI</a>
+  <a href="#export">列印、匯出、備份</a>
+  <a href="#daily">日常操作</a>
+  <a href="#faq">常見問題</a>
+</nav>
+
+<main>
+<section class="hero" id="start">
+  <h1>班級學生資料管理系統使用說明</h1>
+  <p class="lead">本系統用來集中管理一個班級中每位學生的基本資料、學生自評、導師評語、幹部與小老師、特殊表現、成績、學測模擬考、社團活動與專題研究資料。它適合導師在學期中持續累積資料，期末再快速整理成可列印、可匯出 Excel、可備份還原的學生資料表。</p>
+  <p><strong>主程式線上網址：</strong><br>
+  <a href="https://froglssh.github.io/class-student-data-management-online/" target="_blank" rel="noopener">https://froglssh.github.io/class-student-data-management-online/</a></p>
+  <div class="pillrow">
+    <span class="pill">資料存在本機瀏覽器</span>
+    <span class="pill">可建立多個班級備份並快速恢復</span>
+    <span class="pill">支援 Excel / CSV / DOCX / JSON 匯入</span>
+    <span class="pill">可分學期管理</span>
+    <span class="pill">可列印與匯出 Excel</span>
+    <span class="pill">可用 AI 潤飾評語</span>
+  </div>
+</section>
+
+<div class="callout amber">
+  <strong>重要提醒：</strong>程式會自動把目前班級資料存到本機瀏覽器；按工具列的「儲存到班級資料庫」會另外更新班級備份庫中的完整快照，日後可快速恢復。瀏覽器資料仍可能因更換電腦／瀏覽器、清除資料、使用無痕模式或改用不同網址而無法取回。重要資料請定期按「備份班級」另存 JSON 檔。
+</div>
+
+<section id="workflow">
+  <h2>一、建議使用流程</h2>
+  <ol>
+    <li><span class="step-title">先開啟主程式：</span>進入主程式，建議固定使用同一個瀏覽器與同一個網址。</li>
+    <li><span class="step-title">載入上次班級：</span>程式會自動載入上次使用並儲存的班級；若目前沒有班級資料，會自動載入備份庫最近儲存的班級。要切換其他班級，按左側班級名稱上方的「班級備份庫」。</li>
+    <li><span class="step-title">填寫班級名稱與導師：</span>在左側上方輸入班級名稱與導師姓名，之後列印與匯出會自動帶入。</li>
+    <li><span class="step-title">建立學生名冊：</span>按「匯入資料」匯入學生名冊 Excel，或按「新增學生」手動新增。</li>
+    <li><span class="step-title">選取學生：</span>左側名冊點選某位學生，右側會顯示該學生的完整資料表。</li>
+    <li><span class="step-title">依分頁填資料：</span>依序填寫基本資料、職位工作、導師評語、學生自評、特殊表現、成績、模考、社團與專題研究。</li>
+    <li><span class="step-title">使用匯入功能減少手打：</span>可匯入通訊錄、Google 問卷、自評表、導師評語、段考成績、模考成績、社團資料、幹部／小老師分配表與 JSON 備份。</li>
+    <li><span class="step-title">整理評語草稿：</span>在「評語草稿暫存區」按「整合本學期資訊」，再視需要用 AI 潤飾或複製到 AI 網站修改。</li>
+    <li><span class="step-title">列印或匯出：</span>用「列印」、「匯出 Excel」、「匯出全班」輸出正式資料。</li>
+    <li><span class="step-title">儲存最新班級版本：</span>修改或新增學生後，按右上工具列「儲存到班級資料庫」，更新可恢復的班級快照。</li>
+    <li><span class="step-title">另存 JSON 備份：</span>重要修改後仍建議按「備份班級」下載 JSON，保存到安全位置。</li>
+  </ol>
+
+  <div class="section-card" id="class-database">
+    <h3>班級資料自動儲存、備份與恢復</h3>
+    <ol>
+      <li><strong>自動儲存目前班級：</strong>新增學生或修改欄位後，系統會自動儲存在目前瀏覽器。重新開啟相同程式時會自動載入上次的班級；若目前資料空白，會嘗試載入備份庫最近儲存的班級。</li>
+      <li><strong>更新班級備份庫：</strong>按最上方工具列、AI 設定左側的「💾 儲存到班級資料庫」。系統會把目前全班資料寫入備份庫中對應班級；若尚無對應班級，就新增一筆。備份庫會顯示最近儲存時間。</li>
+      <li><strong>恢復或切換班級：</strong>按左側班級名稱上方醒目的「📚 班級備份庫」，找到班級、展開「預覽學生名單」，再按「恢復這個班級」。恢復前會詢問確認，並以該備份取代目前畫面中的班級資料。</li>
+      <li><strong>首次匯入整班 JSON：</strong>按「匯入資料」選擇班級備份 JSON。匯入後會先加入備份庫，確認後載入該班；此後開啟網頁會自動載入目前班級，也可從備份庫再次切換。</li>
+      <li><strong>下載式備份：</strong>左側「備份班級」會下載 JSON 檔，可另存到雲端硬碟或安全資料夾。瀏覽器內的備份庫方便快速切換，下載的 JSON 則可在換裝置或瀏覽器時匯入。</li>
+    </ol>
+    <div class="callout amber"><strong>注意：</strong>「儲存到班級資料庫」會更新瀏覽器內該班級的最新備份快照；一般自動儲存只更新目前班級。編輯後若希望日後從「班級備份庫」恢復到最新版本，請按一次「儲存到班級資料庫」。</div>
+  </div>
+</section>
+
+<section id="layout">
+  <h2>二、畫面區域說明</h2>
+  <div class="grid2">
+    <div class="box">
+      <h3>左側欄：班級與名冊</h3>
+      <p>左側欄是班級層級的操作區。班級名稱欄位上方有醒目的「班級備份庫」按鈕，可預覽、切換及快速恢復之前儲存的班級；下方是班級名稱、導師、學生搜尋與名冊。</p>
+    </div>
+    <div class="box">
+      <h3>右側主區：學生資料表</h3>
+      <p>右側顯示目前選取學生的資料。上方工具列從左至右包含「儲存到班級資料庫」、AI 設定、匯入、列印與匯出；下方則是該學生的各資料分頁與評語草稿區。</p>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>畫面元素</th><th>用途</th><th>操作方式</th></tr></thead>
+    <tbody>
+      <tr><td>班級備份庫</td><td>查看瀏覽器已保存的多個班級快照，並預覽名單、恢復或切換班級。</td><td>位於左側欄班級名稱輸入框上方；選擇班級後按「恢復這個班級」。</td></tr>
+      <tr><td>班級名稱</td><td>記錄目前班級，例如高二仁、高三數理資優班。</td><td>直接在左側輸入框輸入，系統會自動儲存。</td></tr>
+      <tr><td>導師</td><td>記錄導師姓名，列印與匯出時會出現在表頭。</td><td>直接在左側輸入框輸入，系統會自動儲存。</td></tr>
+      <tr><td>搜尋姓名 / 座號</td><td>在學生名冊中快速找到學生。</td><td>輸入姓名或座號的一部分，名冊會即時篩選。</td></tr>
+      <tr><td>學生名冊</td><td>顯示目前班級所有學生，包含座號、姓名與資料完整度百分比。</td><td>點學生列即可切換到該學生資料表。</td></tr>
+      <tr><td>資料完整度百分比</td><td>用來粗略判斷該學生資料是否已填寫足夠。</td><td>隨資料填寫自動更新；它不是正式成績，只是填寫進度提示。</td></tr>
+      <tr><td>學生姓名與座號</td><td>右側學生頁面上方可直接修改姓名與座號。</td><td>點文字後直接編輯，離開欄位時自動儲存。</td></tr>
+      <tr><td>性別選單</td><td>記錄男、女或空白。</td><td>在學生頁面上方選擇，供資料整理與輸出參考。</td></tr>
+      <tr><td>檢視學期</td><td>切換「全部」或高一上到高三下。</td><td>選「全部」可看完整資料；選某學期時，列印與匯出會依目前學期篩選。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="buttons">
+  <h2>三、每一個主要按鈕的功能</h2>
+
+  <h3>左側欄按鈕</h3>
+  <table>
+    <thead><tr><th>按鈕</th><th>功能</th><th>使用時機與注意事項</th></tr></thead>
+    <tbody>
+      <tr><td>班級備份庫</td><td>瀏覽、預覽並恢復本機瀏覽器保存的班級快照。</td><td>位於左側欄班級名稱上方。切換班級時選定班級，再按「恢復這個班級」。</td></tr>
+      <tr><td>匯入資料</td><td>開啟匯入視窗，可匯入名冊、基本資料、成績、自評、問卷、社團、DOCX 或 JSON。</td><td>第一次建立班級資料、或後續要批次補資料時使用。</td></tr>
+      <tr><td>備份班級</td><td>下載整班 JSON 備份檔。</td><td>大量修改前後都建議使用；這是最重要的資料保護功能。</td></tr>
+      <tr><td>新增學生</td><td>手動建立一位新學生。</td><td>適合插班生、補新增、或沒有名冊檔案時使用。若座號重複，系統會提醒確認。</td></tr>
+      <tr><td>清空</td><td>清除目前工作區的班級資料。</td><td>系統會要求兩次確認。已存入班級備份庫的快照仍可恢復；未備份的資料無法直接復原。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>右上方工具列按鈕</h3>
+  <table>
+    <thead><tr><th>按鈕</th><th>功能</th><th>使用方式</th></tr></thead>
+    <tbody>
+      <tr><td>儲存到班級資料庫</td><td>立即把目前全班完整資料寫入班級備份庫，更新對應班級的最新快照；若找不到對應班級則新增。</td><td>每次編輯或新增學生後，若之後要從備份庫恢復到最新內容，按此按鈕一次。</td></tr>
+      <tr><td>AI 設定</td><td>設定 Gemini、OpenAI 或 Claude 的 API 金鑰與模型名稱。</td><td>若要在程式內直接 AI 潤飾評語，需先設定；如果不想輸入金鑰，可改用草稿區的複製到 AI 網站功能。</td></tr>
+      <tr><td>匯入</td><td>與左側「匯入資料」相同，開啟匯入視窗。</td><td>操作中想補資料時可從右上方直接開啟。</td></tr>
+      <tr><td>列印</td><td>選擇要列印的資料項目，開啟瀏覽器列印視窗。</td><td>可列印紙本，也可在列印視窗選「另存為 PDF」。</td></tr>
+      <tr><td>匯出 Excel</td><td>匯出目前選取學生的 Excel 檔。</td><td>會依目前檢視學期與勾選項目輸出。</td></tr>
+      <tr><td>匯出全班</td><td>匯出全班 Excel，每位學生一個工作表分頁。</td><td>適合期末整理整班資料；匯出前可勾選要包含的分頁。</td></tr>
+      <tr><td>匯出 JSON</td><td>匯出目前選取學生的 JSON 檔。</td><td>適合單一學生資料轉移、個別備份或個別修復。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>學生頁面上方按鈕</h3>
+  <table>
+    <thead><tr><th>按鈕</th><th>功能</th><th>說明</th></tr></thead>
+    <tbody>
+      <tr><td>展開全部</td><td>打開目前學生所有資料分頁。</td><td>適合全面檢查資料或準備列印前確認。</td></tr>
+      <tr><td>收合全部</td><td>收起目前學生所有資料分頁。</td><td>適合畫面太長時快速整理版面。</td></tr>
+      <tr><td>上一位</td><td>切換到座號排序中的上一位學生。</td><td>按鈕顯示為向左箭頭；可搭配快捷鍵 <span class="kbd">Alt</span> + <span class="kbd">←</span>。</td></tr>
+      <tr><td>下一位</td><td>切換到座號排序中的下一位學生。</td><td>按鈕顯示為向右箭頭；可搭配快捷鍵 <span class="kbd">Alt</span> + <span class="kbd">→</span>。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>各分頁內常見按鈕</h3>
+  <table>
+    <thead><tr><th>按鈕或控制項</th><th>功能</th><th>注意事項</th></tr></thead>
+    <tbody>
+      <tr><td>分頁標題列</td><td>展開或收合該分頁。</td><td>點標題即可切換，方便只看正在處理的資料。</td></tr>
+      <tr><td>＋ 欄</td><td>在表格型分頁新增一個欄位。</td><td>會影響所有學生此分頁的欄位結構，例如在社團活動新增「指導老師」。</td></tr>
+      <tr><td>欄位旁的刪除符號</td><td>刪除該欄位。</td><td>會移除所有學生該欄的內容，刪除前系統會確認。</td></tr>
+      <tr><td>＋ 新增自訂列</td><td>新增一列學期或項目。</td><td>一般分頁可新增自訂列；學測模考分頁則以模考次數為列。</td></tr>
+      <tr><td>列旁的刪</td><td>刪除該列。</td><td>會刪掉所有學生該列資料，請先確認是否需要備份。</td></tr>
+      <tr><td>＋ 欄位</td><td>在基本資料等欄位型分頁新增輸入欄。</td><td>適合新增「LINE ID」、「緊急聯絡人」等欄位。</td></tr>
+      <tr><td>＋ 補充欄位</td><td>在學生自評的補充區新增欄位。</td><td>適合加入問卷中額外收集的項目。</td></tr>
+      <tr><td>新增其他項目</td><td>在九大分頁後新增自訂資料區。</td><td>可建立「校外營隊」、「證照檢定」、「幹部訓練」等自訂項目。</td></tr>
+      <tr><td>改名</td><td>修改自訂項目名稱。</td><td>只適用於自訂項目。</td></tr>
+      <tr><td>刪此項目</td><td>刪除整個自訂項目。</td><td>會刪除所有學生在此自訂項目中的資料。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="sections">
+  <h2>四、每一個資料分頁的功能</h2>
+
+  <div class="section-card">
+    <h3>一、基本資料</h3>
+    <p>用來記錄學生個人與家庭聯絡資訊。預設欄位包含手機、住址、身分證字號、生日、畢業學校、備註、父姓名、父手機、母姓名、母手機。匯入通訊錄或基本資料 Excel 後，這些欄位會自動填入。</p>
+    <table>
+      <thead><tr><th>操作</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>直接輸入</td><td>在每個欄位打字，系統會自動儲存。</td></tr>
+        <tr><td>＋ 欄位</td><td>新增基本資料欄位，例如住家電話、緊急聯絡人、特殊身分註記。</td></tr>
+        <tr><td>刪除欄位</td><td>點欄位旁刪除符號，會刪除所有學生此欄內容。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>二、職位工作</h3>
+    <p>記錄學生在各學期擔任的幹部、小老師或其他職務。預設欄位是「幹部」與「小老師」，列是高一上到高三下六個學期。</p>
+    <table>
+      <thead><tr><th>功能</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>幹部下拉選單</td><td>可快速選班長、副班長、風紀、學藝、衛生、總務、康樂、圖資、輔導、保健等職務。</td></tr>
+        <tr><td>小老師下拉選單</td><td>可快速選國文、英文、數學、物理、化學、生物、地科、地理、歷史、公民、音樂、美術、資訊、生科、體育等小老師。</td></tr>
+        <tr><td>手動輸入</td><td>若職務不在選單內，可直接在儲存格輸入。</td></tr>
+        <tr><td>＋ 欄</td><td>可新增「服務隊」、「自治幹部」、「校級職務」等欄位。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>三、導師評語</h3>
+    <p>用來整理各學期的正式評語資料。預設欄位包含評語代號、文字描述評語、日常表現、特殊表現。這一頁是期末產生成績單評語時最重要的分頁。</p>
+    <table>
+      <thead><tr><th>功能</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>評語代號</td><td>可填入學校德性評語代號或代碼文字。</td></tr>
+        <tr><td>文字描述評語</td><td>放正式敘述式評語，可由評語草稿暫存區填入。</td></tr>
+        <tr><td>日常表現</td><td>記錄生活常規、出缺勤、態度、人際互動等摘要。</td></tr>
+        <tr><td>特殊表現</td><td>記錄適合放入導師評語中的特殊成果或優良表現。</td></tr>
+        <tr><td>評語詞庫</td><td>可選擇目標學期與目標欄位，再點選正向或待加強詞語，系統會自動插入該欄。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>四、學生自評</h3>
+    <p>用來收集學生自己填寫的文字材料。核心欄位包含個性、性情、向學、進取、紀律、交友、服務、擅長；補充欄位包含學校服務、社團表現、學業表現、生活常規、校內其他特殊表現、社會服務、活動表演、科學展覽、校外其他特殊表現與備註。</p>
+    <table>
+      <thead><tr><th>功能</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>各學期自評</td><td>每個學期都有獨立資料，不會互相覆蓋。</td></tr>
+        <tr><td>核心描述</td><td>適合放學生對自己特質與學習態度的敘述。</td></tr>
+        <tr><td>自評補充</td><td>適合放 Google 問卷、學生自評表或活動記錄中較具體的事實。</td></tr>
+        <tr><td>＋ 補充欄位</td><td>可加入原問卷中的新題目，例如「自主學習成果」、「志工服務」。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>五、特殊表現</h3>
+    <p>記錄各學期的特殊表現與獎懲記錄。這裡適合放正式可查證的校內外表現，例如競賽、服務、表演、獎勵、懲處、班級活動貢獻等。</p>
+    <p>若之後要讓評語草稿自動整合特殊表現，建議用具體事件寫法，例如「參加校內科展獲佳作」、「協助班級園遊會器材管理」，不要只寫「表現很好」。</p>
+  </div>
+
+  <div class="section-card">
+    <h3>六、成績表現</h3>
+    <p>記錄一段考、二段考、期末考的班排與類組排，也會整理較強科目與較弱科目。若使用段考成績 Excel 匯入，系統會自動判斷 80 分以上為較強科目，含 # 或不及格標記者為較弱科目，並整合到此分頁。</p>
+    <table>
+      <thead><tr><th>欄位</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>一段考班排 / 類組排</td><td>記錄第一次段考排名。</td></tr>
+        <tr><td>二段考班排 / 類組排</td><td>記錄第二次段考排名。</td></tr>
+        <tr><td>期末考班排 / 類組排</td><td>記錄期末考排名。</td></tr>
+        <tr><td>較強科目</td><td>可手動填寫，也可由段考匯入自動整理。</td></tr>
+        <tr><td>較弱科目</td><td>可用於提醒需要加強的科目；輸出評語時會作為參考。</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h3>七、學測模考</h3>
+    <p>記錄第一次、第二次、第三次學測模擬考。欄位包含國文、英文、數學A、數學B、社會、自然、總級分、總分、班排名、校排名、全體排名與備註。這個分頁不受「檢視學期」篩選，因為模考是以考次為主。</p>
+  </div>
+
+  <div class="section-card">
+    <h3>八、社團活動</h3>
+    <p>記錄學生每學期參與的社團、職稱與社團表現。可透過社團資料 Excel 批次匯入，也可手動補寫。若學生是社長、幹部、活動負責人或有成果發表，建議寫在「社團表現與活動」。</p>
+  </div>
+
+  <div class="section-card">
+    <h3>九、專題研究（科展競賽）</h3>
+    <p>記錄學生參與專題研究、科展、競賽、活動與獎懲記錄。若學生有研究題目、擔任角色、得獎紀錄或跨校活動成果，可集中放在這一頁，方便日後寫推薦、學習歷程回饋或導師評語。</p>
+  </div>
+
+  <div class="section-card">
+    <h3>十、自訂項目</h3>
+    <p>按「新增其他項目」後，可在九大分頁後新增自訂分頁。建立時要輸入項目名稱與欄位名稱，例如「校外營隊」包含活動名稱、擔任角色、成果；或「證照檢定」包含證照名稱、通過日期、備註。自訂項目同樣支援列印與 Excel 匯出。</p>
+  </div>
+</section>
+
+<section id="import">
+  <h2>五、匯入資料功能完整說明</h2>
+  <p>按「匯入資料」或「匯入」後，會出現匯入視窗。系統會依你選擇的資料類型讀取 Excel、CSV、DOCX 或 JSON，並讓你確認欄位對應後再寫入。</p>
+
+  <table>
+    <thead><tr><th>匯入類型</th><th>適合資料</th><th>匯入後寫入位置</th><th>操作重點</th></tr></thead>
+    <tbody>
+      <tr><td>學生名冊 Excel</td><td>含多個班級分頁的學生名冊。</td><td>建立每位學生分頁，寫入座號與姓名。</td><td>選班級分頁，確認座號欄與姓名欄，可勾選匯入前清空現有學生。</td></tr>
+      <tr><td>全班基本資料 Excel/CSV</td><td>通訊錄、校務系統匯出的基本資料。</td><td>基本資料分頁。</td><td>系統會找表頭並猜測姓名、座號、性別、住址、電話、父母資料；可手動調整欄位對應。</td></tr>
+      <tr><td>之前導師評語 Excel</td><td>舊評語、德性描述、日常表現、特殊表現。</td><td>導師評語分頁。</td><td>選擇匯入學期，可決定與既有內容合併或覆蓋。</td></tr>
+      <tr><td>段考成績 Excel</td><td>含座號、姓名、科目分數、班級名次、類組名次的段考表。</td><td>成績表現分頁。</td><td>選學期與一段考、二段考或期末考；系統會整理較強與較弱科目。</td></tr>
+      <tr><td>學測模擬考 Excel</td><td>含級分、總級分、總分與排名的模考表。</td><td>學測模考分頁。</td><td>選第一次、第二次或第三次模考，再開始匯入。</td></tr>
+      <tr><td>社團資料 Excel</td><td>社團名單、職稱、活動表現。</td><td>社團活動分頁。</td><td>選學期，確認姓名、座號、社團、職稱、表現欄位對應。</td></tr>
+      <tr><td>幹部／小老師分配 JSON／Excel／CSV</td><td>幹部小老師分配程式匯出的職務資料。</td><td>職位工作分頁的指定學期，分別寫入「幹部」或「小老師」。</td><td>JSON 會讀取名冊與已分配職務；Excel／CSV 會先選擇座號、姓名、類別與職務欄。預覽畫面可勾選要匯入幹部、小老師或兩者；系統必須同時比對座號和姓名才會匯入，未比對成功的資料會列出但不寫入。匯入前可選學期及合併或取代所選類別。</td></tr>
+      <tr><td>自評批次 Excel</td><td>整班學生自評資料表。</td><td>學生自評分頁。</td><td>依姓名比對名冊，需先有學生名冊。選學期後開始匯入。</td></tr>
+      <tr><td>Google 問卷彙整 Excel</td><td>Google 表單回覆匯出的 Excel。</td><td>學生自評、職位工作、補充欄位等。</td><td>系統會猜測欄位對應，請務必確認姓名欄正確。</td></tr>
+      <tr><td>個別學生自評 .docx</td><td>單一學生的 Word 自評表。</td><td>該學生的學生自評分頁。</td><td>系統會嘗試偵測姓名、座號與自評欄位；需選擇匯入到哪位學生與哪個學期。</td></tr>
+      <tr><td>班級備份 JSON</td><td>本系統匯出的整班或單一學生 JSON。</td><td>整班 JSON 會加入瀏覽器班級備份庫，確認後載入目前班級；單一學生 JSON 則匯入目前班級。</td><td>整班匯入會先詢問是否取代目前班級。加入備份庫後可重複恢復。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout green">
+    <strong>降低出錯的做法：</strong>先匯入學生名冊，再匯入其他資料。因為大部分批次匯入都需要用「姓名」或「座號」比對學生，若名冊尚未建立，資料會找不到對應學生。
+  </div>
+  <div class="section-card">
+    <h3>幹部／小老師分配匯入步驟</h3>
+    <ol>
+      <li>先確認目前載入的是正確班級，而且名冊中的座號與姓名正確。</li>
+      <li>按「匯入資料」→「幹部／小老師分配 JSON／Excel」，選取分配程式匯出的檔案。</li>
+      <li>JSON 會自動讀取職務；Excel／CSV 請確認欄位對應。若檔案將「幹部」和「小老師」分成兩欄，類別欄選「欄位分別為幹部與小老師」。</li>
+      <li>按「比對並預覽」，先勾選要匯入的「幹部」、「小老師」或兩者，再查看比對清單。只有座號與姓名都相符的學生會進入匯入清單；預覽會依選取的類別更新。</li>
+      <li>選擇學期與匯入方式，再按「確認匯入」。合併會保留原職務並附加新項目；取代只會清除該學期全班所選類別的欄位，再寫入檔案中的分配。</li>
+    </ol>
+    <div class="callout amber"><strong>提醒：</strong>這項功能只讀取匯入檔的結構與當次內容，不會把示範檔中的學生或職務預先寫入系統。若未比對成功，請先修正檔案或名冊；勿只看姓名或座號就手動套用錯誤資料。</div>
+  </div>
+
+  <h3>匯入前檢查清單</h3>
+  <ul>
+    <li>Excel 第一列或附近是否有清楚欄位名稱，例如姓名、座號、班級名次。</li>
+    <li>學生姓名是否與名冊一致，避免同音異字、空白或暱稱。</li>
+    <li>若同名學生存在，建議同時保留座號欄。</li>
+    <li>匯入大量資料前先按「備份班級」。</li>
+    <li>匯入後抽查 2 至 3 位學生，確認資料是否寫入正確分頁與學期。</li>
+  </ul>
+</section>
+
+<section id="draft">
+  <h2>六、評語草稿暫存區與 AI 潤飾</h2>
+  <p>「評語草稿暫存區」位在學生資料表中，用來把本學期資料整理成正式評語前的草稿。它分成「文字描述評語草稿」與「特殊表現草稿」兩種。</p>
+
+  <table>
+    <thead><tr><th>按鈕</th><th>功能</th><th>操作說明</th></tr></thead>
+    <tbody>
+      <tr><td>整合本學期資訊</td><td>把目前學生該學期的自評、活動、成績、職位、社團與專題資料整合成草稿。</td><td>先選對學期，再按此按鈕；如果資料太少，系統會提示沒有資料可整合。</td></tr>
+      <tr><td>AI 潤飾</td><td>呼叫已設定的 Gemini、OpenAI 或 Claude API，把草稿改寫得更通順。</td><td>需先按「AI 設定」填入 API 金鑰；若失敗，可改用複製功能貼到 AI 網站。</td></tr>
+      <tr><td>填入正式欄位</td><td>把草稿寫入「導師評語」分頁的正式欄位。</td><td>文字描述評語草稿會填入「文字描述評語」；特殊表現草稿會填入「特殊表現」。若正式欄已有內容，系統會確認是否覆蓋。</td></tr>
+      <tr><td>清除草稿</td><td>刪除該草稿區文字。</td><td>只清除草稿，不會刪除其他分頁資料。</td></tr>
+      <tr><td>提示詞選單</td><td>選擇要 AI 採用的改寫方向。</td><td>可選完整評語、精煉鼓勵、50 字以內、特殊表現描述、去除條列感等。</td></tr>
+      <tr><td>複製(含提示詞)</td><td>複製提示詞與草稿全文。</td><td>適合貼到 ChatGPT、Gemini 或 Claude 網站。</td></tr>
+      <tr><td>複製原文</td><td>只複製草稿文字。</td><td>適合貼到其他文件或自行編修。</td></tr>
+      <tr><td>ChatGPT / Gemini / Claude</td><td>複製內容後開啟對應 AI 網站。</td><td>開啟後在網站輸入框貼上即可。此方式不需要在本程式儲存 API Key。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>AI 設定視窗</h3>
+  <table>
+    <thead><tr><th>欄位或按鈕</th><th>功能</th></tr></thead>
+    <tbody>
+      <tr><td>AI 服務</td><td>選擇 Google Gemini、OpenAI ChatGPT 或 Anthropic Claude。</td></tr>
+      <tr><td>模型名稱</td><td>可留空使用系統預設，也可下拉選擇或自行輸入目前可用模型名稱。</td></tr>
+      <tr><td>查詢目前可用模型名稱</td><td>連到各家官方模型清單，適合模型名稱失效時查詢。</td></tr>
+      <tr><td>API 金鑰</td><td>貼上對應服務的 API Key。金鑰只存在本機瀏覽器，不會寫入班級備份檔。</td></tr>
+      <tr><td>清除金鑰</td><td>刪除目前瀏覽器儲存的 API Key。</td></tr>
+      <tr><td>儲存設定</td><td>儲存服務、模型與 API Key，之後可直接用 AI 潤飾。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout red">
+    <strong>隱私提醒：</strong>只要使用「AI 潤飾」直接呼叫外部 API，草稿內容就會送到對應 AI 服務。若資料含個資或不適合上傳，請不要使用 API 潤飾，可改用本機整合後由老師自行修改。
+  </div>
+</section>
+
+<section id="export">
+  <h2>七、列印、匯出與備份</h2>
+
+  <h3>列印</h3>
+  <ol>
+    <li>先選取要列印的學生。</li>
+    <li>確認「檢視學期」是全部或指定學期。</li>
+    <li>按「列印」。</li>
+    <li>在跳出的選擇視窗勾選要包含的分頁。</li>
+    <li>按「列印」後，瀏覽器會開啟列印視窗。</li>
+    <li>可直接列印紙本，也可選「另存為 PDF」。</li>
+  </ol>
+
+  <h3>匯出 Excel</h3>
+  <p>「匯出 Excel」會輸出目前選取學生一個 Excel 檔。檔名會包含座號、姓名與目前檢視學期。資料會依照一到九分頁的順序排列，自訂項目會接在後面。</p>
+
+  <h3>匯出全班</h3>
+  <p>「匯出全班」會建立一個 Excel 檔，每位學生一個工作表分頁。適合期末交接、導師留存或行政彙整。匯出前同樣可以勾選要包含哪些大項目。</p>
+
+  <h3>匯出 JSON</h3>
+  <p>工具列「匯出 JSON」會輸出目前學生的 JSON；左側「備份班級」會下載整班 JSON；工具列「儲存到班級資料庫」則會把目前全班最新資料存入瀏覽器備份庫，不會下載檔案。單一學生 JSON 適合個別轉移，整班 JSON 可作為跨裝置備份，班級資料庫則適合在同一瀏覽器內快速恢復及切換班級。</p>
+
+  <table>
+    <thead><tr><th>輸出功能</th><th>產生檔案</th><th>主要用途</th></tr></thead>
+    <tbody>
+      <tr><td>列印</td><td>紙本或 PDF</td><td>交給學生、家長、導師或行政留存。</td></tr>
+      <tr><td>匯出 Excel</td><td>單一學生 .xlsx</td><td>個別學生資料整理。</td></tr>
+      <tr><td>匯出全班</td><td>整班 .xlsx，每生一分頁</td><td>整班期末資料彙整。</td></tr>
+      <tr><td>匯出 JSON</td><td>單一學生 .json</td><td>單生備份或轉移。</td></tr>
+      <tr><td>備份班級</td><td>整班 .json</td><td>完整備份與還原。</td></tr>
+      <tr><td>儲存到班級資料庫</td><td>瀏覽器內的班級快照，無下載檔案</td><td>更新目前班級在備份庫中的最新版本，供日後恢復。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="daily">
+  <h2>八、日常操作建議</h2>
+  <div class="grid2">
+    <div class="box">
+      <h3>每週或每月</h3>
+      <ul>
+        <li>補記學生幹部、服務、競賽與特殊表現。</li>
+        <li>匯入社團或問卷資料後抽查幾位學生。</li>
+        <li>按「儲存到班級資料庫」更新瀏覽器內的班級快照。</li>
+        <li>重要資料再按「備份班級」下載 JSON。</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>段考後</h3>
+      <ul>
+        <li>匯入段考成績 Excel。</li>
+        <li>檢查較強科目與較弱科目是否合理。</li>
+        <li>若有重要學習轉折，補寫到導師評語或特殊表現。</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>期末前</h3>
+      <ul>
+        <li>切換到該學期逐一檢查學生資料。</li>
+        <li>用評語草稿暫存區整合文字描述評語。</li>
+        <li>列印或匯出幾位學生測試格式。</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>期末完成後</h3>
+      <ul>
+        <li>匯出全班 Excel 留存。</li>
+        <li>備份整班 JSON。</li>
+        <li>將備份檔放到雲端硬碟或安全資料夾。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>九、常見問題</h2>
+
+  <h3>為什麼重新開啟網頁後資料還在？</h3>
+  <p>程式會自動載入同一瀏覽器中上次儲存的目前班級。若要恢復備份庫中的最新快照，按左側班級名稱上方的「班級備份庫」選班恢復；修改後按工具列的「儲存到班級資料庫」更新那筆快照。瀏覽器內資料不會同步到 GitHub 或雲端伺服器。</p>
+
+  <h3>換電腦後看不到資料怎麼辦？</h3>
+  <p>「班級備份庫」只存在目前瀏覽器中，換電腦、換瀏覽器或改用不同程式網址時不會自動帶過去。請在原電腦按「備份班級」下載整班 JSON，再到新電腦按「匯入資料」選「班級備份 JSON」。</p>
+
+  <h3>如何讓備份庫中的班級維持最新？</h3>
+  <p>新增學生或修改資料後，按右上工具列、AI 設定左側的「儲存到班級資料庫」。班級備份庫會更新該班最近儲存時間與完整資料；下次在備份庫恢復時即可取回這個版本。一般自動儲存會保存目前工作狀態，但不會自動更新備份庫快照。</p>
+
+  <h3>清空資料後，還能恢復班級嗎？</h3>
+  <p>「清空」會清除目前工作區的班級資料；已存在班級備份庫的快照仍可從左側「班級備份庫」恢復。若沒有存入備份庫，請使用先前下載的整班 JSON 匯入。</p>
+
+  <h3>匯入 Excel 後很多學生找不到？</h3>
+  <p>通常是名冊尚未建立、姓名不一致、座號欄未指定，或表頭列判斷錯誤。建議先匯入名冊，再確認 Excel 的姓名與座號欄位。</p>
+
+  <h3>刪除欄位會只刪目前學生嗎？</h3>
+  <p>不是。欄位結構屬於整班共用，刪除欄位會移除所有學生該欄內容。刪除前請先備份。</p>
+
+  <h3>檢視學期選「全部」和選單一學期有什麼差別？</h3>
+  <p>選「全部」時會顯示或匯出完整學期資料；選單一學期時，列印與匯出會以該學期為主。學測模考分頁以模考次數為主，不受學期篩選。</p>
+
+  <h3>AI 潤飾失敗怎麼辦？</h3>
+  <p>請確認 API Key 正確、模型名稱可用、帳號有額度，且瀏覽器沒有被 CORS 或網路限制擋住。若仍失敗，可按「複製(含提示詞)」再貼到 ChatGPT、Gemini 或 Claude 網站。</p>
+
+  <h3>可以多人共同編輯同一份班級資料嗎？</h3>
+  <p>此系統不是多人同步資料庫。每個瀏覽器各自保存資料。若多人要接力，請用 JSON 備份檔交換，但要注意版本覆蓋問題。</p>
+
+  <h3>如何避免期末資料遺失？</h3>
+  <p>每次大量匯入、欄位調整、評語完成或期末結束後，都下載整班 JSON。建議檔名保留日期，並另存到雲端硬碟。</p>
+</section>
+
+<footer>
+  <p><strong>主程式：</strong><a href="https://froglssh.github.io/class-student-data-management-online/" target="_blank" rel="noopener">班級學生資料管理系統線上版</a></p>
+  <p class="small">本使用說明依主程式目前版本整理，適用於導師建立、維護、匯入、輸出與備份班級學生資料。</p>
+</footer>
+</main>
+</div>
+</body>
+</html>

@@ -350,10 +350,14 @@ footer{margin-top:30px;font-size:12.5px;color:var(--muted);display:flex;flex-wra
   // ---------- 連結 ----------
   const encode = p => p.split('/').map(seg => seg === '..' ? seg : encodeURIComponent(seg)).join('/');
   function sharedHref(t) { return scope ? `共享整合版/${t.integrated}.html?scope=${encodeURIComponent(scope.id)}` : '共享整合版/資料中心.html'; }
+  // 連結順序：示範檔案原檔（本機最新）→ 網站內「獨立程式/」副本 → 舊的線上版
+  const bundled = p => '獨立程式/' + p.replace(/^\.\.\//, '');
+  const fileHref = t => avail[t.id]?.href || encode(t.path);
+  const guideHref = t => avail[t.id]?.guideHref || encode(t.guide);
   function mainHref(t) {
     if (t.integrated) return sharedHref(t);
     if (avail[t.id]?.ok === false && t.online) return t.online;
-    return encode(t.path);
+    return fileHref(t);
   }
 
   // ---------- 卡片 ----------
@@ -364,20 +368,19 @@ footer{margin-top:30px;font-size:12.5px;color:var(--muted);display:flex;flex-wra
     else if (/\.pdf$/i.test(t.path)) badges.push('<span class="badge mute">PDF 文件</span>');
     else badges.push('<span class="badge mute">獨立資料</span>');
     if (t.integrated && scope && modules[t.integrated] > 0) badges.push('<span class="badge">本學期有資料</span>');
-    if (a.ok === false) badges.push(t.online ? '<span class="badge warn">此網址開啟線上版</span>' : '<span class="badge mute" title="此程式放在「示範檔案」資料夾，請用本機啟動器開啟">僅限本機使用</span>');
+    if (a.ok === false) badges.push(t.online ? '<span class="badge warn" title="線上版可能不是最新版">開啟舊線上版</span>' : '<span class="badge err">找不到檔案</span>');
     else if (a.modified) badges.push(`<span class="badge mute">更新 ${esc(fmtDay(a.modified))}</span>`);
     if (t.integrated && a.stale) badges.push('<span class="badge warn" title="獨立版比整合版新，新功能請先用獨立版">整合版待同步</span>');
     const acts = [];
     if (t.integrated) {
       acts.push(`<a class="btn small primary" data-open="${t.id}" href="${esc(sharedHref(t))}" target="_blank" rel="noopener">${scope ? '開啟（共用名冊）' : '先建立班級'}</a>`);
-      if (a.ok !== false) acts.push(`<a class="btn small" data-open="${t.id}" href="${esc(encode(t.path))}" target="_blank" rel="noopener">最新獨立版</a>`);
+      if (a.ok !== false) acts.push(`<a class="btn small" data-open="${t.id}" href="${esc(fileHref(t))}" target="_blank" rel="noopener">最新獨立版</a>`);
     } else {
       const disabled = a.ok === false && !t.online;
       acts.push(`<a class="btn small primary" data-open="${t.id}" href="${esc(mainHref(t))}" target="_blank" rel="noopener"${disabled ? ' aria-disabled="true"' : ''}>${/\.pdf$/i.test(t.path) ? '開啟文件' : '開啟'}</a>`);
     }
     if (t.integrated) acts.push(`<a class="sub" href="docs/${t.integrated}.html" target="_blank" rel="noopener">整合版說明</a>`);
-    if (t.guide) acts.push(`<a class="sub" href="${esc(encode(t.guide))}" target="_blank" rel="noopener">使用說明</a>`);
-    if (t.online && a.ok !== false) acts.push(`<a class="sub" href="${esc(t.online)}" target="_blank" rel="noopener" title="線上版可能不是最新版">線上版</a>`);
+    if (t.guide) acts.push(`<a class="sub" href="${esc(guideHref(t))}" target="_blank" rel="noopener">使用說明</a>`);
     return `<article class="card" data-id="${t.id}">
       <div class="row"><span class="ic">${icon(t.icon)}</span><div><span class="no">${esc(t.no)}</span><h4>${esc(t.title)}</h4></div>
         <button class="star" type="button" data-fav="${t.id}" aria-pressed="${fav}" aria-label="${fav ? '移出常用' : '加入常用'}：${esc(t.title)}">${icon('star')}</button></div>
@@ -418,9 +421,15 @@ footer{margin-top:30px;font-size:12.5px;color:var(--muted);display:flex;flex-wra
     catch { return {}; }
   }
   async function checkFiles() {
+    // 先試一個檔案判斷「示範檔案」同層資料夾在不在（GitHub Pages 上不在），避免每個工具都產生 404
+    const probe = await head(TOOLS.find(t => t.id === 'cleaning').path);
+    const siblings = probe.ok !== false;
     await Promise.all(TOOLS.map(async t => {
-      const a = await head(t.path);
-      if (t.integrated && a.ok) {
+      let a = siblings ? await head(t.path) : { ok: false }, base = t.path;
+      if (a.ok === false) { const b = await head(bundled(t.path)); if (b.ok) { a = b; base = bundled(t.path); } }
+      a.href = encode(base);
+      if (t.guide) a.guideHref = encode(base === t.path ? t.guide : bundled(t.guide));
+      if (t.integrated && a.ok && base === t.path) {
         const shared = await head(`共享整合版/${t.integrated}.html`);
         a.stale = !!(shared.modified && a.modified && a.modified - shared.modified > 86400000);
       }
