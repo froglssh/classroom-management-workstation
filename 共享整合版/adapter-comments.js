@@ -1,13 +1,82 @@
-(()=>{const W=Workspace,D=window.CommentDrafts;let selected=null;
- const panel=document.createElement('section');panel.id='workspace-materials';const select=document.createElement('select');select.id='shared-student';select.setAttribute('aria-label','選擇共用名冊學生');const list=document.createElement('div');list.id='shared-roles';const hint=document.createElement('p');hint.textContent='職務資料自動讀取本學期任職歷史；勾選後可加入評語素材。表現由教師確認，不依任職自動判定。';const perf=document.createElement('select');perf.id='shared-role-performance';perf.setAttribute('aria-label','教師確認的職務表現');perf.append(new Option('請選擇已確認的表現',''),new Option('認真負責','responsible'),new Option('領導協調','leadership'),new Option('參與較被動','passive'),new Option('仍需改進','improve'));const add=document.createElement('button');add.textContent='加入勾選職務素材';add.id='shared-add-roles';panel.append('目前學生：',select,hint,list,perf,add);document.getElementById('workspace-banner').after(panel);
- function roles(){list.replaceChildren();if(!selected)return;const history=W.scope.roleHistory.filter(r=>r.studentId===selected);if(!history.length){list.textContent='本學期尚無任職紀錄。';return}for(const r of history){const label=document.createElement('label'),checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.value=r.id;label.append(checkbox,`${r.name}（${r.endedAt?'曾任':'目前任職'}）`);list.append(label)}}
- function identify(){const s=W.scope.roster.find(s=>s.studentId===selected);if(!s)return;document.getElementById('studentName').value=s.name;document.getElementById('draftClass').value=W.scope.className;document.getElementById('draftYear').value=W.scope.year;document.getElementById('draftSemester').value=W.scope.semester;document.getElementById('draftSeat').value=s.no;document.getElementById('draftStudentNo').value=s.studentNo}
- function switchStudent(id){if(document.getElementById('mergeBtn').disabled){select.value=selected;W.status('請等目前 AI 潤飾完成再切換學生。');return}if(selected&&!D.save()){select.value=selected;return}const existing=workspaceStorage.getItem('lssh.comment.draft.v1:'+id);selected=id;if(existing)D.apply(JSON.parse(existing));else{const content=D.capture();content.fields=Object.fromEntries(Object.keys(content.fields).map(k=>[k,k==='cadrePerf'?'responsible':'']));content.formState={gender:'boy',tone:'encouraging',selectedCodes:[],cadres:[],activities:[],traits:{academic:{},social:{},habit:{},personality:{}},roleFilter:'all'};D.apply({schemaVersion:1,id,revision:0,content})}identify();D.queue();D.save();roles()}
- const originalAuto=autoApplySelfEvalForCurrentStudent;
- autoApplySelfEvalForCurrentStudent=function(){const person=W.scope.roster.find(s=>s.studentId===selected);if(person&&W.scope.roster.filter(s=>s.name===person.name).length>1){showToast('本班有同名學生，請確認座號後手動選擇自評資料，不自動以姓名套用。');return}return originalAuto()};
- const originalApplySelf=applySelectedSelfEvalRow;
- applySelectedSelfEvalRow=function(){const index=Number(document.getElementById('selfEvalStudentSelect').value),record=state.importedSelfEvalRows[index],person=W.scope.roster.find(s=>s.studentId===selected);if(record&&person){const name=getStudentNameFromRow(record),no=getRowValue(record,['座號','座位號碼','學生座號']);if((name&&name!==person.name)||(no&&Number(no)!==Number(person.no))){showToast('自評姓名或座號與目前學生不符，未套用。');return}if(!no&&W.scope.roster.filter(s=>s.name===person.name).length>1&&!confirm('此自評沒有座號，班上有同名學生。確定已核對這是目前選定學生的資料？'))return}return originalApplySelf()};
- select.onchange=()=>switchStudent(select.value);
- add.onclick=()=>{if(!perf.value){W.status('請先選擇教師已確認的職務表現。');return}const ids=[...list.querySelectorAll('input:checked')].map(i=>i.value);for(const r of W.scope.roleHistory.filter(r=>ids.includes(r.id))){if(!state.cadres.some(c=>c.role===r.name))state.cadres.push({id:Date.now()+state.cadres.length,role:r.name,perf:perf.value})}renderCadreTags();D.queue();D.save();W.status('職務素材已加入；既有評語文字保留。')};
- W.adapter={apply(){const keep=selected;select.replaceChildren();W.scope.roster.forEach(s=>select.add(new Option(W.label(s)+(s.active?'':'（轉出）'),s.studentId)));if(!selected&&select.options.length){selected=null;switchStudent(select.options[0].value)}else if(keep){select.value=keep;identify();roles()}W.disable(['studentName','draftClass','draftYear','draftSemester','draftSeat','draftStudentNo','draftNew','draftLibrary','draftImport','draftReload']);document.querySelector('button[onclick="clearAll()"]')?.setAttribute('disabled','');},capture(){if(selected){identify();D.save()}}};
+/* 導師評語生成系統（codex 優化版）與共用名冊的轉接：
+ * - 一個班級學期 = 一個評語工作簿；班級、學年、學期由共用名冊帶入。
+ * - 學生以共用學生 ID 為評語學生 ID；改名、換座號仍保留評語。轉出學生若已有評語內容則保留。
+ * - 本學期任職歷史顯示在「擔任職務」區，老師點選後才加入素材（不自動改寫評語）。
+ * - 舊整合版的逐生草稿（lssh.comment.draft.v1:<學生ID>）在第一次開啟時自動轉入。 */
+(() => {
+  'use strict';
+  const W = Workspace, OLD = 'lssh.comment.draft.v1:';
+  const pad = n => String(n).padStart(2, '0');
+  const st = document.createElement('style');
+  st.textContent = '[data-open="roster"],#btnDemo,#btnAddStudent,#btnClearRoster,#wbSelect{display:none!important}' +
+    '#wsRoles{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:#ecfdf5;font-size:13px}#wsRoles .lbl{color:#065f46;font-weight:700;margin-right:6px}';
+  document.head.append(st);
+
+  function migrateOld(wb) {
+    if (wb.students.length) return 0;
+    let n = 0;
+    for (const r of W.scope.roster) {
+      const raw = workspaceStorage.getItem(OLD + r.studentId); if (!raw) continue;
+      try { const c = convertOldRecord(JSON.parse(raw)); if (c) { c.st.id = r.studentId; wb.students.push(c.st); n++; } } catch {}
+    }
+    return n;
+  }
+
+  function sync() {
+    const wb = WB();
+    store.workbooks = { [wb.id]: wb }; store.activeWb = wb.id;
+    wb.meta.cls = W.scope.className; wb.meta.year = String(W.scope.year); wb.meta.sem = W.scope.semester === '2' ? '2' : '1';
+    const migrated = migrateOld(wb);
+    if (migrated) W.status(`✓ 已轉入舊整合版草稿 ${migrated} 份`);
+    const rosterIds = new Set(W.scope.roster.map(r => r.studentId));
+    const byId = new Map(wb.students.map(s => [s.id, s]));
+    const used = new Set(), next = [];
+    for (const r of W.scope.roster) {
+      let s = byId.get(r.studentId);
+      if (!s) {   // 先前以姓名＋座號建立（例如匯入），改用共用學生 ID
+        s = wb.students.find(x => !used.has(x.id) && !rosterIds.has(x.id) && Number(x.seat) === Number(r.no) && x.name === r.name);
+        if (s) { if (wb.activeId === s.id) wb.activeId = r.studentId; s.id = r.studentId; }
+      }
+      if (!s) { if (!r.active) continue; s = blankStudent({ id: r.studentId }); }
+      used.add(s.id);
+      s.seat = pad(r.no); s.name = r.name; if (r.studentNo) s.no = r.studentNo;
+      if (!r.active && !s.final && !hasContent(s)) continue;
+      next.push(s);
+    }
+    const extra = wb.students.filter(s => !used.has(s.id) && (s.final || hasContent(s)));
+    wb.students = [...next, ...extra];
+    sortStudents(wb);
+    if (!CUR()) wb.activeId = wb.students[0]?.id || null;
+    W.issues(extra.length ? `${extra.length} 位評語學生不在共用名冊（可能是匯入時建立），資料保留，請確認後自行刪除。` : '');
+  }
+
+  // 「擔任職務」區加上本學期共用職務，點選才加入（沿用工具原本的 data-quickrole 處理）
+  const origRoles = renderRoles;
+  renderRoles = function () {
+    origRoles();
+    const s = CUR(), q = document.getElementById('quickRoles');
+    if (!s || !q) return;
+    let box = document.getElementById('wsRoles');
+    if (!box) { box = document.createElement('div'); box.id = 'wsRoles'; box.className = 'quick'; q.parentElement.insertBefore(box, q); }
+    const hist = W.scope.roleHistory.filter(h => h.studentId === s.id);
+    const names = [...new Set(hist.map(h => h.name))];
+    const current = new Set(hist.filter(h => !h.endedAt).map(h => h.name));
+    box.innerHTML = names.length
+      ? '<span class="lbl">本學期職務（共用名冊）</span>' + names.map(n => `<button data-quickrole="${esc(n)}" ${s.cadres.some(c => c.role === n) ? 'disabled style="opacity:.4"' : ''} title="點選加入素材，表現請在下方確認">${esc(n)}${current.has(n) ? '' : '（曾任）'}</button>`).join('')
+      : '<span class="lbl">本學期共用名冊尚無這位學生的職務紀錄</span>';
+  };
+  // 姓名、座號由共用名冊管理
+  const origEditor = renderEditor;
+  renderEditor = function () {
+    origEditor();
+    const s = CUR(), inRoster = !!s && W.scope.roster.some(r => r.studentId === s.id);
+    if (inRoster) ['fName', 'fSeat'].forEach(id => { const el = document.getElementById(id); if (el) { el.readOnly = true; el.title = '姓名與座號請在工作站共用名冊修改'; } });
+    // 共用名冊的學生不在這裡刪除（轉出請到共用名冊）；不在名冊的額外學生仍可刪除
+    document.querySelectorAll('[data-act="delStudent"]').forEach(b => { b.hidden = inRoster; });
+  };
+
+  W.adapter = {
+    apply() { sync(); renderAll(); setTimeout(() => W.capture(), 0); },   // 載入後立即保存整理過的資料
+    capture() { if (store) workspaceStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+  };
 })();

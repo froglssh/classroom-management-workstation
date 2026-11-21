@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+"""由「示範檔案」各資料夾的獨立版程式，重新產生 共享整合版/<module>.html。
+
+用法（在工作站資料夾執行）：
+    python3 tools/sync_integrated.py            # 同步全部已支援的工具
+    python3 tools/sync_integrated.py roles seats
+    python3 tools/sync_integrated.py --check    # 只列出哪些整合版比獨立版舊
+
+前提：獨立版程式內已有 WS（共享整合版）模式：
+    const WS = !!(window.Workspace && window.workspaceStorage);
+主程式 <script> 會改成 type="text/workspace"，由 bridge.js 在共用名冊載入後執行。
+轉換內容：CDN 套件改用 vendor/、移除 Google Fonts、加上 entry.js／core.js／bridge.js、
+標題加「共享整合版｜」、使用說明連結改到 ../docs/<module>.html。
+"""
+import pathlib
+import re
+import sys
+
+HERE = pathlib.Path(__file__).resolve().parent.parent          # 班級經營整合工作站/
+DEMO = HERE.parent                                               # 示範檔案/
+OUT = HERE / '共享整合版'
+
+SOURCES = {
+    'roles': '01幹部設定/班級幹部小老師選取獎勵程式(codex優化版).html',
+    'seats': '02座位安排/座位選取抽籤程式(codex優化版).html',
+    'cleaning': '03打掃工作/學生打掃抽籤系統（codex優化版）.html',
+    'comments': '09德行評語/導師評語生成系統（codex優化版）.html',
+}
+
+VENDOR = [
+    (r'https://cdn\.jsdelivr\.net/npm/xlsx@[^"]+', 'vendor/xlsx.full.min.js'),
+    (r'https://cdn\.jsdelivr\.net/npm/html2canvas@[^"]+', 'vendor/html2canvas.min.js'),
+    (r'https://cdn\.jsdelivr\.net/npm/jspdf@[^"]+', 'vendor/jspdf.umd.min.js'),
+    (r'https://cdn\.jsdelivr\.net/npm/jszip@[^"]+', 'vendor/jszip.min.js'),
+    (r'https://cdn\.tailwindcss\.com[^"]*', 'vendor/tailwindcss.browser.js'),
+]
+
+
+def transform(module, src_rel, text):
+    if 'const WS = !!(window.Workspace && window.workspaceStorage)' not in text:
+        raise SystemExit(f'{src_rel} 尚未加入 WS（共享整合版）模式，無法同步。')
+    for pattern, local in VENDOR:
+        text = re.sub(pattern, local, text)
+    if re.search(r'<script src="https?://', text):
+        raise SystemExit(f'{src_rel} 仍有未對應到 vendor/ 的外部腳本：' + ', '.join(re.findall(r'<script src="(https?://[^"]+)"', text)))
+    text = re.sub(r'\s*<link[^>]+fonts\.(googleapis|gstatic)\.com[^>]*>', '', text)
+    text = re.sub(r'<html([^>]*)>', lambda m: f'<!-- 由 {src_rel} 產生；請改原檔後執行 tools/sync_integrated.py 重新同步 -->\n<html{m.group(1)} data-module="{module}">', text, count=1)
+    text = text.replace('<head>', '<head>\n<script src="entry.js?v=hub-20261121"></script>', 1)
+    text = re.sub(r'<title>(?!共享整合版)', '<title>共享整合版｜', text, count=1)
+    text = text.replace('</head>', '<script src="core.js"></script><script src="bridge.js?v=hub-20261121" defer></script>\n</head>', 1)
+    # 使用說明連結（同資料夾的 *說明*.html）改到整合版說明
+    text = re.sub(r'href="[^"/]*說明[^"/]*\.html"', f'href="../docs/{module}.html"', text)
+    # 主程式：<body> 之後第一個沒有屬性的 <script>
+    body = text.index('<body')
+    m = re.compile(r'<script>').search(text, body)
+    if not m:
+        raise SystemExit(f'{src_rel} 找不到主程式 <script>')
+    text = text[:m.start()] + '<script type="text/workspace">' + text[m.end():]
+    return text
+
+
+def main(argv):
+    check = '--check' in argv
+    names = [a for a in argv if not a.startswith('--')] or list(SOURCES)
+    for name in names:
+        if name not in SOURCES:
+            raise SystemExit(f'未知工具：{name}（可用：{", ".join(SOURCES)}）')
+        src = DEMO / SOURCES[name]
+        dst = OUT / f'{name}.html'
+        if check:
+            stale = not dst.exists() or src.stat().st_mtime > dst.stat().st_mtime
+            print(f'{name:9s} {"需要同步" if stale else "已是最新"}  ← {SOURCES[name]}')
+            continue
+        dst.write_text(transform(name, SOURCES[name], src.read_text(encoding='utf-8')), encoding='utf-8')
+        print(f'已同步 {name}.html ← {SOURCES[name]}')
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

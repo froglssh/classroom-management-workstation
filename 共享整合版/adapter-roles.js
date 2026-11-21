@@ -2,12 +2,25 @@
  const W=Workspace,types=['officer','tutor'];
  const tasksFrom=roles=>Object.fromEntries(types.map(type=>[type,roles.filter(r=>r.type===type).map(r=>({...r}))]));
  W.roleImport={busy:false};
+ /* 2.1 版：名單編輯區改為「共用名冊」說明卡；刪除鈕隱藏（轉出請到共用名冊） */
+ function lockRosterUI(){
+  if(document.getElementById('wsRosterNote'))return;
+  const st=document.createElement('style');st.textContent='#studentsTable .btn-del-stu{display:none!important}';document.head.append(st);
+  const stack=document.querySelector('#panel-students .stack');
+  if(stack){stack.querySelectorAll(':scope > section.card').forEach(c=>c.classList.add('hidden'));
+   const card=document.createElement('section');card.className='card';card.id='wsRosterNote';
+   card.innerHTML='<div class="card-head"><h3>👥 共用名冊</h3></div><div class="card-body"><p style="margin:0">學生名單由工作站「共用名冊」自動帶入，這裡不需要再輸入。新增、改名或轉出學生，請到共用名冊修改，已開啟的工具會自動更新。</p></div>';
+   const a=document.createElement('a');a.className='btn btn-primary';a.style.marginTop='12px';a.textContent='開啟共用名冊';a.href=W.link('資料中心.html');a.target='_blank';a.rel='noopener';card.querySelector('.card-body').append(a);stack.prepend(card);}
+  document.querySelectorAll('header p, .brand p').forEach(p=>{if(p.textContent.includes('自動儲存（IndexedDB＋資料夾）'))p.textContent=p.textContent.replace('自動儲存（IndexedDB＋資料夾）','共享整合版：自動儲存到工作站共用資料庫');});
+  const intro=document.querySelector('#panel-students .page-title p');if(intro)intro.textContent='名單來自工作站共用名冊；職務指派後會自動分享給座位與評語工具。';
+ }
  W.adapter={apply(){
   state.students=W.scope.roster.map(s=>({id:s.studentId,no:s.no,name:s.name+(s.active?'':'（轉出）'),active:s.active}));
   if(W.scope.roles.length||state.tasks.officer.some(t=>t.studentId)||state.tasks.tutor.some(t=>t.studentId))state.tasks=tasksFrom(W.scope.roles);
-  renderStudents();refreshTasksUI();refreshAssignUI();
-  document.querySelectorAll('.btn-del-stu').forEach(b=>b.disabled=true);
+  if(typeof renderAll==='function')renderAll();else{renderStudents();refreshTasksUI();refreshAssignUI();}
   W.disable(['stuName','stuNo','stuBulk','btnAddStudent','btnBulkAddStudents','btnClearStudents','studentExcelFile','btnScanStudentClasses','btnImportStudentsExcel','btnReset','btnLoadLocal']);
+  lockRosterUI();
+  setTimeout(()=>W.capture(),0);
  },capture(){if(W.roleImport.busy)return;workspaceStorage.setItem('cc-class-assign',JSON.stringify(state));W.queueRoles(state.tasks)}};
  deleteStudent=()=>toast('請到共用名冊將學生設為轉出；職務與歷史會保留。');
 
