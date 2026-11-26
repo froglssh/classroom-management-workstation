@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>多功能翻譯工具使用說明</title>
+  <style>
+    :root {
+      --ink: #1f2433; --ink-2: #434a5e; --muted: #5a6277; --line: #e1e4ee;
+      --bg: #f4f5fb; --card: #fff; --soft: #eef0fa;
+      --brand: #3550d8; --brand-soft: #e8ecff; --accent: #bd2238;
+      --warn: #7d4a00; --warn-soft: #fff3dc;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --ink: #eceff7; --ink-2: #c3c9da; --muted: #a1aabe; --line: #2c3243;
+        --bg: #0e1117; --card: #161a23; --soft: #1d2230;
+        --brand: #8fa4ff; --brand-soft: #212a4d; --accent: #ff8294;
+        --warn: #fbbf24; --warn-soft: #3a2e12;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+    body { margin: 0; color: var(--ink); background: var(--bg); line-height: 1.8; overflow-x: hidden;
+      font-family: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif; }
+    .wrap { max-width: 920px; margin: 0 auto; }
+    header { background: linear-gradient(135deg, #3550d8, #7a5bff); color: #fff; padding: 36px 20px 28px; }
+    h1 { margin: 0; font-size: clamp(1.5rem, 4.5vw, 2.3rem); line-height: 1.3; }
+    .ver { display: inline-block; margin-left: 8px; font-size: .9rem; background: rgba(255,255,255,.22); border-radius: 999px; padding: 2px 10px; vertical-align: middle; }
+    header p { max-width: 760px; margin: 12px 0 0; color: #eef0ff; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .button { display: inline-flex; align-items: center; gap: 6px; border-radius: 12px; padding: 10px 16px; text-decoration: none; font-weight: 700; color: #2b43b8; background: #fff; min-height: 44px; }
+    main { padding: 18px 16px 50px; }
+    nav, section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 6px 18px rgba(30,40,90,.06); }
+    nav { padding: 12px 16px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 2px 16px; }
+    nav a { color: var(--brand); text-decoration: none; font-weight: 700; padding: 4px 0; min-height: 32px; }
+    nav a:hover { text-decoration: underline; }
+    section { padding: 20px; margin: 16px 0; }
+    h2 { margin: 0 0 10px; font-size: 1.3rem; display: flex; gap: 10px; align-items: center; }
+    h2 .num { width: 32px; height: 32px; border-radius: 50%; background: var(--brand); color: var(--card); display: grid; place-items: center; font-size: 1rem; flex: 0 0 auto; }
+    h3 { margin: 16px 0 4px; font-size: 1.05rem; }
+    p { margin: 8px 0; }
+    ul, ol { padding-left: 1.35rem; margin: 8px 0; }
+    li { margin: 4px 0; }
+    .callout { border-left: 5px solid var(--brand); background: var(--brand-soft); padding: 10px 14px; margin: 12px 0; border-radius: 0 10px 10px 0; }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 4px; padding: 0; list-style: none; counter-reset: s; }
+    .steps li { margin: 0; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; counter-increment: s; }
+    .steps li::before { content: counter(s); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--brand); color: var(--card); font-weight: 800; font-size: .85rem; margin-bottom: 6px; }
+    .steps b { display: block; }
+    .steps span { color: var(--muted); font-size: .9rem; line-height: 1.55; display: block; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: var(--ink-2); font-size: .9rem; }
+    td:first-child { font-weight: 700; }
+    .tbl { overflow-x: auto; }
+    .ui { display: inline-block; background: var(--card); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 7px; padding: 0 7px; font-size: .9em; font-weight: 700; white-space: nowrap; }
+    code { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: .9em; overflow-wrap: anywhere; }
+    footer { padding: 18px 20px 40px; color: var(--muted); text-align: center; }
+    @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } header { padding: 26px 16px 22px; } section { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>🌐 多功能翻譯工具 <span class="ver">v4.0</span></h1>
+      <p>打字、說話、面對面、聽講都能翻。免費、不用註冊、不用安裝：打開檔案就能用。紀錄會存在你的裝置，想長期保存也可以存到你自己選的資料夾；要翻譯的文字和要辨識的聲音，會送到下面「隱私」一節列出的服務。</p>
+      <div class="button-row"><a class="button" href="多功能翻譯工具(claude優化版).html">▶ 開啟翻譯工具</a></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav aria-label="目錄">
+      <a href="#quick">快速開始</a><a href="#tabs">四個分頁</a><a href="#translate">翻譯</a><a href="#face">面對面</a><a href="#listen">聽講</a><a href="#records">紀錄與匯出</a><a href="#save">資料保存</a><a href="#privacy">隱私</a><a href="#voice">語言與語音</a><a href="#faq">常見問題</a><a href="#limits">已知限制</a>
+    </nav>
+
+    <section id="quick">
+      <h2><span class="num">1</span>快速開始</h2>
+      <p>第一次開啟會出現三張簡單的說明，說明這個工具怎麼用、內容會送到哪裡、資料存在哪裡。可以按 <span class="ui">略過</span>，之後在「設定」最下面隨時能再看。看說明的過程不會要求麥克風或資料夾。</p>
+      <ol class="steps">
+        <li><b>選兩種語言</b><span>左邊是你要翻的語言，右邊是想翻成的語言。第一次會依你的瀏覽器語言先猜好。</span></li>
+        <li><b>打字、貼上或說話</b><span>直接輸入，譯文自動出現。想自己決定時機，改成「手動」再按「翻譯」。</span></li>
+        <li><b>朗讀、複製或收藏</b><span>譯文下方可以朗讀、複製、加星號收藏，或放大成大字給別人看。</span></li>
+      </ol>
+      <div class="callout">用手機時，分頁在畫面最下方；用電腦時在最上方。右上角依序是：儲存狀態、文字大小 <span class="ui">Aa</span>、外觀（自動／淺色／深色）、設定。</div>
+    </section>
+
+    <section id="tabs">
+      <h2><span class="num">2</span>四個分頁</h2>
+      <div class="tbl"><table>
+        <tr><th>分頁</th><th>做什麼</th></tr>
+        <tr><td>📝 翻譯</td><td>單一語言，或同時翻成 2–6 種語言（按 <span class="ui">多語言</span>）。打字、貼上、說話都行。</td></tr>
+        <tr><td>💬 面對面</td><td>兩個人各說各的語言。一顆按鈕是「我」，一顆是「對方」；對方那一半的字都用對方的語言顯示。</td></tr>
+        <tr><td>🎧 聽講</td><td>把聽到的聲音變成文字，或變成邊聽邊翻的雙語字幕。可以全螢幕投影。</td></tr>
+        <tr><td>📚 紀錄</td><td>搜尋、開啟、改名、修改、加星號、刪除（可復原），並匯出成文字、CSV、Word 或列印。</td></tr>
+      </table></div>
+      <p>「設定」在右上角的 <span class="ui">⚙</span>：儲存、資料夾、備份、隱私、外觀、名詞表、關於。</p>
+    </section>
+
+    <section id="translate">
+      <h2><span class="num">3</span>翻譯</h2>
+      <ul>
+        <li><b>語言選單</b>：按語言按鈕會打開一個清單，可以用中文、英文、該語言自己的寫法或代碼搜尋（例如「日文」「Japanese」「日本語」「ja」都找得到）。每種語言旁邊會標示語音輸入與朗讀的情況，「可能可用」是依你的瀏覽器與系統而定，不是保證。按 <span class="ui">☆</span> 可以釘選常用語言，釘選的會排在最前面。鍵盤也能用：方向鍵選、Enter 確定、Esc 關閉。</li>
+        <li><b>主要按鈕</b>：<span class="ui">翻譯</span>。旁邊是 <span class="ui">說話</span>、<span class="ui">貼上</span>、<span class="ui">清除</span>（清除後可以按「復原」）。其餘（朗讀原文、複製原文、放大）在 <span class="ui">⋯</span> 選單。</li>
+        <li><b>自動／手動</b>：自動會在你停手後翻譯；手動只在按「翻譯」或 Ctrl／⌘＋Enter 時翻。用注音輸入法時，選字途中不會送出翻譯。手機上這些選項收在 <span class="ui">選項</span>。</li>
+        <li><b>最近使用</b>：只記你自己用過的語言組合，點一下就切換。</li>
+        <li><b>多語言</b>：在任何一格輸入或說話，其他格同步翻譯。可新增或移除，最少 2 格、最多 6 格。</li>
+        <li><b>顯示由誰翻譯</b>：每次結果下方會寫由哪個翻譯服務翻的。失敗的段落會用紅色標出來，旁邊有「重試」，不會被悄悄略過。</li>
+        <li><b>其他</b>：譯文可以收藏 <span class="ui">☆</span>、放大成全螢幕大字、翻譯後自動朗讀；下方也有連到 Google 翻譯、DeepL、Microsoft 翻譯的連結，以及新增自訂語言。</li>
+      </ul>
+    </section>
+
+    <section id="face">
+      <h2><span class="num">4</span>面對面</h2>
+      <ul>
+        <li>先在上面選好「我說的語言」和「對方的語言」。</li>
+        <li>要說話時，自己按「我」的大按鈕，說完它會自動停止、翻譯、朗讀；換對方時，請對方按「對方」那顆大按鈕。</li>
+        <li><b>對方那一半全部用對方的語言</b>：按鈕、狀態（聆聽中、翻譯中）、出錯時的提示，都用他選的語言顯示，所以對方不需要看得懂你的介面。從 <span class="ui">⋯</span> 選單可以把那一半轉 180°，面向坐在對面的人。</li>
+        <li><b>預設會朗讀翻譯</b>：旁邊的「翻譯後朗讀出來」是明顯的開關，可以關掉。</li>
+        <li><b>免持輪流</b>：程式輪流用「我」和「對方」的語言聆聽。它<b>不會</b>自動判斷是誰在說話；同一個人連講兩句時，請按自己的按鈕切換。<b>單向循環</b>：只聽「我的語言」，翻成對方的語言並朗讀，再繼續聽。</li>
+        <li>對話會自動存成一場一筆的紀錄，按 <span class="ui">⋯</span> → 「開始新對話」可以另開一場。</li>
+      </ul>
+    </section>
+
+    <section id="listen">
+      <h2><span class="num">5</span>聽講</h2>
+      <p>只有一顆大的 <span class="ui">▶ 開始</span>。先選模式：</p>
+      <div class="tbl"><table>
+        <tr><th>模式</th><th>適合</th></tr>
+        <tr><td>只轉文字</td><td>只要文字稿。文字稿可以直接修改；也有「複製給 AI 校對」，並可開啟 ChatGPT 或 Gemini 的網頁（自己貼上）。</td></tr>
+        <tr><td>免費字幕</td><td>邊聽邊翻。每句定稿後翻譯，進行中的句子有即時預覽；按停止時會先把最後一句翻完再結束。</td></tr>
+        <tr><td>Gemini 高品質</td><td>用 Google Gemini 的即時翻譯，聲音可直接轉成另一種語言。需要你自己的 API 金鑰。</td></tr>
+      </table></div>
+      <ul>
+        <li><b>簡報檢視</b>：<span class="ui">🖥 簡報檢視</span> 會把雙語字幕放大到全螢幕（深色背景），可調大小，按 Esc 或「關閉」離開；錄音不會因此停止。</li>
+        <li><b>計時與保持螢幕開著</b>：開始後旁邊會顯示已進行的時間；支援的瀏覽器會要求螢幕保持開啟。</li>
+        <li><b>錄音中的固定提示列</b>：錄音或連線時，每個分頁最上方都有紅色提示列和「停止」鈕，不會有看不見的錄音。切到別的分頁或視窗不會停止錄音。</li>
+        <li><b>Gemini 設定</b>：金鑰是你自己的 Google Gemini 通行碼（免費申請），按「免費取得金鑰」。預設「記住在這台裝置」；<b>公用或借用的電腦請取消勾選</b>，取消後已保存的金鑰立刻刪除。金鑰不會寫進資料夾、匯出檔或還原點。進階欄位（音訊來源：麥克風或分頁音訊、輸出裝置、模型、連線日誌）預設收合，要用再展開。單一連線約 15 分鐘上限，程式會提醒並自動接續。</li>
+        <li>名詞表（設定頁）只有 Gemini 高品質模式會套用，因為免費翻譯引擎沒辦法可靠地套用。</li>
+      </ul>
+    </section>
+
+    <section id="records">
+      <h2><span class="num">6</span>紀錄與匯出</h2>
+      <p>單句翻譯只留最近 200 筆（加星號收藏的不會被擠掉）；面對面、聽講、逐字稿每一場都自動存、不會被清掉。</p>
+      <div class="tbl"><table>
+        <tr><th>匯出方式</th><th>內容</th></tr>
+        <tr><td>下載文字檔</td><td>純文字，含時間戳。</td></tr>
+        <tr><td>雙語 CSV</td><td>時間、說話者、原文語言、原文、譯文語言、譯文、翻譯服務。檔案開頭有 UTF-8 標記，用 Excel 開啟時中文不會亂碼；以 = + - @ 開頭的內容會在前面補一個單引號，避免被 Excel 當成公式執行。</td></tr>
+        <tr><td>Word 文件（.docx）</td><td>由這個頁面自己產生的 .docx：一個標題加一個「時間／說話者／原文／譯文」表格，版面很簡單。</td></tr>
+        <tr><td>列印／PDF</td><td>開一個列印視窗，選「另存為 PDF」。</td></tr>
+      </table></div>
+      <p>紀錄多到兩千筆也能搜尋；列表只畫最新的 300 筆，請用搜尋縮小範圍。</p>
+    </section>
+
+    <section id="save">
+      <h2><span class="num">7</span>資料保存與備份</h2>
+      <p>你的資料會自動存在這台裝置的瀏覽器裡，不需要按儲存；右上角的小標籤會告訴你現在的狀態。</p>
+      <div class="tbl"><table>
+        <tr><th>方式</th><th>說明</th></tr>
+        <tr><td>📁 存到我的資料夾（選用）</td><td>到「設定」按 <span class="ui">選擇資料夾</span>。建議選雲端硬碟裡的資料夾，就能換電腦接續。限電腦版 Chrome 或 Edge；手機與 Safari、Firefox 不能選資料夾，請改用匯出。不選也完全能用，工具不會一打開就要求選資料夾。資料夾裡會有「設定與收藏.json」、一場一個檔案的紀錄（旁邊有一份可以直接閱讀的 .txt）、每天一份的歷史備份（留 14 份）。API 金鑰與草稿永遠不會寫進資料夾。</td></tr>
+        <tr><td>兩台電腦都改了同一筆</td><td>會問你：全部保留（另存一份）、用資料夾的、用這台的；在你決定前兩邊都不會被動到。損毀、不是本程式的、或較新版本的檔案只會被回報，不會被覆寫或刪除。</td></tr>
+        <tr><td>🕘 還原點</td><td>每天自動一份（留 7 天）；匯入、還原、清除、連結資料夾前也會先留一份。設定頁可以還原或下載。</td></tr>
+        <tr><td>匯出／匯入備份檔</td><td>設定頁「匯出全部資料」。匯出檔不含金鑰與只屬於這台裝置的設定。匯入可選「合併」或「取代全部」，動手前先留還原點。</td></tr>
+        <tr><td>🔒 不留紀錄</td><td>設定頁開啟後，完全不儲存文字：草稿、紀錄、快取、資料夾、還原點都不寫；關閉時，開啟期間產生的內容也不會被存下來。適合公用或借用的電腦。</td></tr>
+        <tr><td>清除這台裝置上的所有資料</td><td>刪除紀錄、草稿、設定、還原點與金鑰，並中斷資料夾連結（資料夾裡的檔案不會被刪）。無法復原。</td></tr>
+      </table></div>
+      <div class="callout warn">「雙擊開啟的檔案」和「網頁版」是瀏覽器眼中兩個不同的地方，資料不會自動相通；要共用請連到同一個資料夾，或用匯出／匯入。清除瀏覽資料也會清掉這台裝置上的內容，重要資料請連結資料夾或定期匯出。</div>
+    </section>
+
+    <section id="privacy">
+      <h2><span class="num">8</span>隱私：內容會送到哪裡</h2>
+      <p>紀錄、草稿和設定存在你的裝置（和你選的資料夾）。不過要完成翻譯、辨識和朗讀，下面這些內容<b>會離開你的裝置</b>：</p>
+      <ul>
+        <li><b>要翻譯的文字</b>送到 Google 翻譯（免費、非官方服務，可能被限流或停用）；它沒回應時改送 MyMemory。每次結果下方會寫是哪一個。</li>
+        <li><b>語音辨識的聲音</b>由你的瀏覽器處理，可能送到瀏覽器廠商的伺服器（例如 Chrome 會把聲音送到 Google）。</li>
+        <li><b>朗讀的文字</b>：朗讀用的是你的瀏覽器或系統的語音。有些是線上語音（例如 Chrome 裡名稱以「Google」開頭的語音），朗讀的文字會送到該語音服務；離線語音則不會。</li>
+        <li><b>Gemini 高品質模式</b>（選用）會把聲音送到 Google Gemini，需要你自己的金鑰。</li>
+        <li>工具本身沒有伺服器：不收集資料，也不會傳給製作者。</li>
+        <li><b>送出前遮蔽</b>（設定 → 隱私，預設關閉）：開啟後，<b>送去翻譯服務的文字</b>（單句、多語言、面對面、字幕與重試）裡的電話、Email、證件號碼會先換成 <code>[phone]</code>、<code>[email]</code>、<code>[ID]</code>。它<b>不涵蓋</b>：語音辨識的聲音、朗讀的文字、Gemini 的聲音，以及你按「複製給 AI 校對」複製出去的文字。它只能降低風險，不保證每一種格式都遮得住，也不會把原本的號碼還原回譯文。</li>
+        <li>請不要輸入你不願送出的機密資料。</li>
+      </ul>
+    </section>
+
+    <section id="voice">
+      <h2><span class="num">9</span>語言與語音</h2>
+      <ul>
+        <li>約 45 種語言（含菲律賓文、緬甸文、高棉文等），每種語言對各翻譯服務使用正確的代碼，也可以自己新增語言。</li>
+        <li>語音輸入需要瀏覽器支援，建議用電腦或 Android 的 Chrome 或 Edge。語言選單會誠實標示「可能可用」「此瀏覽器不支援」。朗讀依你裝置上安裝的語音而定，沒有該語言的語音時會告訴你。</li>
+        <li>語音功能要明確指定語言，不能選「自動偵測」。</li>
+        <li>介面有繁體中文與 English，預設依瀏覽器語言，可在設定改。</li>
+        <li>快捷鍵：Ctrl／⌘＋Enter 立即翻譯；<code>Alt＋Shift＋M</code> 在翻譯頁開始或停止說話；Esc 先關閉最上面的選單、選擇器、簡報或對話框，沒有東西可關時才停止錄音與朗讀。</li>
+      </ul>
+    </section>
+
+    <section id="faq">
+      <h2><span class="num">10</span>常見問題</h2>
+      <h3>麥克風沒反應或被封鎖</h3>
+      <p>按網址列左邊的鎖頭或相機圖示，把麥克風改成「允許」，再按一次說話。</p>
+      <h3>提示「請你慢一點」或「額度用完」</h3>
+      <p>免費翻譯服務有流量限制。等一下再按「重試」，或改用下方連到其他翻譯網站的連結。</p>
+      <h3>沒有聲音可以朗讀</h3>
+      <p>你的裝置可能沒有安裝該語言的語音。到系統設定新增語音，或只看文字。</p>
+      <h3>手機上資料夾按鈕不能用</h3>
+      <p>手機瀏覽器目前不支援選資料夾；請用「匯出全部資料」存檔，需要時再「匯入」。</p>
+      <h3>想把紀錄交給別人看</h3>
+      <p>在紀錄裡開啟那一筆，匯出 Word 或 PDF；Word 檔就是一個簡單的雙語表格。</p>
+    </section>
+
+    <section id="limits">
+      <h2><span class="num">11</span>已知限制與使用前請先確認</h2>
+      <ul>
+        <li>重要場合使用前，請先在你自己的裝置與瀏覽器上試一次：說話辨識、朗讀、資料夾儲存會因手機型號、瀏覽器與系統而不同。這個工具主要在電腦版 Chrome 上確認過；Safari、Firefox 與各種手機瀏覽器、包成 App 的版本，請自己試試看。</li>
+        <li>免費翻譯服務可能限流、變慢或停用；翻不出來時會告訴你原因並讓你重試。翻譯結果請自行確認，醫療、法律、合約等重要內容不要只靠機器翻譯。</li>
+        <li>「面對面」中對方那一半的各語言文字，是用 AI 草擬的，沒有請各語言的母語人士檢查過，可能有不自然的地方。</li>
+        <li>語音辨識與朗讀能不能用，取決於你的瀏覽器與系統；沒有把握的地方，語言選單會寫「可能可用」。</li>
+        <li>匯出的 Word 文件是簡單的雙語表格；CSV 用 Excel 開啟時請選 UTF-8。第一次使用匯出的檔案時，請先打開確認內容。</li>
+        <li>真實的資料夾選擇與雲端硬碟同步、Gemini 即時口譯，請先用不重要的資料試一次，再用在正式場合。</li>
+        <li>清除瀏覽器資料會清掉這台裝置上的內容；重要資料請連結資料夾或定期匯出。</li>
+      </ul>
+    </section>
+  </main>
+  <footer>製作者：臺北市立麗山高中 林獻升老師（frog@lssh.tp.edu.tw）</footer>
+</body>
+</html>

@@ -134,6 +134,7 @@ window.WORKSTATION_TOOLS = [
   { id: 'translate', no: '12', cat: 'life', icon: 'globe', title: '多功能翻譯工具',
     desc: '多語翻譯與常用語句。',
     path: '../12語言翻譯/多功能翻譯工具(claude優化版).html',
+    guide: '../12語言翻譯/多功能翻譯工具(claude優化版)使用說明.html',
     keywords: '翻譯 語言 英文 日文' },
   { id: 'currency', no: '14', cat: 'life', icon: 'coin', title: '貨幣轉換與旅遊記帳',
     desc: '匯率換算與旅途花費記帳。',
