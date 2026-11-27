@@ -2,217 +2,250 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>學習歷程檔案輔助程式 2.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>學習歷程檔案輔助程式 3.0</title>
 <style>
   :root{
-    --bg:#f0f7f7;
-    --panel:#ffffff;
-    --ink:#1f3a3d;
-    --muted:#5b7174;
-    --line:#dce8e8;
-    --teal:#0d9488;
-    --teal-d:#0f766e;
-    --teal-l:#ccfbf1;
-    --blue:#2563eb;
-    --blue-l:#dbeafe;
-    --amber:#d97706;
-    --amber-l:#fef3c7;
-    --red:#dc2626;
-    --violet:#7c3aed;
-    --violet-l:#ede9fe;
+    --bg:#eef6f6; --bg2:#f6fafb; --panel:#ffffff; --panel2:#f7fbfb;
+    --ink:#1f3a3d; --muted:#5b7174; --line:#dce8e8;
+    --teal:#0d9488; --teal-d:#0f766e; --teal-l:#ccfbf1;
+    --blue:#2563eb; --blue-l:#dbeafe;
+    --amber:#b45309; --amber-l:#fef3c7;
+    --danger:#dc2626; --danger-l:#fee2e2;
+    --violet:#7c3aed; --violet-l:#ede9fe;
+    --ok:#15803d; --ok-l:#dcfce7;
     --shadow:0 4px 18px rgba(13,148,136,.10);
-    --radius:14px;
+    --radius:14px; --fs:15px;
+    color-scheme:light;
   }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1a1b; --bg2:#122021; --panel:#172627; --panel2:#1c2e2f;
+      --ink:#e3efef; --muted:#9bb3b5; --line:#2b4143;
+      --teal:#2dd4bf; --teal-d:#5eead4; --teal-l:#134e4a;
+      --blue:#60a5fa; --blue-l:#1e3a5f; --amber:#fbbf24; --amber-l:#3b2f12;
+      --danger:#f87171; --danger-l:#4a1d1d; --violet:#a78bfa; --violet-l:#2e2350;
+      --ok:#4ade80; --ok-l:#14361f; --shadow:0 4px 18px rgba(0,0,0,.35); color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1a1b; --bg2:#122021; --panel:#172627; --panel2:#1c2e2f;
+    --ink:#e3efef; --muted:#9bb3b5; --line:#2b4143;
+    --teal:#2dd4bf; --teal-d:#5eead4; --teal-l:#134e4a;
+    --blue:#60a5fa; --blue-l:#1e3a5f; --amber:#fbbf24; --amber-l:#3b2f12;
+    --danger:#f87171; --danger-l:#4a1d1d; --violet:#a78bfa; --violet-l:#2e2350;
+    --ok:#4ade80; --ok-l:#14361f; --shadow:0 4px 18px rgba(0,0,0,.35); color-scheme:dark;
+  }
+  :root.big{--fs:17.5px}
   *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    background:linear-gradient(160deg,#e7f4f3 0%,#f0f7f7 40%,#eef6fb 100%);
-    color:var(--ink);
-    line-height:1.7;
-    min-height:100vh;
-  }
+  body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh;font-size:var(--fs)}
   a{color:var(--teal-d)}
+  button{font-family:inherit;font-size:inherit;color:inherit}
+  [hidden]{display:none!important}
+  code{background:var(--panel2);padding:1px 6px;border-radius:6px;font-size:.88em}
+  #boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:999;color:var(--teal-d);font-weight:700}
 
   /* ---------- Top bar ---------- */
-  header.topbar{
-    background:linear-gradient(110deg,var(--teal-d),var(--teal) 60%,#14b8a6);
-    color:#fff;
-    padding:18px 24px;
-    display:flex;align-items:center;justify-content:space-between;
-    gap:16px;flex-wrap:wrap;
-    box-shadow:0 4px 20px rgba(13,118,110,.25);
-    position:sticky;top:0;z-index:50;
-  }
-  .topbar h1{font-size:20px;margin:0;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
-  .topbar .sub{font-size:12.5px;opacity:.9;font-weight:400}
-  .topbar .tools{display:flex;gap:8px;flex-wrap:wrap}
-  .topbar button{
-    background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35);
-    padding:8px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;
-    transition:.18s;backdrop-filter:blur(4px);
-  }
-  .topbar button:hover{background:rgba(255,255,255,.30)}
+  header.topbar{background:linear-gradient(110deg,#0f766e,#0d9488 60%,#14b8a6);color:#fff;
+    padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    box-shadow:0 4px 20px rgba(13,118,110,.25);position:sticky;top:0;z-index:50}
+  .topbar h1{font-size:19px;margin:0;font-weight:800;display:flex;align-items:center;gap:8px}
+  .topbar .ver{font-size:12px;background:rgba(255,255,255,.22);padding:1px 9px;border-radius:20px}
+  .topbar .sub{font-size:12px;opacity:.9}
+  .topbar .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .topbar button{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35);
+    padding:7px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+  .topbar button:hover{background:rgba(255,255,255,.3)}
+  .who{font-size:13px;font-weight:700;opacity:.95;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .savetag.warn{background:rgba(251,191,36,.35)!important}
+  .savetag.err{background:rgba(220,38,38,.55)!important}
+
+  .banner{display:none;max-width:1320px;margin:12px auto 0;padding:10px 14px;background:var(--amber-l);color:var(--ink);
+    border:1px solid var(--amber);border-radius:12px;gap:10px;align-items:center;flex-wrap:wrap}
+  .banner.show{display:flex}
+  .banner #bannerMsg{flex:1;min-width:200px}
+  .banner #bannerBtns{display:flex;gap:6px;flex-wrap:wrap}
 
   /* ---------- Layout ---------- */
-  .layout{display:flex;max-width:1320px;margin:0 auto;padding:18px;gap:18px;align-items:flex-start}
-  nav.sidebar{
-    width:248px;flex-shrink:0;position:sticky;top:92px;
-    background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:12px;border:1px solid var(--line);
-  }
-  .nav-title{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:1px;padding:6px 10px 10px}
-  .nav-item{
-    display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;cursor:pointer;
-    font-size:14.5px;font-weight:600;color:var(--ink);transition:.15s;margin-bottom:3px;
-    border:1px solid transparent;
-  }
-  .nav-item .ico{font-size:18px;width:24px;text-align:center}
-  .nav-item .num{margin-left:auto;font-size:11px;background:var(--line);color:var(--muted);
-    border-radius:20px;padding:1px 8px;font-weight:700}
+  .layout{display:flex;max-width:1320px;margin:0 auto;padding:16px;gap:18px;align-items:flex-start}
+  nav.sidebar{width:262px;flex-shrink:0;position:sticky;top:78px;max-height:calc(100vh - 92px);overflow:auto;
+    background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px;border:1px solid var(--line)}
+  .nav-title{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:1px;padding:6px 6px 8px;display:flex;justify-content:space-between}
+  .profile{padding:0 4px 10px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .profile input{margin-bottom:7px}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;cursor:pointer;width:100%;
+    font-size:14px;font-weight:600;transition:.15s;margin-bottom:2px;border:1px solid transparent;background:none;text-align:left}
+  .nav-item .ico{font-size:17px;width:22px;text-align:center}
+  .nav-item .nm{flex:1}
+  .nav-item .dot{font-size:12px;color:var(--muted);white-space:nowrap}
+  .nav-item .dot.full{color:var(--ok)} .nav-item .dot.part{color:var(--amber)}
   .nav-item:hover{background:var(--teal-l)}
-  .nav-item.active{background:linear-gradient(100deg,var(--teal),#14b8a6);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,.3)}
-  .nav-item.active .num{background:rgba(255,255,255,.25);color:#fff}
-
+  .nav-item.active{background:linear-gradient(100deg,#0d9488,#14b8a6);color:#fff;box-shadow:0 4px 12px rgba(13,148,136,.3)}
+  .nav-item.active .dot{color:#fff}
+  .side-foot{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
   main.content{flex:1;min-width:0}
 
   /* ---------- Cards ---------- */
-  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);
-    border:1px solid var(--line);padding:22px;margin-bottom:18px}
-  .page-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:4px}
+  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);padding:20px;margin-bottom:16px}
+  .card h3{margin:0 0 6px;font-size:17px;color:var(--teal-d)}
+  .page-head{display:flex;align-items:flex-start;gap:14px}
   .page-head .big-ico{font-size:34px;line-height:1}
-  .page-head h2{margin:0;font-size:23px;font-weight:800;color:var(--teal-d)}
-  .page-head .desc{margin:4px 0 0;color:var(--muted);font-size:14px}
+  .page-head h2{margin:0;font-size:22px;font-weight:800;color:var(--teal-d);display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .page-head .desc{margin:4px 0 0;color:var(--muted);font-size:.92em}
+  .hint{color:var(--muted);font-size:.86em;margin:4px 0}
+  .welcome{border-left:5px solid var(--teal)}
+  .welcome ol{margin:6px 0 10px;padding-left:22px}
 
-  /* principles panel */
-  .principles{
-    background:linear-gradient(135deg,#f0fdfa,#ecfeff);
-    border:1px solid var(--teal-l);border-left:5px solid var(--teal);
-    border-radius:12px;padding:16px 18px;margin:16px 0 22px;
-  }
-  .principles h3{margin:0 0 8px;font-size:15px;color:var(--teal-d);display:flex;align-items:center;gap:8px}
-  .principles ul{margin:0;padding-left:4px;list-style:none}
-  .principles li{position:relative;padding:5px 0 5px 26px;font-size:13.8px;color:#2c4a4d}
-  .principles li::before{content:"✓";position:absolute;left:2px;top:5px;color:var(--teal);font-weight:800}
-  .principles .tip{margin-top:10px;font-size:12.5px;color:var(--amber);background:var(--amber-l);
-    padding:7px 12px;border-radius:8px;display:inline-block}
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin:14px 0 0;border-bottom:2px solid var(--line)}
+  .tab{border:none;background:none;padding:10px 16px;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;border-radius:10px 10px 0 0}
+  .tab:hover{background:var(--teal-l)}
+  .tab.active{color:var(--teal-d);border-bottom-color:var(--teal)}
+  .tab .badge{font-size:11px;margin-left:4px;background:var(--line);border-radius:20px;padding:0 7px;color:var(--muted)}
+  .tab .badge{white-space:nowrap}
+  .tab .badge:empty{display:none}
+  .pane{display:none}
+  .pane.active{display:block}
+
+  /* principles */
+  details.principles{background:var(--panel2);border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:12px;padding:10px 16px;margin:14px 0 18px}
+  details.principles summary{cursor:pointer;font-weight:800;color:var(--teal-d)}
+  .principles ul{margin:8px 0 0;padding-left:4px;list-style:none}
+  .principles li{position:relative;padding:4px 0 4px 24px;font-size:.92em}
+  .principles li::before{content:"✓";position:absolute;left:2px;top:4px;color:var(--teal);font-weight:800}
+  .principles .tip{margin:8px 0 4px;font-size:.85em;color:var(--amber);background:var(--amber-l);padding:6px 12px;border-radius:8px;display:inline-block}
 
   /* steps */
-  .step{margin-bottom:20px}
-  .step-label{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-weight:700;font-size:15px}
-  .step-num{background:var(--teal);color:#fff;width:25px;height:25px;border-radius:50%;
-    display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-  .step-hint{font-size:12.8px;color:var(--muted);margin:0 0 8px 35px;font-weight:400}
+  .step{margin-bottom:18px}
+  .step-label{display:flex;align-items:center;gap:10px;margin-bottom:4px;font-weight:700}
+  .step-num{background:var(--teal);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;flex-shrink:0}
+  .step-num.done{background:var(--ok)}
+  .step-hint{font-size:.85em;color:var(--muted);margin:0 0 7px 34px}
   .field-wrap{display:flex;gap:8px;align-items:flex-start}
-  textarea,input[type=text]{
-    width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;
-    font-family:inherit;font-size:14.5px;color:var(--ink);background:#fbfdfd;transition:.15s;resize:vertical;
-  }
-  textarea{min-height:96px;line-height:1.65}
-  textarea:focus,input[type=text]:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px var(--teal-l)}
+  textarea,input[type=text],input[type=password],input:not([type]),select{
+    width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:.96em;
+    color:var(--ink);background:var(--panel2);transition:border-color .15s,box-shadow .15s;resize:vertical}
+  textarea{min-height:90px;line-height:1.7}
+  textarea:focus,input:focus,select:focus{outline:none;border-color:var(--teal);background:var(--panel);box-shadow:0 0 0 3px var(--teal-l)}
   .mini-btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
   .mini-btns button{width:40px;height:40px;border-radius:10px;border:none;cursor:pointer;font-size:16px;transition:.15s}
   .b-mic{background:var(--blue-l);color:var(--blue)}
-  .b-mic:hover{background:var(--blue);color:#fff}
+  .b-mic.rec{background:var(--danger);color:#fff;animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.6}}
   .b-ai{background:var(--violet-l);color:var(--violet)}
   .b-ai:hover{background:var(--violet);color:#fff}
-  .b-clr{background:#fee2e2;color:var(--red)}
-  .b-clr:hover{background:var(--red);color:#fff}
-  .charcount{font-size:11.5px;color:var(--muted);text-align:right;margin-top:3px}
-  .charcount.over{color:var(--red);font-weight:700}
+  .charcount{font-size:.78em;color:var(--muted);text-align:right;margin-top:2px;padding-right:48px}
+  .charcount.over{color:var(--danger);font-weight:700}
 
   /* buttons */
-  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
-  .btn{padding:10px 18px;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;
-    transition:.16s;display:inline-flex;align-items:center;gap:7px}
-  .btn-primary{background:linear-gradient(100deg,var(--teal),#14b8a6);color:#fff}
-  .btn-primary:hover{filter:brightness(1.07);box-shadow:0 4px 14px rgba(13,148,136,.35)}
-  .btn-violet{background:linear-gradient(100deg,var(--violet),#8b5cf6);color:#fff}
-  .btn-violet:hover{filter:brightness(1.08)}
-  .btn-amber{background:linear-gradient(100deg,var(--amber),#f59e0b);color:#fff}
-  .btn-ghost{background:#fff;color:var(--teal-d);border:1.5px solid var(--teal-l)}
-  .btn-ghost:hover{background:var(--teal-l)}
-
-  .merged{margin-top:18px}
-  .merged textarea{min-height:260px;background:#f8fafc}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .btn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;font-size:.92em;font-weight:700;transition:.16s;
+    display:inline-flex;align-items:center;gap:6px;background:linear-gradient(100deg,#0d9488,#14b8a6);color:#fff;text-decoration:none}
+  .btn:hover{filter:brightness(1.07)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.violet{background:linear-gradient(100deg,#7c3aed,#8b5cf6)}
+  .btn.amber{background:linear-gradient(100deg,#d97706,#f59e0b)}
+  .btn.sub{background:var(--panel);color:var(--teal-d);border:1.5px solid var(--line)}
+  .btn.sub:hover{background:var(--teal-l)}
+  .btn.danger{background:var(--danger);color:#fff}
+  .btn.sm{padding:6px 11px;font-size:.84em}
+  .btn.block{width:100%;justify-content:center}
 
   /* evidence */
-  .ev-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-  .ev-row .step{flex:1;min-width:200px;margin-bottom:0}
-  .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:14px}
-  .photo-item{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fbfdfd;position:relative}
-  .photo-item img{width:100%;max-height:170px;object-fit:contain;border-radius:8px;display:block}
-  .photo-item input{margin-top:8px;font-size:13px}
-  .photo-item .del{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;
-    border:none;background:rgba(220,38,38,.9);color:#fff;cursor:pointer;font-size:13px}
-  .filebox{border:2px dashed var(--teal-l);border-radius:12px;padding:18px;text-align:center;
-    background:#f7fdfc;color:var(--muted);font-size:13.5px}
-  .filebox input{margin-top:8px}
+  .dropzone{border:2px dashed var(--line);border-radius:12px;padding:18px;text-align:center;background:var(--panel2);
+    color:var(--muted);font-size:.9em;cursor:pointer;transition:.15s}
+  .dropzone:hover,.dropzone.over{border-color:var(--teal);background:var(--teal-l);color:var(--ink)}
+  .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:12px}
+  .ph{border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--panel2)}
+  .ph img{width:100%;height:150px;object-fit:contain;border-radius:8px;display:block;background:var(--panel);cursor:zoom-in}
+  .ph input{margin-top:6px;font-size:.84em;padding:7px 9px}
+  .ph .ph-bar{display:flex;gap:4px;margin-top:6px;align-items:center}
+  .ph .ph-bar .n{flex:1;font-size:.78em;color:var(--muted)}
+  .ph .ph-bar button{border:1px solid var(--line);background:var(--panel);border-radius:8px;cursor:pointer;padding:2px 8px;font-size:.8em}
+  .ph.nocap input{border-color:var(--amber)}
+  .warnbox{background:var(--amber-l);border:1px solid var(--amber);border-radius:10px;padding:8px 12px;font-size:.86em;margin-top:10px}
+  .okbox{background:var(--ok-l);border:1px solid var(--ok);border-radius:10px;padding:8px 12px;font-size:.86em;margin-top:10px}
 
-  /* modal */
-  .overlay{position:fixed;inset:0;background:rgba(15,40,42,.55);z-index:200;display:none;
-    align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(2px)}
-  .overlay.show{display:flex}
-  .modal{background:#fff;border-radius:16px;max-width:640px;width:100%;max-height:88vh;overflow:auto;
-    box-shadow:0 20px 60px rgba(0,0,0,.3);padding:24px}
-  .modal h3{margin:0 0 4px;font-size:19px;color:var(--teal-d)}
-  .modal .mdesc{color:var(--muted);font-size:13px;margin:0 0 16px}
-  .modal label{display:block;font-weight:700;font-size:13.5px;margin:14px 0 6px}
-  .modal input[type=text],.modal input[type=password],.modal select,.modal textarea{
-    width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit}
-  .modal .modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
-  .mode-opt{border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:.15s}
-  .mode-opt:hover{border-color:var(--teal)}
-  .mode-opt.sel{border-color:var(--teal);background:var(--teal-l)}
-  .mode-opt .mt{font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px}
-  .mode-opt .md{font-size:12.8px;color:var(--muted);margin-top:4px;margin-left:28px}
-  .file-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
-    border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;transition:.15s}
-  .file-row:hover{border-color:var(--teal);background:var(--teal-l)}
-  .file-row .fi-name{font-weight:800;font-size:15px}
-  .file-row .fi-meta{font-size:12px;color:var(--muted);margin-top:2px}
-  .file-row .fi-act{display:flex;gap:8px;flex-shrink:0}
-  .file-row .fi-act button{padding:7px 14px;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700}
-  .fi-load{background:var(--teal);color:#fff}
-  .fi-del{background:#fee2e2;color:var(--red)}
-  .fi-del:hover{background:var(--red);color:#fff}
-  .file-empty{text-align:center;color:var(--muted);padding:24px;font-size:14px}
-  .ai-result{background:#f0fdfa;border:1px solid var(--teal-l);border-radius:10px;padding:14px;
-    margin-top:14px;white-space:pre-wrap;font-size:14px;max-height:300px;overflow:auto;display:none}
-  .ai-loading{display:none;text-align:center;padding:20px;color:var(--teal-d);font-weight:600}
-  .spin{display:inline-block;width:18px;height:18px;border:3px solid var(--teal-l);
-    border-top-color:var(--teal);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px;margin-right:8px}
+  /* AI output & checklist */
+  .outbox{margin-top:14px}
+  .outbox textarea{min-height:220px;background:var(--panel2)}
+  .checklist{list-style:none;padding:0;margin:8px 0}
+  .checklist li{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px dashed var(--line)}
+  .checklist .st{width:24px;text-align:center}
+  .preview{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px;max-height:460px;overflow:auto;white-space:pre-wrap;font-size:.92em}
+
+  /* dialogs */
+  dialog{border:none;border-radius:16px;padding:0;max-width:min(760px,calc(100vw - 24px));width:100%;
+    background:var(--panel);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  dialog::backdrop{background:rgba(15,40,42,.55);backdrop-filter:blur(2px)}
+  dialog.wide{max-width:min(1080px,calc(100vw - 24px))}
+  .dlg-in{padding:22px;max-height:calc(100vh - 40px);overflow:auto}
+  .dlg-in h3{margin:0 0 4px;font-size:19px;color:var(--teal-d)}
+  .dlg-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+  .dlg-in label{display:block;font-weight:700;font-size:.9em;margin:12px 0 5px}
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+  .mode{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;background:var(--panel)}
+  .mode.sel{border-color:var(--teal);background:var(--teal-l)}
+  .mode b{display:block;font-size:.95em}
+  .mode span{font-size:.78em;color:var(--muted)}
+  .mode-opts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.88em;margin-bottom:6px}
+  .mode-opts select{width:auto;padding:5px 8px}
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .cmp h4{margin:0 0 6px;font-size:.9em;color:var(--muted)}
+  .cmp .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap;max-height:380px;overflow:auto;font-size:.9em}
+  .cmp textarea{min-height:300px}
+  .loading{text-align:center;padding:18px;color:var(--teal-d);font-weight:700}
+  .spin{display:inline-block;width:18px;height:18px;border:3px solid var(--teal-l);border-top-color:var(--teal);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-3px;margin-right:8px}
   @keyframes sp{to{transform:rotate(360deg)}}
-  .pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-left:6px}
-  .pill-local{background:var(--amber-l);color:var(--amber)}
-  .pill-copy{background:var(--blue-l);color:var(--blue)}
-  .pill-api{background:var(--violet-l);color:var(--violet)}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 9px;border-radius:20px;background:var(--line);color:var(--muted)}
+  .pill.on{background:var(--ok-l);color:var(--ok)} .pill.warn{background:var(--amber-l);color:var(--amber)} .pill.err{background:var(--danger-l);color:var(--danger)}
+  .kv{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:.9em;margin:8px 0}
+  .kv dt{color:var(--muted)} .kv dd{margin:0}
+  .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .set-sec{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+  .set-sec h3{font-size:16px}
+  .snap-wrap{overflow:auto}
+  table.snap{width:100%;border-collapse:collapse;font-size:.85em}
+  table.snap td,table.snap th{border-bottom:1px solid var(--line);padding:6px;text-align:left}
+  .split-row{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
+  .split-row .hd{display:flex;align-items:center;gap:8px;font-weight:700}
+  .split-row .tx{white-space:pre-wrap;font-size:.86em;color:var(--muted);max-height:110px;overflow:auto;margin-top:4px}
+  #lightbox{max-width:94vw;background:transparent;box-shadow:none}
+  #lightbox img{max-width:94vw;max-height:90vh;display:block;margin:auto;border-radius:10px}
 
   /* toast */
-  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);
-    background:var(--ink);color:#fff;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:600;
-    z-index:300;transition:.35s;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:90vw}
-  #toast.show{transform:translateX(-50%) translateY(0)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(140px);background:#1f3a3d;color:#fff;
+    padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;z-index:1000;transition:.3s;box-shadow:0 8px 30px rgba(0,0,0,.3);
+    max-width:92vw;display:flex;gap:12px;align-items:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.error{background:#b91c1c}
+  .toast button{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:8px;padding:4px 10px;cursor:pointer;font-weight:700}
 
-  footer{text-align:center;padding:26px 16px;color:var(--muted);font-size:13px}
-  footer a{font-weight:600}
+  footer{text-align:center;padding:22px 16px 90px;color:var(--muted);font-size:12.5px}
 
-  /* mobile nav toggle */
-  .nav-toggle{display:none}
   @media(max-width:880px){
-    .layout{flex-direction:column;padding:12px}
-    nav.sidebar{width:100%;position:static}
-    .nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
-    .nav-item .num{display:none}
-    .topbar h1{font-size:17px}
-    .page-head h2{font-size:20px}
+    .layout{flex-direction:column;padding:10px 12px}
+    nav.sidebar{width:100%;position:static;max-height:none}
+    .nav-list{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:thin}
+    .nav-item{flex:0 0 auto;width:auto;white-space:nowrap}
+    .topbar{padding:10px 14px}
+    .topbar .sub{display:none}
+    .tabs{position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--panel);margin:0;border-top:1px solid var(--line);border-bottom:none;
+      padding:4px 6px calc(4px + env(safe-area-inset-bottom));justify-content:space-around;box-shadow:0 -4px 16px rgba(0,0,0,.08)}
+    .tab{flex:1;border-bottom:none;border-top:3px solid transparent;border-radius:0;padding:8px 4px;font-size:.88em}
+    .tab.active{border-top-color:var(--teal)}
+    .cmp{grid-template-columns:1fr}
+    .modes{grid-template-columns:1fr}
   }
   @media(max-width:560px){
     .field-wrap{flex-direction:column}
     .mini-btns{flex-direction:row}
-    .mini-btns button{width:46px}
+    .charcount{padding-right:0}
+    .step-hint{margin-left:0}
+    .card{padding:16px}
   }
+  @media print{ .topbar,.sidebar,.tabs,footer,.banner{display:none!important} }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -221,119 +254,154 @@
 </script>
 </head>
 <body>
+<div id="boot">讀取資料中…</div>
 
 <header class="topbar">
   <div>
-    <h1>🎓 學習歷程檔案輔助程式 <span style="font-size:12px;background:rgba(255,255,255,.22);padding:2px 9px;border-radius:20px">2.0</span></h1>
-    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:2px">
-      <div class="sub">108 課綱備審資料製作・九大檔案類型・AI 三模式優化</div>
-      <div class="author" style="font-size:11.5px;opacity:.85">
-        製作者：臺北市立麗山高中 林獻升老師　|　聯絡信箱：<a href="mailto:frog@lssh.tp.edu.tw" style="color:#fff;text-decoration:underline">frog@lssh.tp.edu.tw</a>
-      </div>
-    </div>
+    <h1>🎓 學習歷程檔案輔助程式 <span class="ver">3.0</span></h1>
+    <div class="sub">108 課綱備審資料製作・十種檔案類型・AI 三模式優化　|　製作者：臺北市立麗山高中 林獻升老師（<a href="mailto:frog@lssh.tp.edu.tw" style="color:#fff">frog@lssh.tp.edu.tw</a>）</div>
   </div>
   <div class="tools">
-    <button onclick="openSettings()">⚙️ AI 設定</button>
-    <button onclick="saveAll()">💾 儲存</button>
-    <button onclick="loadAll()">📂 讀取</button>
-    <button onclick="deleteAll()">🗑️ 刪除</button>
+    <span class="who" id="whoTag"></span>
+    <button type="button" id="saveTag" class="savetag" data-action="savenow" title="內容會自動儲存；點這裡可立即儲存（Ctrl／⌘＋S）">💾 讀取中…</button>
+    <button type="button" data-action="open-settings">⚙️ 設定與備份</button>
   </div>
 </header>
+<div class="banner" id="banner"><span id="bannerMsg"></span><span id="bannerBtns"></span></div>
 
 <div class="layout">
-  <nav class="sidebar">
-    <div class="nav-title">👤 基本資料</div>
-    <div style="padding:4px 6px;margin-bottom:6px">
-      <input type="text" id="studentName" placeholder="學生姓名" style="margin-bottom:8px">
-      <input type="text" id="targetDept" placeholder="目標校系（如：台大資工）">
+  <nav class="sidebar" aria-label="檔案類型">
+    <div class="profile">
+      <div class="nav-title">👤 我的基本資料</div>
+      <input type="text" id="studentName" data-profile="name" placeholder="姓名" autocomplete="off">
+      <input type="text" id="targetDept" data-profile="targetDept" placeholder="目標校系（如：台大資工）" autocomplete="off">
     </div>
-
-    <div class="nav-title">💡 快速示範體驗</div>
-    <div style="padding:4px 6px;margin-bottom:12px;display:flex;flex-direction:column;gap:6px">
-      <select id="sampleSelect" style="width:100%;font-size:12px;padding:6px;border-radius:8px;border:1px solid var(--line);background:#fff">
-        <option value="">— 選擇檔案類型範例 —</option>
-        <option value="course">1. 課程學習成果 (歷史探究)</option>
-        <option value="diverse">2. 多元表現 (資訊社社長)</option>
-        <option value="diverse_summary">3. 多元表現綜整心得 (商管主軸)</option>
-        <option value="self_statement">4. 學習歷程自述 (機械工程申請)</option>
-        <option value="self_directed">5. 自主學習計畫與成果 (Python 爬蟲)</option>
-        <option value="inquiry">6. 探究與實作成果 (物理單擺測g值)</option>
-        <option value="competition">7. 競賽成果 (學科能力競賽化學)</option>
-        <option value="autobiography">8. 個人自傳 (醫學系申請自我行銷)</option>
-        <option value="study_plan">9. 讀書計畫 (材料科學工程學習藍圖)</option>
-        <option value="future">10. 未來發展 (生物科技領域志業)</option>
-      </select>
-      <div style="display:flex;gap:6px">
-        <button type="button" onclick="loadBuiltinSample()" style="flex:1;padding:6px;font-size:12px;font-weight:bold;background:var(--teal);color:#fff;border:none;border-radius:6px;cursor:pointer">一鍵填寫</button>
-        <button type="button" onclick="downloadSampleWord()" style="flex:1;padding:6px;font-size:12px;font-weight:bold;background:var(--teal-l);color:var(--teal-d);border:none;border-radius:6px;cursor:pointer">下載 Word</button>
-      </div>
+    <div class="nav-title"><span>📁 檔案類型</span><span id="navSummary"></span></div>
+    <div class="nav-list" id="navList"></div>
+    <div class="side-foot">
+      <button type="button" class="btn sub sm block" data-action="open-sample">💡 看範例／下載範例 Word</button>
     </div>
-    <div class="nav-title">📁 檔案類型</div>
-    <div class="nav-grid" id="navList"></div>
   </nav>
 
-  <main class="content" id="content"></main>
+  <main class="content" id="content">
+    <div class="card welcome" id="welcome" hidden>
+      <h3>👋 第一次使用？三步驟開始</h3>
+      <ol>
+        <li>在左邊填上<b>姓名</b>與<b>目標校系</b>（AI 會依校系給建議）。</li>
+        <li>選一種檔案類型，在「① 填寫」一格一格寫；寫不出來可以先「💡 看範例」。</li>
+        <li>寫好後到「② 草稿與 AI」請 AI 優化，最後在「③ 匯出」下載 Word／PDF。</li>
+      </ol>
+      <p class="hint">內容會<b>自動儲存</b>在這台電腦。建議到「⚙️ 設定與備份」選一個雲端硬碟資料夾，換電腦也能接著寫。</p>
+      <div class="btn-row">
+        <button type="button" class="btn" data-action="welcome-close">直接開始</button>
+        <button type="button" class="btn sub" data-action="open-sample">先看範例</button>
+        <button type="button" class="btn sub" data-action="welcome-folder">設定雲端資料夾</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="page-head" id="pageHead"></div>
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab" data-tab="write" role="tab">① 填寫<span class="badge" id="badge-write"></span></button>
+        <button type="button" class="tab" data-tab="ai" role="tab">② 草稿與 AI<span class="badge" id="badge-ai"></span></button>
+        <button type="button" class="tab" data-tab="export" role="tab">③ 匯出<span class="badge" id="badge-export"></span></button>
+      </div>
+      <section class="pane" id="pane-write"></section>
+      <section class="pane" id="pane-ai"></section>
+      <section class="pane" id="pane-export"></section>
+    </div>
+  </main>
 </div>
 
 <footer>
-  <p style="font-size:11.5px;opacity:.75">所有資料僅儲存在您的瀏覽器本機（localStorage），不會上傳；AI 金鑰亦只存於本機。</p>
+  資料自動儲存在這台電腦的瀏覽器（IndexedDB），也可同步到你選的雲端硬碟資料夾；不會上傳到任何伺服器。<br>
+  只有在你使用「直接呼叫 API」時，文字與圖片才會送到你選的 AI 服務。API 金鑰只存在這台電腦，不會寫進資料夾或備份檔。
 </footer>
 
-<!-- AI optimize modal -->
-<div class="overlay" id="aiOverlay">
-  <div class="modal">
-    <h3>✨ AI 優化文字</h3>
-    <p class="mdesc" id="aiFieldName"></p>
-    <div id="aiModes">
-      <div class="mode-opt sel" data-mode="local" onclick="pickMode('local')">
-        <div class="mt">🛠️ 1. 本地系統優化 <span class="pill pill-local">免金鑰・離線</span></div>
-        <div class="md">程式內建規則：錯字/贅字清理、台灣用語校正、字數檢查、依架構套版、空洞語句偵測。即時完成。</div>
-      </div>
-      <div class="mode-opt" data-mode="copy" onclick="pickMode('copy')">
-        <div class="mt">📋 2. 產生提示詞並複製 <span class="pill pill-copy">手動貼上</span></div>
-        <div class="md">自動產生客製化優化提示詞＋你的原文，一鍵複製，並開啟 ChatGPT 或 Gemini 網頁貼上。</div>
-        <div style="margin-left:28px;margin-top:8px">
-          <label style="display:inline;font-size:12px">前往：</label>
-          <select id="copyTarget" style="width:auto;padding:5px 8px;display:inline-block">
-            <option value="chatgpt">ChatGPT</option>
-            <option value="gemini">Gemini</option>
-          </select>
-        </div>
-      </div>
-      <div class="mode-opt" data-mode="api" onclick="pickMode('api')">
-        <div class="mt">🤖 3. 直接呼叫 API <span class="pill pill-api">即時優化</span></div>
-        <div class="md">在程式內直接取得優化結果，可一鍵套用回欄位。需先在「⚙️ AI 設定」填入你的 API 金鑰。</div>
-        <div style="margin-left:28px;margin-top:8px">
-          <label style="display:inline;font-size:12px">模型：</label>
-          <select id="apiTarget" style="width:auto;padding:5px 8px;display:inline-block">
-            <option value="openai">OpenAI (ChatGPT)</option>
-            <option value="gemini">Google Gemini</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="ai-loading" id="aiLoading"><span class="spin"></span>AI 優化中，請稍候…</div>
-    <div class="ai-result" id="aiResult"></div>
-
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeAI()">取消</button>
-      <button class="btn btn-ghost" id="aiCopyBtn" style="display:none" onclick="copyAIResult()">📋 複製</button>
-      <button class="btn btn-amber" id="aiExportBtn" style="display:none" onclick="exportAIResult()">⬇️ 匯出到草稿下方</button>
-      <button class="btn btn-primary" id="aiApplyBtn" style="display:none" onclick="applyAIResult()">✓ 套用結果</button>
-      <button class="btn btn-violet" id="aiRunBtn" onclick="runAI()">執行優化</button>
+<!-- AI 對話框 -->
+<dialog id="aiDlg" class="wide"><div class="dlg-in">
+  <h3 id="aiTitle">✨ AI 優化</h3>
+  <p class="hint" id="aiTarget"></p>
+  <div class="modes" id="aiModes">
+    <div class="mode" data-mode="local"><b>🛠️ 本機規則</b><span>免金鑰、離線、即時：用語校正、空洞語句、字數檢查</span></div>
+    <div class="mode" data-mode="copy"><b>📋 複製提示詞</b><span>貼到 ChatGPT／Gemini／Claude，再把回覆貼回來</span></div>
+    <div class="mode" data-mode="api"><b>🤖 直接呼叫 API</b><span>在程式內取得結果，需先設定金鑰</span></div>
+  </div>
+  <div class="mode-opts" id="optCopy">前往：<select id="copyTarget"><option value="chatgpt">ChatGPT</option><option value="gemini">Gemini</option><option value="claude">Claude</option></select></div>
+  <div class="mode-opts" id="optApi">使用：<select id="apiTarget"><option value="openai">OpenAI (ChatGPT)</option><option value="gemini">Google Gemini</option></select>
+    <span class="hint" id="apiModelHint"></span></div>
+  <div class="loading" id="aiLoading" hidden><span class="spin"></span>AI 處理中…<span id="aiElapsed">0</span> 秒　<button type="button" class="btn sub sm" data-action="ai-cancel">取消</button></div>
+  <div id="aiResultWrap" hidden>
+    <div class="preview" id="aiReport" hidden style="margin-top:10px;max-height:260px"></div>
+    <div class="cmp" id="aiCmp">
+      <div id="aiOrigCol"><h4>原文</h4><div class="box" id="aiOrig"></div></div>
+      <div><h4 id="aiResultLabel">AI 結果（可修改後再採用）</h4><textarea id="aiResult"></textarea></div>
     </div>
   </div>
-</div>
+  <div class="dlg-foot">
+    <button type="button" class="btn sub" data-action="ai-close">關閉</button>
+    <button type="button" class="btn sub" data-action="ai-copyresult" id="aiCopyBtn" hidden>📋 複製結果</button>
+    <button type="button" class="btn amber" data-action="ai-keep" id="aiKeepBtn" hidden>📤 存到 AI 輸出區</button>
+    <button type="button" class="btn violet" data-action="ai-split" id="aiSplitBtn" hidden>📥 依欄位分欄填入</button>
+    <button type="button" class="btn" data-action="ai-apply" id="aiApplyBtn" hidden>✓ 採用到欄位</button>
+    <button type="button" class="btn violet" data-action="ai-run" id="aiRunBtn">執行</button>
+  </div>
+</div></dialog>
 
-<!-- Settings modal -->
-<div class="overlay" id="setOverlay">
-  <div class="modal">
-    <h3>⚙️ AI 設定</h3>
-    <p class="mdesc">金鑰只會儲存在你目前這台裝置的瀏覽器（localStorage），不會上傳到任何伺服器。</p>
-    <label>OpenAI API 金鑰（sk-...）</label>
-    <input type="password" id="openaiKey" placeholder="sk-...">
-    <label>OpenAI 模型</label>
+<!-- 分欄填入預覽 -->
+<dialog id="splitDlg"><div class="dlg-in">
+  <h3>📥 依欄位分欄填入</h3>
+  <p class="hint">程式依「【欄位名稱】」等標題把文字分到各欄位。勾選要填入的欄位；已有內容的欄位會被取代，填入後可按「復原」。</p>
+  <div id="splitList"></div>
+  <div class="dlg-foot">
+    <button type="button" class="btn sub" data-action="split-close">取消</button>
+    <button type="button" class="btn" data-action="split-do">填入勾選的欄位</button>
+  </div>
+</div></dialog>
+
+<!-- 範例 -->
+<dialog id="sampleDlg" class="wide"><div class="dlg-in">
+  <h3>💡 範例</h3>
+  <p class="hint">範例只供參考，不會自動覆蓋你寫的內容。可以複製單一段落，或在該類型還沒寫時「整份套用」。</p>
+  <label for="sampleSelect">選擇範例</label>
+  <select id="sampleSelect"></select>
+  <div id="sampleBody" style="margin-top:12px"></div>
+  <div class="dlg-foot">
+    <button type="button" class="btn sub" data-action="sample-close">關閉</button>
+    <button type="button" class="btn sub" data-action="sample-word">⬇️ 下載範例 Word</button>
+    <button type="button" class="btn" data-action="sample-apply">整份套用到我的檔案</button>
+  </div>
+</div></dialog>
+
+<!-- 設定與備份 -->
+<dialog id="setDlg" class="wide"><div class="dlg-in">
+  <h3>⚙️ 設定與備份</h3>
+  <div class="set-sec" id="folderCard"></div>
+  <div class="set-sec">
+    <h3>💾 本機儲存</h3>
+    <dl class="kv" id="storeInfo"></dl>
+    <div class="actions">
+      <button type="button" class="btn sm" data-action="export-all">⬇️ 下載完整備份（含圖片）</button>
+      <button type="button" class="btn sub sm" data-action="import">⬆️ 匯入備份檔</button>
+      <input type="file" id="importInput" accept=".json,application/json" hidden>
+    </div>
+    <p class="hint">備份檔包含所有文字與佐證圖片，不含 API 金鑰。換電腦或手機、平板（無法選資料夾）時請用備份檔。</p>
+  </div>
+  <div class="set-sec">
+    <h3>⏪ 自動還原點</h3>
+    <p class="hint">每天自動留一份（保留 7 天）；刪除、套用範例、匯入、還原、載入資料夾前也會各留一份（保留 10 份）。</p>
+    <div id="snapshotList"></div>
+  </div>
+  <div class="set-sec" id="legacySec" hidden>
+    <h3>📦 舊版（2.0）資料</h3>
+    <div id="legacyList"></div>
+  </div>
+  <div class="set-sec">
+    <h3>🤖 AI 設定</h3>
+    <p class="hint">金鑰只存在這台電腦的瀏覽器，不會寫進資料夾或備份檔。</p>
+    <label for="openaiKey">OpenAI API 金鑰（sk-...）</label>
+    <input type="password" id="openaiKey" placeholder="sk-..." autocomplete="off">
+    <label for="openaiModel">OpenAI 模型</label>
     <select id="openaiModel">
       <option value="gpt-5.4-mini">gpt-5.4-mini（便宜快速，推薦）</option>
       <option value="gpt-5.5">gpt-5.5（品質最佳）</option>
@@ -341,9 +409,9 @@
       <option value="gpt-4o-mini">gpt-4o-mini（舊版備用）</option>
     </select>
     <input type="text" id="openaiModelCustom" placeholder="或自行輸入模型名稱（填了優先使用）" style="margin-top:6px">
-    <label>Google Gemini API 金鑰</label>
-    <input type="password" id="geminiKey" placeholder="AIza...">
-    <label>Gemini 模型</label>
+    <label for="geminiKey">Google Gemini API 金鑰</label>
+    <input type="password" id="geminiKey" placeholder="AIza..." autocomplete="off">
+    <label for="geminiModel">Gemini 模型</label>
     <select id="geminiModel">
       <option value="gemini-3.5-flash">gemini-3.5-flash（推薦）</option>
       <option value="gemini-3.1-pro">gemini-3.1-pro（品質最佳）</option>
@@ -351,31 +419,35 @@
       <option value="gemini-2.0-flash">gemini-2.0-flash（舊版備用）</option>
     </select>
     <input type="text" id="geminiModelCustom" placeholder="或自行輸入模型名稱（填了優先使用）" style="margin-top:6px">
-    <p style="font-size:12.5px;color:var(--muted);margin-top:14px;line-height:2">
-      🔑 取得金鑰：<br>
-      OpenAI → <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="font-weight:700">platform.openai.com/api-keys ↗</a><br>
-      Gemini → <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="font-weight:700">aistudio.google.com/apikey ↗</a>
-    </p>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeSettings()">關閉</button>
-      <button class="btn btn-primary" onclick="saveSettings()">儲存設定</button>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" id="keyRemember" style="width:auto"> 記住金鑰在這台電腦（共用電腦請不要勾選，關閉分頁後就會忘記）</label>
+    <p class="hint">取得金鑰：OpenAI → <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys ↗</a>　Gemini → <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey ↗</a></p>
+    <div class="actions"><button type="button" class="btn sm" data-action="ai-savecfg">儲存 AI 設定</button><button type="button" class="btn sub sm" data-action="ai-clearkey">清除金鑰</button></div>
+  </div>
+  <div class="set-sec">
+    <h3>🎨 外觀</h3>
+    <div class="actions" style="align-items:center">
+      <label style="margin:0">主題</label>
+      <select id="themeSel" style="width:auto"><option value="auto">跟隨系統</option><option value="light">淺色</option><option value="dark">深色</option></select>
+      <label style="display:flex;gap:6px;align-items:center;margin:0 0 0 12px"><input type="checkbox" id="bigText" style="width:auto"> 大字模式</label>
     </div>
   </div>
-</div>
-
-<!-- File manager modal -->
-<div class="overlay" id="fileOverlay">
-  <div class="modal">
-    <h3 id="fileModalTitle">📂 讀取檔案</h3>
-    <p class="mdesc" id="fileModalDesc">點選下方檔案進行操作。</p>
-    <div id="fileList"></div>
-    <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeFileModal()">關閉</button>
-    </div>
+  <div class="set-sec">
+    <h3>🧹 清除</h3>
+    <p class="hint">清除這台電腦上的全部內容（會先留一個還原點）。</p>
+    <button type="button" class="btn danger sm" data-action="clear-all">清除全部資料</button>
   </div>
-</div>
+  <div class="dlg-foot"><button type="button" class="btn" data-action="set-close">關閉</button></div>
+</div></dialog>
 
-<div id="toast"></div>
+<!-- 通用詢問 -->
+<dialog id="askDlg"><div class="dlg-in">
+  <h3 id="askTitle"></h3>
+  <div id="askBody"></div>
+  <div class="dlg-foot" id="askBtns"></div>
+</div></dialog>
+<dialog id="lightbox"><img id="lightImg" alt="放大檢視"></dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn" hidden></button></div>
 
 <script>
 /* =========================================================
@@ -708,876 +780,1614 @@ const BUILTIN_SAMPLES = {
   }
 };
 
-function loadBuiltinSample() {
-  const val = document.getElementById('sampleSelect').value;
-  if (!val) {
-    toast("請先選擇一個檔案範例");
+/* =========================================================
+   常數與小工具
+   ========================================================= */
+const APP_ID = 'lssh-portfolio-helper', APP_VERSION = '3.0';
+const IDB_NAME = 'lssh-portfolio-helper', IDB_VERSION = 1;
+const LS_KEY = 'lssh.lp.v3', UI_KEY = 'lssh.lp.ui', DEVICE_KEY = 'lssh.lp.device', AI_KEY = 'lp_settings';
+const FOLDER_FILE = '學習歷程資料.json', FOLDER_HIST = '學習歷程資料_歷史', FOLDER_PHOTOS = '學習歷程圖片';
+const FOLDER_HIST_RE = /^學習歷程資料_\d{8}\.json$/;
+const HIST_KEEP = 14, DAILY_SNAP_KEEP = 7, EVENT_SNAP_KEEP = 10;
+const TABS = ['write', 'ai', 'export'];
+const SAMPLE_DIR = '學習歷程示範/';
+const AI_TIMEOUT = 180000;
+
+const $ = id => document.getElementById(id);
+const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const uid = p => p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const pad = n => String(n).padStart(2, '0');
+const dayStamp = (d = new Date()) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+const minuteStamp = (d = new Date()) => `${dayStamp(d)}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+const fmtTime = t => { if (!t) return '—'; const d = new Date(t); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const safeName = s => String(s || '').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40) || '未命名';
+const str = v => typeof v === 'string' ? v : (v == null ? '' : String(v));
+const charLen = s => Array.from(str(s).replace(/\s/g, '')).length;
+const typeOf = id => TYPES.find(t => t.id === id) || TYPES[0];
+
+/* ---------- 提示訊息（可附「復原」） ---------- */
+function toast(msg, type = '', action = null) {
+  const t = $('toast'), b = $('toastBtn');
+  $('toastMsg').textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  if (action) { b.hidden = false; b.textContent = action.label; b.onclick = () => { t.classList.remove('show'); action.fn(); }; }
+  else { b.hidden = true; b.onclick = null; }
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), action ? 7000 : 2800);
+}
+/* ---------- 對話框 ---------- */
+function askChoice(title, html, buttons) {
+  return new Promise(resolve => {
+    const d = $('askDlg');
+    $('askTitle').textContent = title;
+    $('askBody').innerHTML = html;
+    const box = $('askBtns'); box.innerHTML = '';
+    let done = false;
+    const finish = v => { if (done) return; done = true; if (d.open) d.close(); resolve(v); };
+    buttons.forEach(b => {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'btn sm ' + (b.style === 'danger' ? 'danger' : b.style === 'plain' ? 'sub' : '');
+      el.textContent = b.label; el.onclick = () => finish(b.value);
+      box.appendChild(el);
+    });
+    d.onclose = () => finish(null);
+    d.showModal();
+  });
+}
+const confirmBox = async (title, html, ok = '確定', style = 'primary') => (await askChoice(title, html, [{ value: 'cancel', label: '取消', style: 'plain' }, { value: 'ok', label: ok, style }])) === 'ok';
+function showBanner(html, actions = []) {
+  $('bannerMsg').innerHTML = html;
+  const box = $('bannerBtns'); box.innerHTML = '';
+  actions.forEach(a => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn sm'; b.textContent = a.label; b.onclick = a.fn; box.appendChild(b); });
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'btn sub sm'; x.textContent = '稍後'; x.onclick = hideBanner; box.appendChild(x);
+  $('banner').classList.add('show');
+}
+function hideBanner() { $('banner').classList.remove('show'); }
+function downloadBlob(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+async function copyText(text, okMsg = '已複製') {
+  try { await navigator.clipboard.writeText(text); toast(okMsg); return true; }
+  catch {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch {}
+    ta.remove(); toast(ok ? okMsg : '複製失敗，請手動選取文字', ok ? '' : 'error'); return ok;
+  }
+}
+
+/* =========================================================
+   資料模型
+   profile = { name, targetDept }
+   docs[typeId] = { fields:{fid:text}, evTheme, photos:[{id,caption}], draft, draftName,
+                    ai:{ text, at, provider, model, mode, target, source } | null, updatedAt }
+   ========================================================= */
+let state = { profile: { name: '', targetDept: '' }, docs: {}, current: TYPES[0].id };
+const blankDoc = () => ({ fields: {}, evTheme: '', photos: [], draft: '', draftName: '', ai: null, updatedAt: 0 });
+function normalizeDoc(d) {
+  const o = blankDoc(); if (!d || typeof d !== 'object') return o;
+  if (d.fields && typeof d.fields === 'object') for (const [k, v] of Object.entries(d.fields)) o.fields[k] = str(v);
+  o.evTheme = str(d.evTheme); o.draft = str(d.draft); o.draftName = str(d.draftName);
+  o.photos = Array.isArray(d.photos) ? d.photos.filter(p => p && typeof p.id === 'string').map(p => ({ id: p.id, caption: str(p.caption) })) : [];
+  o.ai = d.ai && typeof d.ai === 'object' && str(d.ai.text) ? { ...d.ai, text: str(d.ai.text) } : null;
+  o.updatedAt = +d.updatedAt || 0;
+  return o;
+}
+function normalizeData(d) {
+  if (!d || typeof d !== 'object' || !d.docs || typeof d.docs !== 'object') return null;
+  const docs = {}; TYPES.forEach(t => { docs[t.id] = normalizeDoc(d.docs[t.id]); });
+  const p = d.profile || {};
+  return { profile: { name: str(p.name), targetDept: str(p.targetDept) }, docs, current: TYPES.some(t => t.id === d.current) ? d.current : TYPES[0].id, savedAt: d.savedAt || 0 };
+}
+const doc = (tid = state.current) => (state.docs[tid] = state.docs[tid] || blankDoc());
+const curType = () => typeOf(state.current);
+const docHas = d => !!d && (Object.values(d.fields || {}).some(v => str(v).trim()) || (d.photos || []).length > 0 || !!str(d.draft).trim() || !!(d.ai && d.ai.text));
+const filledCount = (t, d) => t.fields.filter(f => str(d?.fields?.[f.id]).trim()).length;
+function countsText(data) {
+  const docs = data?.docs || {};
+  const n = TYPES.filter(t => docHas(docs[t.id])).length;
+  const p = TYPES.reduce((s, t) => s + ((docs[t.id]?.photos) || []).length, 0);
+  return `${data?.profile?.name || '未填姓名'}：${n} 類有內容、${p} 張圖`;
+}
+const isEmptyAll = (data = state) => !str(data.profile?.name).trim() && !str(data.profile?.targetDept).trim() && !TYPES.some(t => docHas(data.docs?.[t.id]));
+const currentData = () => ({ profile: state.profile, docs: state.docs, current: state.current });
+
+/* ---------- 介面偏好 ---------- */
+let prefs = { theme: 'auto', big: false, tab: 'write', welcomed: false, aiMode: 'local', copyTarget: 'chatgpt', apiTarget: 'openai' };
+function loadPrefs() { try { Object.assign(prefs, JSON.parse(localStorage.getItem(UI_KEY) || '{}')); } catch {} }
+function savePrefs() { try { localStorage.setItem(UI_KEY, JSON.stringify(prefs)); } catch {} }
+function applyPrefs() {
+  const r = document.documentElement;
+  if (prefs.theme === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', prefs.theme);
+  r.classList.toggle('big', !!prefs.big);
+}
+
+/* =========================================================
+   畫面：導覽、頁首、分頁
+   ========================================================= */
+function renderNav() {
+  const box = $('navList');
+  let done = 0;
+  box.innerHTML = TYPES.map(t => {
+    const d = state.docs[t.id], n = filledCount(t, d), all = t.fields.length;
+    if (n === all) done++;
+    const cls = n === all ? 'full' : n ? 'part' : '';
+    const mark = n === all ? '●' : n ? '◐' : '○';
+    return `<button type="button" class="nav-item${t.id === state.current ? ' active' : ''}" data-type="${t.id}" title="${esc(t.title)}：已填 ${n}/${all} 欄">
+      <span class="ico">${t.icon}</span><span class="nm">${esc(t.title)}</span><span class="dot ${cls}">${mark} ${n}/${all}</span></button>`;
+  }).join('');
+  $('navSummary').textContent = `完成 ${done}/${TYPES.length}`;
+}
+function renderWho() {
+  const p = state.profile;
+  $('whoTag').textContent = (p.name || '未填姓名') + (p.targetDept ? '｜' + p.targetDept : '');
+}
+function renderHead() {
+  const t = curType(), d = doc(), n = filledCount(t, d);
+  const pill = n === t.fields.length ? '<span class="pill on">已填完</span>' : n ? `<span class="pill warn">已填 ${n}/${t.fields.length}</span>` : '<span class="pill">尚未開始</span>';
+  $('pageHead').innerHTML = `<div class="big-ico">${t.icon}</div><div><h2>${esc(t.title)} ${pill}</h2><p class="desc">${esc(t.desc)}</p></div>`;
+}
+function renderBadges() {
+  const t = curType(), d = doc();
+  $('badge-write').textContent = `${filledCount(t, d)}/${t.fields.length}`;
+  $('badge-ai').textContent = d.ai ? 'AI' : (d.draft.trim() ? '草稿' : '');
+  $('badge-export').textContent = filledCount(t, d) === t.fields.length ? '✓' : '';
+}
+let ui = { tab: 'write' };
+function setTab(tab) {
+  if (!TABS.includes(tab)) tab = 'write';
+  ui.tab = tab; prefs.tab = tab; savePrefs();
+  qsa('.tab').forEach(b => { const on = b.dataset.tab === tab; b.classList.toggle('active', on); b.setAttribute('aria-selected', on); });
+  qsa('.pane').forEach(p => p.classList.toggle('active', p.id === 'pane-' + tab));
+  renderPane();
+}
+function renderPane() {
+  if (ui.tab === 'write') renderWrite();
+  else if (ui.tab === 'ai') renderAIPane();
+  else renderExport();
+}
+function renderAll() {
+  $('studentName').value = state.profile.name;
+  $('targetDept').value = state.profile.targetDept;
+  renderNav(); renderWho(); renderHead(); renderBadges(); setTab(ui.tab);
+}
+function switchType(id) {
+  if (!TYPES.some(t => t.id === id) || id === state.current) return;
+  stopMic();
+  state.current = id; saveLocal();
+  renderNav(); renderHead(); renderBadges(); renderPane();
+  $('content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ---------- ① 填寫 ---------- */
+function renderWrite() {
+  const t = curType(), d = doc();
+  const empty = !filledCount(t, d);
+  let h = `<details class="principles"${empty ? ' open' : ''}><summary>📌 製作重點與原則（${t.principles.length} 點）</summary>
+    <ul>${t.principles.map(p => `<li>${esc(p)}</li>`).join('')}</ul>${t.tip ? `<div class="tip">💡 ${esc(t.tip)}</div>` : ''}</details>`;
+  t.fields.forEach((f, i) => {
+    const v = str(d.fields[f.id]);
+    const input = f.rows === 1
+      ? `<input type="text" id="f_${f.id}" data-field="${f.id}" value="${esc(v)}">`
+      : `<textarea id="f_${f.id}" data-field="${f.id}" rows="${f.rows}">${esc(v)}</textarea>`;
+    h += `<div class="step">
+      <div class="step-label"><span class="step-num${v.trim() ? ' done' : ''}" id="sn_${f.id}">${v.trim() ? '✓' : i + 1}</span><label for="f_${f.id}">${esc(f.label)}</label></div>
+      <p class="step-hint">${esc(f.hint)}</p>
+      <div class="field-wrap">${input}
+        <div class="mini-btns">
+          <button type="button" class="b-ai" title="AI 優化這一欄" data-action="ai-field" data-field="${f.id}">✨</button>
+          <button type="button" class="b-mic" title="語音輸入（再按一次停止）" data-action="mic" data-field="${f.id}">🎤</button>
+        </div></div>
+      <div class="charcount" id="cc_${f.id}"></div></div>`;
+  });
+  h += `<div class="btn-row"><button type="button" class="btn violet" data-action="ai-merged">✨ AI 優化整份</button>
+    <button type="button" class="btn sub" data-action="tab" data-tab="export">下一步：匯出 →</button></div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:24px 0 18px">
+    <h3 style="margin:0">📎 佐證資料</h3>
+    <p class="hint">上傳照片或圖表，每張都加上圖說（標出自己是哪一位）。圖片會自動壓縮後保存，連接資料夾時也會存成獨立圖片檔。</p>
+    <label class="hint" for="evTheme" style="display:block;font-weight:700;margin-top:10px">佐證主題</label>
+    <input type="text" id="evTheme" placeholder="如：全國科展現場解說" value="${esc(d.evTheme)}">
+    <div class="dropzone" data-drop="photo" data-action="pick-photo" style="margin-top:10px">📷 點這裡選擇圖片，或把圖片拖曳到這裡（可多張）</div>
+    <div id="photoWarn"></div>
+    <div class="photo-grid" id="photoGrid"></div>`;
+  $('pane-write').innerHTML = h;
+  t.fields.forEach(f => updateCount(f.id));
+  renderPhotos();
+}
+function updateCount(fid) {
+  const t = curType(), f = t.fields.find(x => x.id === fid), el = $('f_' + fid), cc = $('cc_' + fid);
+  if (!f || !el || !cc) return;
+  const n = charLen(el.value);
+  cc.textContent = f.limit ? `${n} / ${f.limit} 字` : (n ? `${n} 字` : '');
+  cc.classList.toggle('over', !!f.limit && n > f.limit);
+  const sn = $('sn_' + fid);
+  if (sn) { const i = t.fields.indexOf(f); sn.classList.toggle('done', !!el.value.trim()); sn.textContent = el.value.trim() ? '✓' : i + 1; }
+}
+
+/* ---------- 照片（IndexedDB 存 Blob，自動壓縮） ---------- */
+const photoURL = new Map(), memPhotos = new Map();
+async function compressImage(file, max = 1800, q = 0.86) {
+  let src;
+  try { src = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch { src = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('無法讀取圖片')); im.src = URL.createObjectURL(file); }); }
+  const w = src.width, h = src.height, s = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement('canvas'); c.width = Math.round(w * s); c.height = Math.round(h * s);
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(src, 0, 0, c.width, c.height);
+  const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
+  if (!blob) throw new Error('圖片壓縮失敗');
+  return blob;
+}
+const newPhotoId = tid => `${safeName(typeOf(tid).title)}_${minuteStamp()}_${Math.random().toString(36).slice(2, 6)}`;
+async function storePhoto(blob, id) {
+  if (store.mode === 'idb') await idbPut('photos', id, { id, blob, at: Date.now() });
+  else memPhotos.set(id, blob);
+  folder.photoDone.delete(id);
+  return id;
+}
+async function getPhotoBlob(id) {
+  if (memPhotos.has(id)) return memPhotos.get(id);
+  if (store.mode !== 'idb') return null;
+  try { const r = await idbGet('photos', id); return r?.blob || null; } catch { return null; }
+}
+async function photoSrc(id) {
+  if (!photoURL.has(id)) { const b = await getPhotoBlob(id); if (!b) return ''; photoURL.set(id, URL.createObjectURL(b)); }
+  return photoURL.get(id);
+}
+const blobToDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
+async function dataURLToBlob(u) { return (await fetch(u)).blob(); }
+function referencedPhotos(docs = state.docs) { const s = new Set(); Object.values(docs || {}).forEach(d => (d?.photos || []).forEach(p => s.add(p.id))); return s; }
+async function gcPhotos() {
+  if (store.mode !== 'idb') return;
+  try {
+    const keep = referencedPhotos();
+    (await idbAll('snapshots')).forEach(sn => referencedPhotos(sn.data?.docs).forEach(id => keep.add(id)));
+    const keys = await idbTx('photos', 'readonly', st => st.getAllKeys());
+    for (const k of keys || []) if (!keep.has(k)) await idbDel('photos', k);
+  } catch (e) { console.warn('圖片整理失敗', e); }
+}
+function renderPhotos() {
+  const g = $('photoGrid'); if (!g) return;
+  const t = curType(), arr = doc().photos;
+  g.innerHTML = arr.map((p, i) => `<div class="ph${p.caption.trim() ? '' : ' nocap'}">
+      <img data-pid="${esc(p.id)}" alt="佐證圖片 ${i + 1}" data-action="zoom">
+      <input type="text" data-cap="${i}" placeholder="圖說（標出自己是哪位）" value="${esc(p.caption)}">
+      <div class="ph-bar"><span class="n">圖 ${i + 1}</span>
+        <button type="button" data-action="ph-move" data-i="${i}" data-dir="-1" title="往前" ${i ? '' : 'disabled'}>←</button>
+        <button type="button" data-action="ph-move" data-i="${i}" data-dir="1" title="往後" ${i < arr.length - 1 ? '' : 'disabled'}>→</button>
+        <button type="button" data-action="ph-del" data-i="${i}" title="移除">🗑</button></div></div>`).join('');
+  qsa('img[data-pid]', g).forEach(async img => { const s = await photoSrc(img.dataset.pid); if (s) img.src = s; else img.alt = '（圖片遺失）'; });
+  const warn = [];
+  const noCap = arr.filter(p => !p.caption.trim()).length;
+  if (t.id === 'diverse_summary' && arr.length > 3) warn.push(`綜整心得限 3 張圖片，目前 ${arr.length} 張，建議做成組圖或刪減。`);
+  if (noCap) warn.push(`有 ${noCap} 張圖片還沒有圖說。`);
+  $('photoWarn').innerHTML = warn.length ? `<div class="warnbox">⚠️ ${warn.map(esc).join('<br>⚠️ ')}</div>` : '';
+}
+async function addPhotos(files) {
+  files = Array.from(files || []).filter(f => f.type.startsWith('image/'));
+  if (!files.length) { toast('沒有可用的圖片檔'); return; }
+  const tid = state.current, d = doc(tid); let n = 0;
+  toast(`圖片處理中（${files.length} 張）…`);
+  for (const f of files) {
+    try { const id = await storePhoto(await compressImage(f), newPhotoId(tid)); d.photos.push({ id, caption: '' }); n++; }
+    catch (e) { toast(`「${f.name}」無法加入：${e.message || e}`, 'error'); }
+  }
+  if (n) { touch(); if (state.current === tid) renderPhotos(); toast(`已加入 ${n} 張圖片` + (store.mode === 'idb' ? '' : '（此瀏覽器無法長期保存圖片，請記得下載備份）')); }
+}
+function undoDoc(msg, tid, before) {
+  toast(msg, '', { label: '復原', fn: () => { state.docs[tid] = before; touch(); if (state.current === tid) { renderHead(); renderBadges(); renderPane(); } renderNav(); toast('已復原'); } });
+}
+const photoInput = document.createElement('input'); photoInput.type = 'file'; photoInput.accept = 'image/*'; photoInput.multiple = true; photoInput.hidden = true;
+photoInput.addEventListener('change', () => { const f = Array.from(photoInput.files || []); photoInput.value = ''; addPhotos(f); });
+
+/* ---------- ② 草稿與 AI ---------- */
+function renderAIPane() {
+  const t = curType(), d = doc();
+  const len = charLen(d.draft), paras = d.draft.split(/\n+/).filter(p => p.trim()).length;
+  let h = `<h3 style="margin-top:16px">🔎 上傳已完成的草稿，讓 AI 全面分析</h3>
+    <p class="hint">支援 PDF、Word（.docx）。程式只擷取文字；<b>原始檔案不會保存</b>，也不會寫進資料夾或備份。掃描成圖片的 PDF 無法擷取，請直接貼上文字。</p>
+    <div class="dropzone" data-drop="draft" data-action="pick-draft">📄 點這裡選擇檔案，或把 PDF／Word 拖曳到這裡</div>
+    <label class="hint" for="draftText" style="display:flex;justify-content:space-between;font-weight:700;margin-top:12px">
+      <span>📝 草稿文字（可直接貼上或修改）${d.draftName ? `<span class="pill">來源：${esc(d.draftName)}</span>` : ''}</span><span id="draftInfo">${len ? `約 ${len} 字、${paras} 段` : ''}</span></label>
+    <textarea id="draftText" rows="9" placeholder="上傳後擷取的文字會出現在這裡，也可以直接貼上你的草稿…">${esc(d.draft)}</textarea>
+    <div class="btn-row">
+      <button type="button" class="btn violet" data-action="ai-draft">🤖 AI 分析草稿${d.photos.length ? `（含 ${d.photos.length} 張圖）` : ''}</button>
+      <button type="button" class="btn sub" data-action="split-draft">📥 依欄位分欄填入「① 填寫」</button>
+      ${d.draft ? '<button type="button" class="btn sub" data-action="draft-clear">清除草稿</button>' : ''}
+    </div>
+    <p class="hint">分欄填入會找草稿裡「【${esc(t.fields[0].label)}】」這類欄位標題；草稿沒有標題時，請先用「AI 分析草稿」，AI 回覆的最後會整理好分欄草稿。</p>
+    <hr style="border:none;border-top:1px solid var(--line);margin:22px 0 16px">
+    <h3 style="margin:0">✨ 依「① 填寫」的內容優化整份</h3>
+    <p class="hint">把目前各欄位合併後交給 AI 優化；AI 會用欄位標題分段回覆，可以直接分欄填回。</p>
+    <div class="btn-row"><button type="button" class="btn violet" data-action="ai-merged">✨ AI 優化整份</button></div>`;
+  h += `<div class="outbox" id="aiOutBox">${d.ai ? `
+    <hr style="border:none;border-top:1px solid var(--line);margin:22px 0 16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+      <h3 style="margin:0">📤 最近一次 AI 輸出</h3>
+      <span class="hint">${esc(d.ai.targetLabel || '')}　${esc(fmtTime(d.ai.at))}　${esc(aiSourceText(d.ai))}</span></div>
+    <textarea id="aiOutText" rows="12">${esc(d.ai.text)}</textarea>
+    <div class="btn-row">
+      <button type="button" class="btn sub sm" data-action="aiout-copy">📋 複製</button>
+      <button type="button" class="btn sub sm" data-action="aiout-split">📥 依欄位分欄填入</button>
+      <button type="button" class="btn sub sm" data-action="aiout-clear">✕ 清除</button></div>
+    <p class="hint">只保留最近一次輸出。</p>` : ''}</div>`;
+  $('pane-ai').innerHTML = h;
+}
+function aiSourceText(a) {
+  if (!a) return '';
+  if (a.mode === 'local') return '本機規則';
+  if (a.mode === 'copy') return `貼回自 ${({ chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude' })[a.provider] || '外部網站'}`;
+  if (a.mode === 'api') return `${a.provider === 'gemini' ? 'Gemini' : 'OpenAI'} ${a.model || ''}`;
+  if (a.mode === 'legacy') return '舊版 2.0';
+  return '';
+}
+function updateDraftInfo() {
+  const d = doc(), el = $('draftInfo'); if (!el) return;
+  const len = charLen(d.draft), paras = d.draft.split(/\n+/).filter(p => p.trim()).length;
+  el.textContent = len ? `約 ${len} 字、${paras} 段` : '';
+}
+const draftInput = document.createElement('input'); draftInput.type = 'file'; draftInput.accept = '.pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain'; draftInput.hidden = true;
+draftInput.addEventListener('change', () => { const f = draftInput.files?.[0]; draftInput.value = ''; if (f) handleDraftFile(f); });
+async function extractPDF(file) {
+  if (!window.pdfjsLib) throw new Error('PDF 擷取元件未載入，請檢查網路');
+  const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+  let out = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const c = await (await pdf.getPage(i)).getTextContent();
+    let line = '', lastY = null;
+    c.items.forEach(it => { const y = it.transform ? it.transform[5] : null; if (lastY != null && y != null && Math.abs(y - lastY) > 2) { out += line + '\n'; line = ''; } line += it.str; lastY = y; });
+    out += line + '\n\n';
+  }
+  return out;
+}
+async function handleDraftFile(file) {
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (ext === 'doc') { toast('舊版 .doc 無法讀取，請在 Word 另存為 .docx 或 PDF', 'error'); return; }
+  const tid = state.current;
+  toast('⏳ 正在擷取文字…');
+  let text = '';
+  try {
+    if (ext === 'pdf') text = await extractPDF(file);
+    else if (ext === 'docx') { if (!window.mammoth) throw new Error('Word 擷取元件未載入，請檢查網路'); text = (await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value; }
+    else text = await file.text();
+  } catch (e) { toast('擷取失敗：' + (e.message || e) + '（可直接貼上文字）', 'error'); return; }
+  text = str(text).replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  if (!text) { toast('沒有擷取到文字（可能是掃描圖檔的 PDF），請直接貼上草稿', 'error'); return; }
+  const d = doc(tid), before = clone(d);
+  if (d.draft.trim()) {
+    const c = await askChoice('草稿欄已經有內容', `<p>新擷取的「${esc(file.name)}」約 ${charLen(text)} 字。要怎麼處理？</p>`,
+      [{ value: 'replace', label: '取代原本草稿', style: 'danger' }, { value: 'append', label: '接在後面', style: 'primary' }, { value: null, label: '取消', style: 'plain' }]);
+    if (!c) return;
+    d.draft = c === 'append' ? d.draft.trimEnd() + '\n\n' + text : text;
+  } else d.draft = text;
+  d.draftName = file.name;
+  touch(); if (state.current === tid) { renderBadges(); renderAIPane(); }
+  undoDoc(`已擷取「${file.name}」約 ${charLen(text)} 字（原檔不保存）`, tid, before);
+}
+
+/* ---------- 分欄填入 ---------- */
+const normLabel = s => str(s).replace(/[\s【】▍#*：:（）()「」『』.。、,，\-—_~>]/g, '').replace(/^\d+/, '').toLowerCase();
+function labelVariants(f) {
+  const vs = new Set([f.label, f.label.split('（')[0], f.label.replace(/^[A-Za-z][.．]\s*/, ''), f.label.replace(/^[A-Za-z][.．]\s*/, '').split('（')[0]]);
+  return [...vs].map(normLabel).filter(v => v.length >= 2).sort((a, b) => b.length - a.length);
+}
+function splitByFields(text, t) {
+  const lines = str(text).split('\n');
+  const strict = t.fields.some(f => labelVariants(f).some(v => lines.some(l => /【[^】]+】/.test(l) && normLabel((l.match(/【([^】]+)】/) || [])[1]) === v)));
+  const found = {}; let cur = null, buf = [];
+  const flush = () => { if (cur) { const txt = buf.join('\n').replace(/^\s*\n+|\s+$/g, '').replace(/\*\*(.+?)\*\*/g, '$1'); if (txt && !/^（?\s*草稿中沒有相關內容\s*）?$/.test(txt.trim())) found[cur] = txt; } buf = []; };
+  for (const line of lines) {
+    let hit = null, rest = '';
+    if (line.trim().length <= 60) {
+      let head = line, tail = '';
+      if (strict) { const m = line.match(/^\s*【([^】]+)】\s*(.*)$/); if (m) { head = m[1]; tail = m[2]; } else head = null; }
+      else { const m = line.match(/^(.{2,40}?)[：:]\s*(.+)$/); if (m && !/^\s*【/.test(line)) { head = m[1]; tail = m[2]; } }
+      if (head != null) {
+        const nh = normLabel(head);
+        for (const f of t.fields) {
+          if (labelVariants(f).some(v => nh === v || (nh.startsWith(v) && nh.length <= v.length + 4))) { hit = f.id; rest = tail; break; }
+        }
+        if (!hit && !strict && tail) { // 整行沒有冒號後內容時再試一次
+          const nh2 = normLabel(line);
+          for (const f of t.fields) if (labelVariants(f).some(v => nh2 === v)) { hit = f.id; rest = ''; break; }
+        }
+      }
+      if (!hit && !strict) { const nh2 = normLabel(line); if (nh2) for (const f of t.fields) if (labelVariants(f).some(v => nh2 === v)) { hit = f.id; rest = ''; break; } }
+    }
+    if (hit) { flush(); cur = hit; if (rest.trim()) buf.push(rest); }
+    else if (cur) buf.push(line);
+  }
+  flush();
+  return found;
+}
+let splitPending = null;
+function openSplit(text, srcLabel) {
+  const t = curType(), d = doc();
+  const found = splitByFields(text, t);
+  const ids = Object.keys(found);
+  if (!ids.length) {
+    askChoice('找不到欄位標題', `<p>${esc(srcLabel)}裡沒有找到這一類的欄位標題，例如：</p><p>${t.fields.slice(0, 3).map(f => `<code>【${esc(f.label)}】</code>`).join('<br>')}</p><p>可以先用「🤖 AI 分析草稿」，AI 會在回覆最後整理好分欄草稿；或自己在草稿中加上這些標題。</p>`, [{ value: 'ok', label: '知道了', style: 'primary' }]);
     return;
   }
-  const rawSample = BUILTIN_SAMPLES[val];
-  if (!rawSample) return;
-
-  // 1. 填寫學生姓名與目標校系
-  document.getElementById('studentName').value = rawSample.studentName || '';
-  document.getElementById('targetDept').value = rawSample.targetDept || '';
-
-  // 2. 複製資料到 bigData
-  bigData[val] = JSON.parse(JSON.stringify(rawSample.data));
-
-  // 3. 同時產生完整草稿文字，作為示範 AI 優化時的輸入
-  const fieldsConfig = TYPES.find(t => t.id === val).fields;
-  let draftText = `學習歷程檔案示範草稿\n\n【基本資料】\n姓名：${rawSample.studentName}\n目標校系：${rawSample.targetDept}\n\n`;
-  fieldsConfig.forEach(f => {
-    const fval = rawSample.data[f.id] || '';
-    draftText += `【${f.label}】\n${fval}\n\n`;
-  });
-  bigData[val].__draft = draftText.trim();
-  bigData[val].__draftName = rawSample.filename;
-
-  // 4. 切換到該檔案類型分頁並渲染
-  switchType(val);
-  toast(`已載入「${TYPES.find(t => t.id === val).title}」完整示範資料與草稿！`);
+  splitPending = { tid: t.id, found };
+  $('splitList').innerHTML = t.fields.map(f => {
+    if (!found[f.id]) return `<div class="split-row" style="opacity:.55"><div class="hd">— ${esc(f.label)}</div><div class="tx">（沒有找到）</div></div>`;
+    const had = str(d.fields[f.id]).trim();
+    return `<div class="split-row"><label class="hd" style="margin:0"><input type="checkbox" data-split="${f.id}" checked style="width:auto"> ${esc(f.label)} <span class="pill ${had ? 'warn' : 'on'}">${had ? '會取代原有內容' : '空白欄位'}</span> <span class="hint">${charLen(found[f.id])} 字</span></label><div class="tx">${esc(found[f.id])}</div></div>`;
+  }).join('');
+  $('splitDlg').showModal();
+}
+function doSplit() {
+  if (!splitPending) return;
+  const { tid, found } = splitPending, d = doc(tid), before = clone(d);
+  const ids = qsa('[data-split]', $('splitList')).filter(c => c.checked).map(c => c.dataset.split);
+  $('splitDlg').close(); splitPending = null;
+  if (!ids.length) { toast('沒有勾選任何欄位'); return; }
+  ids.forEach(id => { d.fields[id] = found[id]; });
+  touch(); renderNav(); renderHead(); renderBadges(); setTab('write');
+  undoDoc(`已填入 ${ids.length} 個欄位`, tid, before);
 }
 
-function downloadSampleWord() {
-  const val = document.getElementById('sampleSelect').value;
-  if (!val) {
-    toast("請先選擇一個檔案範例");
-    return;
+/* ---------- ③ 匯出 ---------- */
+function gatherType(t, d, withHead = true) {
+  let out = '';
+  if (withHead) {
+    out = `【${t.title}】\n`;
+    const p = state.profile;
+    if (p.name) out += `學生：${p.name}　`;
+    if (p.targetDept) out += `目標校系：${p.targetDept}`;
+    out += '\n\n';
   }
-  const sample = BUILTIN_SAMPLES[val];
-  if (!sample) return;
-
-  const filename = sample.filename;
-  const path = `範例檔案/學習歷程/${filename}`;
-  const link = document.createElement("a");
-  link.href = path;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-let currentType = TYPES[0].id;
-
-/* ---------- 建立導覽 ---------- */
-function buildNav(){
-  const nav=document.getElementById('navList');
-  nav.innerHTML='';
-  TYPES.forEach((t,i)=>{
-    const d=document.createElement('div');
-    d.className='nav-item'+(t.id===currentType?' active':'');
-    d.onclick=()=>switchType(t.id);
-    d.innerHTML=`<span class="ico">${t.icon}</span><span>${t.title}</span><span class="num">${i+1}</span>`;
-    nav.appendChild(d);
-  });
-}
-
-/* ---------- 渲染分頁內容 ---------- */
-function renderPage(){
-  const t=TYPES.find(x=>x.id===currentType);
-  const c=document.getElementById('content');
-  let html=`
-    <div class="card">
-      <div class="page-head">
-        <div class="big-ico">${t.icon}</div>
-        <div>
-          <h2>${t.title}</h2>
-          <p class="desc">${t.desc}</p>
-        </div>
-      </div>
-      <div class="principles">
-        <h3>📌 製作重點與原則</h3>
-        <ul>${t.principles.map(p=>`<li>${p}</li>`).join('')}</ul>
-        ${t.tip?`<div class="tip">💡 ${t.tip}</div>`:''}
-      </div>
-  `;
-  t.fields.forEach((f,i)=>{
-    const limitAttr=f.limit?`data-limit="${f.limit}"`:'';
-    const input = f.rows===1
-      ? `<input type="text" id="f_${t.id}_${f.id}" oninput="updateCount('${t.id}','${f.id}')" ${limitAttr}>`
-      : `<textarea id="f_${t.id}_${f.id}" rows="${f.rows}" oninput="updateCount('${t.id}','${f.id}')" ${limitAttr}></textarea>`;
-    html+=`
-      <div class="step">
-        <div class="step-label"><span class="step-num">${i+1}</span>${f.label}</div>
-        <p class="step-hint">${f.hint}</p>
-        <div class="field-wrap">
-          ${input}
-          <div class="mini-btns">
-            <button class="b-mic" title="語音輸入" onclick="speak('f_${t.id}_${f.id}')">🎤</button>
-            <button class="b-ai" title="AI 優化此欄" onclick="openAI('${t.id}','${f.id}')">✨</button>
-            <button class="b-clr" title="清除" onclick="clearField('f_${t.id}_${f.id}')">✕</button>
-          </div>
-        </div>
-        ${f.limit?`<div class="charcount" id="cc_${t.id}_${f.id}">0 / ${f.limit} 字</div>`:''}
-      </div>`;
-  });
-  html+=`
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="mergeType()">🔗 合併本檔內容</button>
-        <button class="btn btn-violet" onclick="openAI('${t.id}','__merged__')">✨ AI 優化整份</button>
-        <button class="btn btn-ghost" onclick="exportWord()">📝 下載 Word</button>
-        <button class="btn btn-amber" onclick="printPDF()">🖨️ 列印／下載 PDF</button>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:8px">📝 Word：可再編輯的文件檔。🖨️ PDF：整合此頁所有文字與佐證圖片，於列印視窗選「儲存為 PDF」即可下載完整檔案。</p>
-      <div class="merged" id="merged_${t.id}"></div>
-    </div>`;
-
-  // 佐證資料卡（通用）
-  html+=`
-    <div class="card">
-      <div class="page-head"><div class="big-ico">📎</div><div>
-        <h2 style="font-size:20px">佐證資料</h2>
-        <p class="desc">上傳照片或圖表並加上圖說，輔助說明你的成果。</p>
-      </div></div>
-      <div class="ev-row">
-        <div class="step"><div class="step-label" style="font-size:14px">佐證主題</div>
-          <input type="text" id="ev_theme_${t.id}" placeholder="如：全國科展現場解說"></div>
-      </div>
-      <div class="filebox">📷 點擊選擇圖片（可多張）
-        <input type="file" id="ev_file_${t.id}" multiple accept="image/*" onchange="handlePhotos('${t.id}')">
-      </div>
-      <div class="photo-grid" id="photos_${t.id}"></div>
-    </div>`;
-
-  // 草稿分析卡
-  html+=`
-    <div class="card">
-      <div class="page-head"><div class="big-ico">🔎</div><div>
-        <h2 style="font-size:20px">上傳已完成草稿　AI 全面分析</h2>
-        <p class="desc">上傳你已寫好的 PDF / Word 檔，自動擷取文字成草稿，再由 AI 依「${t.title}」的製作原則，連同上方佐證圖片一起診斷並給改寫建議。</p>
-      </div></div>
-      <div class="filebox" id="draftBox_${t.id}">📄 點擊選擇你已完成的檔案（支援 PDF、Word .docx）
-        <input type="file" id="draft_file_${t.id}" accept=".pdf,.docx,.doc" onchange="handleDraftUpload('${t.id}')">
-        <div id="draftStatus_${t.id}" style="margin-top:8px;font-size:12.5px;color:var(--teal-d)"></div>
-      </div>
-      <div id="draftArea_${t.id}" style="display:none;margin-top:14px">
-        <div class="step-label" style="font-size:14px;justify-content:space-between">
-          <span>📝 草稿文字（可編輯）</span>
-          <button class="btn btn-ghost" style="padding:5px 12px;font-size:12.5px" onclick="toggleDraftView('${t.id}')" id="draftToggle_${t.id}">🔍 縮寫檢視全貌</button>
-        </div>
-        <div id="draftOutline_${t.id}" style="display:none;background:#f7fdfc;border:1px solid var(--teal-l);border-radius:10px;padding:14px;margin-bottom:10px;font-size:13px"></div>
-        <textarea id="draft_${t.id}" rows="8" placeholder="擷取的文字會出現在這裡，你也可以直接貼上草稿…" oninput="bigData['${t.id}']=bigData['${t.id}']||{};bigData['${t.id}'].__draft=this.value"></textarea>
-        <div class="btn-row" style="margin-top:10px">
-          <button class="btn btn-violet" onclick="openAI('${t.id}','__draft__')">🤖 AI 分析草稿（文字＋圖片）</button>
-        </div>
-        <p style="font-size:12px;color:var(--muted);margin-top:8px">分析完成後，可在分析視窗按「📋 複製」或「⬇️ 匯出到草稿下方」，輸出文字會出現在下方輸出框，再依「分項重構藍圖」填入上方各步驟欄位逐欄優化。</p>
-        <div id="draftOutput_${t.id}"></div>
-      </div>
-    </div>`;
-
-  c.innerHTML=html;
-  restoreFields(t);
-  renderPhotos(t.id);
-  restoreDraft(t.id);
-}
-
-function switchType(id){
-  saveCurrentFields();
-  currentType=id;
-  buildNav();
-  renderPage();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-/* ---------- 字數統計 ---------- */
-function updateCount(tid,fid){
-  const el=document.getElementById(`f_${tid}_${fid}`);
-  const cc=document.getElementById(`cc_${tid}_${fid}`);
-  if(!cc)return;
-  const limit=parseInt(el.dataset.limit||0);
-  const n=el.value.length;
-  cc.textContent=`${n} / ${limit} 字`;
-  cc.classList.toggle('over',n>limit);
-}
-
-function clearField(id){
-  if(confirm('確定清除此欄位？')) document.getElementById(id).value='';
-}
-
-/* ---------- 語音輸入 ---------- */
-function speak(id){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('此瀏覽器不支援語音辨識（建議用 Chrome）');return;}
-  const r=new SR();r.lang='zh-TW';r.continuous=false;r.interimResults=false;
-  toast('🎤 請開始說話…');
-  r.onresult=e=>{
-    const txt=e.results[0][0].transcript;
-    const el=document.getElementById(id);
-    el.value=el.value?el.value+txt:txt;
-    el.dispatchEvent(new Event('input'));
-  };
-  r.onerror=()=>toast('語音辨識失敗，請再試一次');
-  r.start();
-}
-
-/* ---------- 合併 / 匯出 ---------- */
-function gatherType(t){
-  let out=`【${t.title}】\n`;
-  const name=val('studentName'), dept=val('targetDept');
-  if(name)out+=`學生：${name}　`;
-  if(dept)out+=`目標校系：${dept}`;
-  out+='\n\n';
-  t.fields.forEach(f=>{
-    const v=val(`f_${t.id}_${f.id}`);
-    if(v)out+=`▍${f.label}\n${v}\n\n`;
-  });
+  t.fields.forEach(f => { const v = str(d.fields[f.id]).trim(); if (v) out += `【${f.label}】\n${v}\n\n`; });
   return out.trim();
 }
-function mergeType(){
-  const t=TYPES.find(x=>x.id===currentType);
-  const text=gatherType(t);
-  const box=document.getElementById('merged_'+t.id);
-  box.innerHTML=`<label style="font-weight:700;font-size:14px">合併結果（可再編輯）</label>
-    <textarea id="mergedText_${t.id}">${text}</textarea>`;
-  toast('已合併本檔內容');
-}
-/* 收集此頁「已修飾」內容（欄位值 = AI 套用後的最新文字）＋ 佐證圖片 */
-function collectContent(t){
-  const sections=t.fields.map(f=>({label:f.label,text:val(`f_${t.id}_${f.id}`)})).filter(s=>s.text.trim());
-  const photos=(photoStore[t.id]||[]).slice();
-  const evTheme=val('ev_theme_'+t.id);
-  return {sections,photos,evTheme,name:val('studentName')||'學生',dept:val('targetDept')};
-}
-function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-/* 產生整合 HTML（Word / PDF 共用），含文字與圖片 */
-async function buildDocHTML(t,forPrint){
-  const d=collectContent(t);
-  const today=new Date().toLocaleDateString('zh-TW');
-  let body=`<h1 style="text-align:center;color:#0f766e;border-bottom:3px solid #0d9488;padding-bottom:10px">${t.icon} ${t.title}</h1>
-    <p style="text-align:center;color:#555;font-size:14px">學生：${esc(d.name)}${d.dept?'　|　目標校系：'+esc(d.dept):''}　|　${today}</p>`;
-  d.sections.forEach((s,i)=>{
-    body+=`<h2 style="color:#0d9488;font-size:17px;border-left:5px solid #0d9488;padding-left:10px;margin-top:22px">${i+1}. ${esc(s.label)}</h2>
-      <p style="font-size:15px;line-height:1.9;white-space:pre-wrap;text-align:justify">${esc(s.text)}</p>`;
+function renderExport() {
+  const t = curType(), d = doc(), p = state.profile;
+  const items = [[!!p.name.trim(), '姓名（左側基本資料）', 'profile'], [!!p.targetDept.trim(), '目標校系（左側基本資料，AI 會依此給建議）', 'profile', true]];
+  t.fields.forEach(f => {
+    const v = str(d.fields[f.id]), n = charLen(v);
+    if (f.limit && n > f.limit) items.push([false, `${f.label}：${n} 字，超過上限 ${f.limit} 字`, f.id]);
+    else items.push([!!v.trim(), f.label + (v.trim() ? `（${n} 字）` : ''), f.id]);
   });
-  if(d.photos.length){
-    // 量測每張圖原始尺寸，寬度上限頁寬（不放大），讓 Word/PDF 不超出頁面
-    const PAGE_W=620; // 約等於 A4 內容寬度
-    const sizes=await Promise.all(d.photos.map(p=>measureImg(p.src)));
-    body+=`<h2 style="color:#0d9488;font-size:17px;border-left:5px solid #0d9488;padding-left:10px;margin-top:24px">📎 佐證資料${d.evTheme?'：'+esc(d.evTheme):''}</h2>`;
-    d.photos.forEach((p,i)=>{
-      const nat=sizes[i]||{w:PAGE_W};
-      const w=Math.min(nat.w||PAGE_W, PAGE_W);
-      body+=`<div style="margin:14px 0;text-align:center;page-break-inside:avoid">
-        <img src="${p.src}" width="${w}" style="width:${w}px;max-width:100%;height:auto;border:1px solid #ccc;border-radius:6px">
-        <div style="font-size:13px;color:#555;margin-top:6px">圖 ${i+1}：${esc(p.caption||'')}</div></div>`;
-    });
+  const noCap = d.photos.filter(x => !x.caption.trim()).length;
+  items.push([d.photos.length ? !noCap : false, d.photos.length ? (noCap ? `佐證圖片：${noCap} 張沒有圖說` : `佐證圖片 ${d.photos.length} 張，都有圖說`) : '佐證圖片（選用）', 'photo', !d.photos.length]);
+  if (t.id === 'diverse_summary' && d.photos.length > 3) items.push([false, `綜整心得限 3 張圖片，目前 ${d.photos.length} 張`, 'photo']);
+  const need = items.filter(i => !i[0] && !i[3]).length;
+  $('pane-export').innerHTML = `
+    <h3 style="margin-top:16px">✅ 完整度檢查 ${need ? `<span class="pill warn">還有 ${need} 項</span>` : '<span class="pill on">都完成了</span>'}</h3>
+    <ul class="checklist">${items.map(([ok, label, go, opt]) => `<li><span class="st">${ok ? '✅' : opt ? '⏳' : '⬜'}</span><span style="flex:1">${esc(label)}</span>${ok ? '' : `<button type="button" class="btn sub sm" data-action="goto" data-go="${go}">前往</button>`}</li>`).join('')}</ul>
+    <div class="btn-row">
+      <button type="button" class="btn" data-action="word">📝 下載 Word</button>
+      <button type="button" class="btn amber" data-action="print">🖨️ 列印／存成 PDF</button>
+      <button type="button" class="btn sub" data-action="copyall">📋 複製全文</button>
+    </div>
+    <p class="hint">Word：可再編輯（含圖片）。PDF：在列印視窗選「儲存為 PDF」。圖片依原始比例縮放，不會超出頁面。</p>
+    <h3 style="margin-top:18px">👀 全文預覽</h3>
+    <div class="preview">${esc(gatherType(t, d)) || '（還沒有內容）'}</div>`;
+}
+function gotoTarget(go) {
+  if (go === 'profile') { $(state.profile.name.trim() ? 'targetDept' : 'studentName').focus(); return; }
+  setTab('write');
+  setTimeout(() => {
+    const el = go === 'photo' ? $('photoGrid') : $('f_' + go);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (el.focus && go !== 'photo') el.focus({ preventScroll: true });
+  }, 50);
+}
+function measureImg(src) {
+  return new Promise(res => { const im = new Image(); im.onload = () => res({ w: im.naturalWidth, h: im.naturalHeight }); im.onerror = () => res(null); im.src = src; });
+}
+async function buildDocHTML(t) {
+  const d = doc(t.id), p = state.profile;
+  const today = new Date().toLocaleDateString('zh-TW');
+  let body = `<h1 style="text-align:center;color:#0f766e;border-bottom:3px solid #0d9488;padding-bottom:10px">${t.icon} ${esc(t.title)}</h1>
+    <p style="text-align:center;color:#555;font-size:14px">學生：${esc(p.name || '學生')}${p.targetDept ? '　|　目標校系：' + esc(p.targetDept) : ''}　|　${today}</p>`;
+  t.fields.filter(f => str(d.fields[f.id]).trim()).forEach((f, i) => {
+    body += `<h2 style="color:#0d9488;font-size:17px;border-left:5px solid #0d9488;padding-left:10px;margin-top:22px">${i + 1}. ${esc(f.label)}</h2>
+      <p style="font-size:15px;line-height:1.9;white-space:pre-wrap;text-align:justify">${esc(d.fields[f.id].trim())}</p>`;
+  });
+  if (d.photos.length) {
+    const PAGE_W = 620;
+    body += `<h2 style="color:#0d9488;font-size:17px;border-left:5px solid #0d9488;padding-left:10px;margin-top:24px">📎 佐證資料${d.evTheme ? '：' + esc(d.evTheme) : ''}</h2>`;
+    for (let i = 0; i < d.photos.length; i++) {
+      const ph = d.photos[i], b = await getPhotoBlob(ph.id); if (!b) continue;
+      const src = await blobToDataURL(b), nat = await measureImg(src);
+      const w = Math.min(nat?.w || PAGE_W, PAGE_W);
+      body += `<div style="margin:14px 0;text-align:center;page-break-inside:avoid"><img src="${src}" width="${w}" style="width:${w}px;max-width:100%;height:auto;border:1px solid #ccc;border-radius:6px">
+        <div style="font-size:13px;color:#555;margin-top:6px">圖 ${i + 1}：${esc(ph.caption)}</div></div>`;
+    }
   }
-  const head=`<meta charset="utf-8"><style>
-    body{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:#1f3a3d;max-width:760px;margin:0 auto;padding:30px}
-    img{max-width:100%;height:auto}
-    @media print{body{padding:0}}</style>`;
-  return `<!DOCTYPE html><html><head>${head}<title>${esc(t.title)}_${esc(d.name)}</title></head><body>${body}${forPrint?'':''}</body></html>`;
+  const head = `<meta charset="utf-8"><style>body{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:#1f3a3d;max-width:760px;margin:0 auto;padding:30px}img{max-width:100%;height:auto}@media print{body{padding:0}}</style>`;
+  return { head, body, title: `${t.title}_${p.name || '學生'}` };
 }
-/* 量測 base64 圖片原始尺寸 */
-function measureImg(src){
-  return new Promise(res=>{
-    try{ const im=new Image();
-      im.onload=()=>res({w:im.naturalWidth,h:im.naturalHeight});
-      im.onerror=()=>res(null); im.src=src;
-    }catch(e){res(null);}
-  });
+async function exportWord() {
+  const t = curType(), d = doc();
+  if (!filledCount(t, d) && !d.photos.length) { toast('這一類還沒有內容可以匯出'); return; }
+  const x = await buildDocHTML(t);
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head>${x.head}<title>${esc(x.title)}</title></head><body>${x.body}</body></html>`;
+  downloadBlob(new Blob(['﻿', html], { type: 'application/msword' }), safeName(x.title) + '.doc');
+  toast('已下載 Word 檔');
 }
-
-/* 下載 Word（.doc，可在 Word 開啟並再編輯，支援中文與圖片） */
-async function exportWord(){
-  const t=TYPES.find(x=>x.id===currentType);
-  const d=collectContent(t);
-  if(!d.sections.length){toast('此頁尚無內容可匯出');return;}
-  const html=await buildDocHTML(t,false);
-  const pre='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">';
-  const doc=pre+html.replace(/^<!DOCTYPE html><html>/,'').replace(/<\/html>$/,'')+'</html>';
-  const blob=new Blob(['﻿',doc],{type:'application/msword'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`${t.title}_${d.name}.doc`;a.click();
-  toast('✓ 已下載 Word 檔');
-}
-
-/* 列印／下載 PDF：整合文字＋圖片，開列印視窗（可選「儲存為 PDF」） */
-async function printPDF(){
-  const t=TYPES.find(x=>x.id===currentType);
-  const d=collectContent(t);
-  if(!d.sections.length && !d.photos.length){toast('此頁尚無內容可列印');return;}
-  const w=window.open('','_blank');
-  if(!w){toast('請允許彈出視窗以列印 PDF');return;}
-  const docHtml=await buildDocHTML(t,true);
-  w.document.write(docHtml);
+async function printPDF() {
+  const t = curType(), d = doc();
+  if (!filledCount(t, d) && !d.photos.length) { toast('這一類還沒有內容可以列印'); return; }
+  const w = window.open('', '_blank');
+  if (!w) { toast('請允許彈出視窗以列印 PDF', 'error'); return; }
+  w.document.write('<p style="font-family:sans-serif;padding:20px">準備中…</p>');
+  const x = await buildDocHTML(t);
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html><head>${x.head}<title>${esc(x.title)}</title></head><body>${x.body}<script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);
   w.document.close();
-  // 等圖片載入完成再列印
-  w.onload=()=>{
-    const imgs=w.document.images;
-    let left=imgs.length;
-    const go=()=>{w.focus();w.print();};
-    if(!left)return setTimeout(go,300);
-    [...imgs].forEach(im=>{ if(im.complete){if(--left===0)setTimeout(go,300);}
-      else{im.onload=im.onerror=()=>{if(--left===0)setTimeout(go,300);};}});
-  };
   toast('已開啟列印視窗，請選「儲存為 PDF」');
 }
 
-/* ---------- AI 優化 ---------- */
-let aiCtx={tid:null,fid:null,mode:'local'};
-function openAI(tid,fid){
-  aiCtx={tid,fid,mode:'local'};
-  const t=TYPES.find(x=>x.id===tid);
-  let label;
-  if(fid==='__merged__'){
-    label=`整份「${t.title}」`;
-    const mt=document.getElementById('mergedText_'+tid);
-    if(!mt||!mt.value.trim()){ mergeType(); }
-  }else if(fid==='__draft__'){
-    label=`分析「${t.title}」上傳草稿`;
-  }else{
-    label=t.fields.find(f=>f.id===fid).label;
-  }
-  const photoN=(photoStore[tid]||[]).length;
-  document.getElementById('aiFieldName').textContent=(fid==='__draft__'?'🔎 ':'優化目標：')+label+
-    (fid==='__draft__'&&photoN?`（將連同 ${photoN} 張佐證圖片一起分析）`:'');
-  document.querySelectorAll('.mode-opt').forEach(m=>m.classList.toggle('sel',m.dataset.mode==='local'));
-  document.getElementById('aiResult').style.display='none';
-  document.getElementById('aiResult').textContent='';
-  document.getElementById('aiApplyBtn').style.display='none';
-  document.getElementById('aiCopyBtn').style.display='none';
-  document.getElementById('aiExportBtn').style.display='none';
-  document.getElementById('aiLoading').style.display='none';
-  document.getElementById('aiRunBtn').style.display='inline-flex';
-  document.getElementById('aiOverlay').classList.add('show');
+/* ---------- 語音輸入 ---------- */
+let rec = null, recField = null;
+function stopMic() { if (rec) { try { rec.stop(); } catch {} } }
+function toggleMic(fid) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { toast('此瀏覽器不支援語音輸入（建議用 Chrome）', 'error'); return; }
+  if (rec) { const same = recField === fid; stopMic(); if (same) return; }
+  const r = new SR(); r.lang = 'zh-TW'; r.continuous = true; r.interimResults = false;
+  rec = r; recField = fid;
+  const btn = qsa(`[data-action="mic"][data-field="${fid}"]`)[0]; if (btn) btn.classList.add('rec');
+  r.onresult = e => {
+    const el = $('f_' + fid); if (!el) return;
+    for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) el.value += e.results[i][0].transcript;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  r.onerror = ev => { if (ev.error !== 'aborted' && ev.error !== 'no-speech') toast('語音辨識失敗：' + ev.error, 'error'); };
+  r.onend = () => { qsa('.b-mic.rec').forEach(b => b.classList.remove('rec')); if (rec === r) { rec = null; recField = null; } };
+  try { r.start(); toast('🎤 開始聆聽，說完再按一次 🎤 停止'); } catch { rec = null; }
 }
-function closeAI(){document.getElementById('aiOverlay').classList.remove('show');}
-function pickMode(m){
-  aiCtx.mode=m;
-  document.querySelectorAll('.mode-opt').forEach(x=>x.classList.toggle('sel',x.dataset.mode===m));
+
+/* =========================================================
+   AI
+   ========================================================= */
+let aiCtx = { tid: null, fid: null, mode: 'local', orig: '' };
+let aiAbort = null, aiTimer = null;
+function aiTargetLabel(t, fid) {
+  if (fid === '__merged__') return `整份「${t.title}」`;
+  if (fid === '__draft__') return `「${t.title}」草稿分析`;
+  return `「${t.title}」→ ${t.fields.find(f => f.id === fid)?.label || ''}`;
 }
-function getAITargetText(){
-  const t=TYPES.find(x=>x.id===aiCtx.tid);
-  if(aiCtx.fid==='__merged__'){
-    const mt=document.getElementById('mergedText_'+aiCtx.tid);
-    return mt?mt.value:gatherType(t);
-  }
-  if(aiCtx.fid==='__draft__'){
-    const dr=document.getElementById('draft_'+aiCtx.tid);
-    return dr?dr.value:((bigData[aiCtx.tid]||{}).__draft||'');
-  }
-  return val(`f_${aiCtx.tid}_${aiCtx.fid}`);
+function aiTargetText() {
+  const t = typeOf(aiCtx.tid), d = doc(aiCtx.tid);
+  if (aiCtx.fid === '__merged__') return gatherType(t, d, false);
+  if (aiCtx.fid === '__draft__') return d.draft;
+  return str(d.fields[aiCtx.fid]);
 }
-function buildPrompt(){
-  const t=TYPES.find(x=>x.id===aiCtx.tid);
-  const dept=val('targetDept');
-  const principles=t.principles.map((p,i)=>`${i+1}. ${p}`).join('\n');
-  const photoN=(photoStore[t.id]||[]).length;
-  // 草稿分析模式：診斷 + 改寫建議 + 分項重構方向
-  if(aiCtx.fid==='__draft__'){
-    const sectionList=t.fields.map(f=>`「${f.label}」`).join('、');
-    return `你是台灣 108 課綱升學備審資料的資深指導老師。以下是學生為「${t.title}」所完成的草稿全文${photoN?`，另外附上 ${photoN} 張學生上傳的圖片／圖表／照片`:''}。
-${dept?`學生的目標校系是：${dept}。請依此科系所重視的特質給建議。\n`:''}
-請務必嚴格依據下列「${t.title}」的製作原則進行全面診斷${photoN?'，並一併評估圖片是否恰當、是否需要圖說或改用圖表':''}：
+function openAI(fid) {
+  const t = curType();
+  aiCtx = { tid: t.id, fid, mode: prefs.aiMode || 'local', orig: '' };
+  const text = aiTargetText();
+  if (!text.trim()) { toast(fid === '__draft__' ? '請先上傳或貼上草稿' : fid === '__merged__' ? '請先在「① 填寫」寫一些內容' : '這一欄還沒有內容，請先寫一些再優化'); return; }
+  aiCtx.orig = text;
+  const photoN = doc().photos.length;
+  $('aiTitle').textContent = fid === '__draft__' ? '🔎 AI 分析草稿' : '✨ AI 優化';
+  $('aiTarget').textContent = '目標：' + aiTargetLabel(t, fid) + ((fid === '__draft__' || fid === '__merged__') && photoN ? `（使用 API 時會連同 ${photoN} 張佐證圖片一起分析，最多 4 張）` : '');
+  $('copyTarget').value = prefs.copyTarget; $('apiTarget').value = prefs.apiTarget;
+  resetAIResult(); pickMode(aiCtx.mode);
+  $('aiDlg').showModal();
+}
+function resetAIResult() {
+  $('aiResultWrap').hidden = true; $('aiReport').hidden = true; $('aiResult').value = '';
+  ['aiCopyBtn', 'aiKeepBtn', 'aiSplitBtn', 'aiApplyBtn'].forEach(id => $(id).hidden = true);
+  $('aiLoading').hidden = true; $('aiRunBtn').hidden = false;
+  $('aiRunBtn').textContent = { local: '執行本機檢查', copy: '複製提示詞並開啟網站', api: '呼叫 AI' }[aiCtx.mode] || '執行';
+}
+function pickMode(m) {
+  aiCtx.mode = m; prefs.aiMode = m; savePrefs();
+  qsa('#aiModes .mode').forEach(x => x.classList.toggle('sel', x.dataset.mode === m));
+  $('optCopy').hidden = m !== 'copy'; $('optApi').hidden = m !== 'api';
+  const c = getAiCfg(), prov = $('apiTarget').value;
+  $('apiModelHint').textContent = prov === 'gemini' ? (c.geminiKey ? `模型：${geminiModelName(c)}` : '⚠️ 尚未設定 Gemini 金鑰') : (c.openaiKey ? `模型：${openaiModelName(c)}` : '⚠️ 尚未設定 OpenAI 金鑰');
+  if ($('aiResultWrap').hidden) $('aiRunBtn').textContent = { local: '執行本機檢查', copy: '複製提示詞並開啟網站', api: '呼叫 AI' }[m];
+}
+function showAIResult(resultText, report, { editable = true, label } = {}) {
+  const isField = aiCtx.fid !== '__draft__' && aiCtx.fid !== '__merged__';
+  $('aiResultWrap').hidden = false;
+  $('aiReport').hidden = !report; $('aiReport').textContent = report || '';
+  $('aiOrigCol').hidden = !isField; $('aiOrig').textContent = aiCtx.orig;
+  $('aiCmp').style.gridTemplateColumns = isField ? '' : '1fr';
+  $('aiResultLabel').textContent = label || (isField ? 'AI 結果（可修改後再採用）' : 'AI 回覆（可修改）');
+  $('aiResult').value = resultText || '';
+  $('aiResult').readOnly = !editable;
+  refreshAIButtons();
+}
+function refreshAIButtons() {
+  const has = !!$('aiResult').value.trim(), isField = aiCtx.fid !== '__draft__' && aiCtx.fid !== '__merged__';
+  $('aiCopyBtn').hidden = !has; $('aiKeepBtn').hidden = !has;
+  $('aiApplyBtn').hidden = !(has && isField);
+  $('aiSplitBtn').hidden = !(has && !isField);
+}
+function runAI() {
+  if (aiCtx.mode === 'local') return runLocal();
+  if (aiCtx.mode === 'copy') return runCopy();
+  return runApi();
+}
+function buildPrompt() {
+  const t = typeOf(aiCtx.tid), dept = state.profile.targetDept.trim();
+  const principles = t.principles.map((p, i) => `${i + 1}. ${p}`).join('\n');
+  const photoN = doc(aiCtx.tid).photos.length;
+  const labels = t.fields.map(f => `【${f.label}】`).join('\n');
+  if (aiCtx.fid === '__draft__') {
+    const sectionList = t.fields.map(f => `「${f.label}」`).join('、');
+    return `你是台灣 108 課綱升學備審資料的資深指導老師。以下是學生為「${t.title}」所完成的草稿全文${photoN ? `，另外附上學生上傳的圖片／圖表／照片` : ''}。
+${dept ? `學生的目標校系是：${dept}。請依此科系所重視的特質給建議。\n` : ''}
+請務必嚴格依據下列「${t.title}」的製作原則進行全面診斷${photoN ? '，並一併評估圖片是否恰當、是否需要圖說或改用圖表' : ''}：
 【製作原則】
 ${principles}
 
 【請依序輸出】
 一、整體評價：這份草稿目前最大的優點與最該改進的 2–3 個問題。
 二、逐項原則對照：逐條檢視草稿是否符合上述每一條原則，標示「✅符合／⚠️待加強／❌缺漏」並說明。
-${photoN?'三、圖片運用建議：每張圖是否切題、是否需要圖說或改成圖表、擺放建議。\n四':'三'}、文字改寫建議：點出空洞語句、流水帳、缺乏數據之處，給出具體改寫示範。
-${photoN?'五':'四'}、分項重構藍圖：請依此檔案類型應有的區塊（${sectionList}），把學生草稿的內容重新歸位，告訴學生每個區塊「目前有什麼、缺什麼、該怎麼補」，方便學生接下來一步一步分項優化。
+${photoN ? '三、圖片運用建議：每張圖是否切題、是否需要圖說或改成圖表、擺放建議。\n四' : '三'}、文字改寫建議：點出空洞語句、流水帳、缺乏數據之處，給出具體改寫示範。
+${photoN ? '五' : '四'}、分項重構藍圖：依此檔案類型應有的區塊（${sectionList}），說明每個區塊「目前有什麼、缺什麼、該怎麼補」（這一段請用條列，不要使用【】符號）。
+${photoN ? '六' : '五'}、分欄草稿：最後，請用下列標題（含【】符號，各自獨立一行），把草稿中屬於該區塊的原文內容整理在標題下方，只做輕度潤飾、不可捏造；草稿中沒有內容的區塊寫「（草稿中沒有相關內容）」。
+${labels}
 
 請用繁體中文（台灣用語），條理清晰、具體可執行，但不要捏造學生沒提供的事實或數據。
 
 【學生草稿全文】
-${getAITargetText()}`;
+${aiTargetText()}`;
   }
-  const fieldLabel = aiCtx.fid==='__merged__' ? '整份檔案' :
-    t.fields.find(f=>f.id===aiCtx.fid).label;
-  return `你是台灣升學備審資料的資深指導老師。請依下列原則，協助優化我在「${t.title}」中「${fieldLabel}」這個部分的文字。
-${dept?`我的目標校系是：${dept}。請讓內容更貼合此科系所重視的特質。\n`:''}
+  if (aiCtx.fid === '__merged__') {
+    return `你是台灣升學備審資料的資深指導老師。請依下列原則，協助優化我的「${t.title}」整份內容。
+${dept ? `我的目標校系是：${dept}。請讓內容更貼合此科系所重視的特質。\n` : ''}
 【此檔案類型的撰寫原則】
 ${principles}
 
 【優化要求】
-1. 修正錯字與台灣慣用語（如「程序」改「程式」、「信息」改「資訊」）。
+1. 修正錯字與台灣慣用語（如「信息」改「資訊」、「視頻」改「影片」）。
+2. 改善語意邏輯，去除流水帳與空洞形容詞，改用具體事例與量化數據；各段之間要前後呼應。
+3. 保持我本人的真實語氣，不要捏造不存在的事實或數據；缺少資料的地方用〔請補充：…〕標示。
+4. 輸出格式：依下列標題（含【】符號，各自獨立一行）逐段輸出優化後的文字，標題不可更改；最後再用 2–4 點說明主要修改。
+${labels}
+
+【我的原始內容】
+${aiTargetText()}`;
+  }
+  const f = t.fields.find(x => x.id === aiCtx.fid);
+  return `你是台灣升學備審資料的資深指導老師。請依下列原則，協助優化我在「${t.title}」中「${f.label}」這個部分的文字。
+${dept ? `我的目標校系是：${dept}。請讓內容更貼合此科系所重視的特質。\n` : ''}
+【這一欄的寫作提示】
+${f.hint}${f.limit ? `\n字數上限：${f.limit} 字。` : ''}
+
+【此檔案類型的撰寫原則】
+${principles}
+
+【優化要求】
+1. 修正錯字與台灣慣用語（如「信息」改「資訊」、「視頻」改「影片」）。
 2. 改善語意邏輯，去除流水帳與空洞形容詞，改用具體事例與量化數據。
-3. 依上述原則強化結構與深度，但保持我本人的真實語氣，不要捏造不存在的事實或數據。
+3. 依上述原則強化結構與深度，但保持我本人的真實語氣，不要捏造不存在的事實或數據；缺少資料的地方用〔請補充：…〕標示。
 4. 字數適中，符合該檔案類型的篇幅慣例。
-5. 直接輸出優化後的文字即可，必要時可附上 1–2 句修改說明。
+5. 只輸出優化後的文字本身，不要加標題、前言或修改說明。
 
 【我的原始文字】
-${getAITargetText()}`;
+${aiTargetText()}`;
 }
 
-function runAI(){
-  const text=getAITargetText();
-  if(!text||!text.trim()){toast('請先輸入內容再優化');return;}
-  if(aiCtx.mode==='local') return runLocal(text);
-  if(aiCtx.mode==='copy') return runCopy();
-  if(aiCtx.mode==='api') return runApi();
+/* 模式一：本機規則 */
+const CN_TW = { '信息': '資訊', '軟件': '軟體', '硬件': '硬體', '質量': '品質', '網絡': '網路', '數據庫': '資料庫', '視頻': '影片', '文件夾': '資料夾',
+  '激活': '啟用', '調研': '調查研究', '屏幕': '螢幕', '打印': '列印', '博客': '部落格', '服務器': '伺服器', '人工智能': '人工智慧', '算法': '演算法',
+  '默認': '預設', '鼠標': '滑鼠', '內存': '記憶體', '互聯網': '網際網路', '短信': '簡訊', '頻道號': '頻道', '高清': '高畫質', '水平高': '程度高' };
+const VAGUE = ['學到很多', '學習到很多', '收穫滿滿', '獲益良多', '很有趣', '很有意義', '增廣見聞', '受益匪淺', '成長很多', '印象深刻', '難忘的經驗', '寶貴的經驗', '非常開心'];
+function localClean(text) {
+  let s = text; const fixes = [];
+  for (const k in CN_TW) if (s.includes(k)) { s = s.split(k).join(CN_TW[k]); fixes.push(`「${k}」→「${CN_TW[k]}」`); }
+  const before = s;
+  s = s.replace(/([一-鿿]),\s*(?=[一-鿿])/g, '$1，').replace(/([一-鿿])\?/g, '$1？').replace(/([一-鿿])!/g, '$1！')
+       .replace(/([一-鿿]);/g, '$1；').replace(/([一-鿿]):(?=[一-鿿\s])/g, '$1：').replace(/([一-鿿])\(([^()]*)\)/g, '$1（$2）');
+  if (s !== before) fixes.push('半形標點改為全形');
+  s = s.replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+  return { s, fixes };
 }
-
-/* 模式一：本地系統規則優化 */
-function runLocal(text){
-  const t=TYPES.find(x=>x.id===aiCtx.tid);
-  if(aiCtx.fid==='__draft__') return runLocalDraft(text,t);
-  let s=text;
-  // 台灣用語校正
-  const map={'程序':'程式','信息':'資訊','軟件':'軟體','硬件':'硬體','質量':'品質',
-    '網絡':'網路','數據庫':'資料庫','視頻':'影片','文件夾':'資料夾','激活':'啟用',
-    '優化':'優化','調研':'調查研究','項目':'專題','屏幕':'螢幕','打印':'列印',
-    '博客':'部落格','服務器':'伺服器','人工智能':'人工智慧','算法':'演算法'};
-  let fixes=[];
-  for(const k in map){ if(s.includes(k)){ s=s.split(k).join(map[k]); if(k!==map[k])fixes.push(`「${k}」→「${map[k]}」`);} }
-  // 清理贅字與空白
-  s=s.replace(/[ \t]{2,}/g,' ').replace(/\n{3,}/g,'\n\n').trim();
-  const fillers=['基本上','其實','真的','非常的','一個的'];
-  // 空洞語句偵測
-  const vague=['學到很多','收穫滿滿','獲益良多','很有趣','很有意義','增廣見聞','受益匪淺','成長很多'];
-  let vagueHits=vague.filter(v=>text.includes(v));
-  // 字數與篇幅建議
-  const len=text.replace(/\s/g,'').length;
-  let lenNote='';
-  const limfield = aiCtx.fid!=='__merged__' && t.fields.find(f=>f.id===aiCtx.fid)?.limit;
-  if(limfield){ lenNote = len>limfield?`⚠️ 目前約 ${len} 字，超過建議上限 ${limfield} 字，請精簡。`:`字數 ${len}（上限 ${limfield}）尚在範圍內。`; }
-  else if(aiCtx.tid==='diverse_summary'){ lenNote=`綜整心得建議 800 字內，目前約 ${len} 字。`; }
-  else if(aiCtx.tid==='autobiography'){ lenNote=`自傳建議 800–1200 字，目前約 ${len} 字。`; }
-
-  // 套版建議
-  let template='';
-  if(aiCtx.tid==='self_statement'||aiCtx.tid==='autobiography'){
-    template='\n\n📐 建議用 STAR 檢視：情境(S)→任務(T)→行動(A)→結果與反思(R)，確認每一段都有具體「行動」與「量化結果」。';
-  }else if(aiCtx.tid==='inquiry'){
-    template='\n\n📐 建議用 IMRD 檢視：引言→方法→結果→討論，並補上誤差分析或多重觀點。';
-  }else if(aiCtx.tid==='course'){
-    template='\n\n📐 建議補齊五要素：標題、摘要、作品說明(脈絡)、正文(過程與成果)、心得反思。';
+function runLocal() {
+  const t = typeOf(aiCtx.tid), text = aiCtx.orig, d = doc(aiCtx.tid);
+  const len = charLen(text), paras = text.split(/\n+/).filter(p => p.trim()).length;
+  const vagueHits = VAGUE.filter(v => text.includes(v));
+  const hasNum = /[\d０-９]|[一二三四五六七八九十百千]+(?:人|次|場|位|%|名|項|小時|週|個月)/.test(text);
+  const { s, fixes } = localClean(text);
+  let r = '';
+  if (aiCtx.fid === '__draft__' || aiCtx.fid === '__merged__') {
+    r = `【🔎 本機檢查：${aiTargetLabel(t, aiCtx.fid)}】\n\n一、基本檢查\n• 全文約 ${len} 字、${paras} 段、佐證圖片 ${d.photos.length} 張。\n`;
+    if (t.id === 'diverse_summary') r += `• 綜整心得建議 800 字、3 張圖內：${len > 800 ? '⚠️ 字數偏多需精簡' : '字數適中'}；圖片${d.photos.length > 3 ? '⚠️ 超過 3 張' : d.photos.length ? '張數 OK' : '尚未上傳'}。\n`;
+    if (t.id === 'autobiography') r += `• 自傳建議 800–1200 字，目前 ${len} 字${len < 800 ? '（偏短，可再充實）' : len > 1200 ? '（偏長，可精簡）' : '（適中）'}。\n`;
+    r += `• 量化數據：${hasNum ? '✅ 有數字，記得用來佐證成果' : '⚠️ 幾乎沒有數字，建議加入量化成果（人數、百分比、名次、時數等）'}。\n`;
+    r += `• 空洞語句：${vagueHits.length ? `⚠️ 發現「${vagueHits.join('」「')}」，請改成具體事例＋數據` : '✅ 未見明顯空泛詞'}。\n`;
+    r += `• 用語與標點：${fixes.length ? '⚠️ ' + fixes.join('、') : '✅ 正常'}。\n`;
+    if (aiCtx.fid === '__draft__') {
+      const found = splitByFields(text, t);
+      r += `\n二、欄位對照\n${t.fields.map(f => `${found[f.id] ? '✅' : '⬜'} ${f.label}${found[f.id] ? `（${charLen(found[f.id])} 字）` : '：草稿中沒有找到這個標題'}`).join('\n')}\n`;
+    } else {
+      r += `\n二、各欄字數\n${t.fields.map(f => { const n = charLen(d.fields[f.id]); return `${n ? '✅' : '⬜'} ${f.label}：${n ? n + ' 字' : '空白'}${f.limit && n > f.limit ? `（⚠️ 超過上限 ${f.limit}）` : ''}`; }).join('\n')}\n`;
+    }
+    r += `\n三、請對照「${t.title}」製作原則自我檢查\n${t.principles.map((p, i) => `${i + 1}. ${p}`).join('\n')}\n`;
+    r += `\n💡 想要更深入（連同圖片內容一起判讀）的分析，請改用「直接呼叫 API」或「複製提示詞」。`;
+    showAIResult(r, null, { label: '本機檢查報告' });
+    return;
   }
-
-  let report='【🛠️ 本地系統優化報告】\n\n';
-  report+='① 台灣用語／格式校正：'+(fixes.length?fixes.join('、'):'未發現需校正之中國用語')+'\n';
-  report+='② 空洞語句偵測：'+(vagueHits.length?`發現「${vagueHits.join('」「')}」等空泛詞，建議改成具體事例＋數據`:'未發現明顯空洞語句 👍')+'\n';
-  report+='③ 篇幅檢查：'+(lenNote||`目前約 ${len} 字`)+template+'\n\n';
-  report+='──── 清理後文字（已校正用語與空白）────\n'+s;
-
-  showResult(report, s);
+  const f = t.fields.find(x => x.id === aiCtx.fid);
+  let lenNote = f?.limit ? (len > f.limit ? `⚠️ 約 ${len} 字，超過上限 ${f.limit} 字，請精簡。` : `${len} 字（上限 ${f.limit}），在範圍內。`) : `約 ${len} 字。`;
+  let tpl = '';
+  if (t.id === 'self_statement' || t.id === 'autobiography') tpl = '\n📐 用 STAR 檢視：情境(S)→任務(T)→行動(A)→結果與反思(R)，每段都要有具體「行動」與「量化結果」。';
+  else if (t.id === 'inquiry') tpl = '\n📐 用 IMRD 檢視：引言→方法→結果→討論，並補上誤差分析或多重觀點。';
+  else if (t.id === 'course') tpl = '\n📐 補齊五要素：標題、摘要、作品說明(脈絡)、正文(過程與成果)、心得反思。';
+  r = `【🛠️ 本機規則檢查】\n① 用語與標點：${fixes.length ? fixes.join('、') : '未發現需校正之處'}\n② 空洞語句：${vagueHits.length ? `發現「${vagueHits.join('」「')}」，建議改成具體事例＋數據` : '未發現明顯空泛詞 👍'}\n③ 量化數據：${hasNum ? '有數字 👍' : '沒有數字，建議補上人數、次數、名次等'}\n④ 篇幅：${lenNote}${tpl}`;
+  showAIResult(s, r, { label: '校正後文字（只改用語、標點與空白，可再修改後採用）' });
 }
 
-/* 本地草稿分析（離線啟發式檢查） */
-function runLocalDraft(text,t){
-  const len=text.replace(/\s/g,'').length;
-  const photoN=(photoStore[t.id]||[]).length;
-  const paras=text.split(/\n+/).filter(p=>p.trim());
-  const vague=['學到很多','收穫滿滿','獲益良多','很有趣','很有意義','增廣見聞','受益匪淺','成長很多','學習到很多','印象深刻'];
-  const vagueHits=vague.filter(v=>text.includes(v));
-  const hasNum=/\d/.test(text);
-  const cnMap={'程序':'程式','信息':'資訊','軟件':'軟體','質量':'品質','網絡':'網路','項目':'專題','算法':'演算法','人工智能':'人工智慧'};
-  const cnHits=Object.keys(cnMap).filter(k=>text.includes(k));
-  let r=`【🔎 本地草稿分析報告：${t.title}】\n\n`;
-  r+=`一、基本檢查\n`;
-  r+=`• 全文約 ${len} 字、${paras.length} 段、佐證圖片 ${photoN} 張。\n`;
-  if(t.id==='diverse_summary')r+=`• 綜整心得建議 800 字／3 張圖內，${len>800?'⚠️ 字數偏多需精簡':'字數適中'}；圖片${photoN>3?'⚠️ 超過 3 張':photoN?'已上傳':'尚未上傳'}。\n`;
-  if(t.id==='autobiography')r+=`• 自傳建議 800–1200 字，目前 ${len} 字${len<800?'（偏短，可再充實）':len>1200?'（偏長，可精簡）':'（適中）'}。\n`;
-  r+=`• 量化數據：${hasNum?'✅ 文中有數字，記得用來佐證成果':'⚠️ 幾乎沒有數字，建議加入量化成果（人數、百分比、名次等）'}。\n`;
-  r+=`• 空洞語句：${vagueHits.length?`⚠️ 發現「${vagueHits.join('」「')}」，請改成具體事例＋數據`:'✅ 未見明顯空泛詞'}。\n`;
-  r+=`• 台灣用語：${cnHits.length?`⚠️ 發現「${cnHits.join('」「')}」等用語建議改為台灣慣用語`:'✅ 用語正常'}。\n`;
-  r+=`\n二、逐項對照「${t.title}」製作原則\n`;
-  t.principles.forEach((p,i)=>{ r+=`${i+1}. ${p}\n   → 請自我檢查草稿是否做到此點。\n`; });
-  if(photoN)r+=`\n三、圖片運用\n• 共 ${photoN} 張，請確認每張都有圖說、且能對應原則中「圖表勝於照片、標出自己」的建議。\n`;
-  r+=`\n四、分項重構藍圖（接下來請逐區塊優化）\n`;
-  t.fields.forEach((f,i)=>{ r+=`${i+1}. ${f.label}：${f.hint}\n`; });
-  r+=`\n💡 想要更深入、連同圖片內容一起判讀的分析，請改用「模式 3 直接呼叫 API」（可讀圖的模型），或「模式 2」複製提示詞到 ChatGPT/Gemini。\n`;
-  r+=`完成分析後，請依上方「分項重構藍圖」把內容填入各步驟欄位，再逐欄用 ✨ 一步步優化。`;
-  showResult(r,null);
-}
-
-/* 模式二：複製提示詞並開啟網頁 */
-function runCopy(){
-  const prompt=buildPrompt();
-  const target=document.getElementById('copyTarget').value;
-  const url= target==='gemini' ? 'https://gemini.google.com/app' : 'https://chat.openai.com';
-  navigator.clipboard.writeText(prompt).then(()=>{
-    showResult('✅ 優化提示詞（含你的原文）已複製到剪貼簿！\n\n即將開啟 '+(target==='gemini'?'Gemini':'ChatGPT')+
-      '，請直接貼上(Ctrl/Cmd+V)送出，取得結果後再貼回欄位。\n\n──── 以下為已複製的內容預覽 ────\n\n'+prompt, null);
-    window.open(url,'_blank');
-  }).catch(()=>{
-    showResult('複製失敗，請手動複製下方提示詞：\n\n'+prompt, null);
-  });
+/* 模式二：複製提示詞 */
+async function runCopy() {
+  const prompt = buildPrompt(), target = $('copyTarget').value;
+  prefs.copyTarget = target; savePrefs();
+  const url = { chatgpt: 'https://chatgpt.com/', gemini: 'https://gemini.google.com/app', claude: 'https://claude.ai/new' }[target];
+  const name = { chatgpt: 'ChatGPT', gemini: 'Gemini', claude: 'Claude' }[target];
+  const ok = await copyText(prompt, '提示詞已複製');
+  if (ok) window.open(url, '_blank', 'noopener');
+  aiCtx.provider = target;
+  showAIResult('', ok
+    ? `✅ 提示詞（含你的原文）已複製，並開啟 ${name}。\n請貼上（Ctrl／⌘＋V）送出，取得回覆後全選複製，貼到下方框中，就可以採用或保存。${doc(aiCtx.tid).photos.length && (aiCtx.fid === '__draft__' || aiCtx.fid === '__merged__') ? '\n（需要分析圖片時，請在網站上另外附上圖片檔。）' : ''}\n\n──── 已複製的提示詞 ────\n${prompt}`
+    : `複製失敗，請手動選取下方提示詞複製：\n\n${prompt}`, { label: `把 ${name} 的回覆貼在這裡` });
+  $('aiResult').placeholder = `在 ${name} 取得回覆後，全選複製貼到這裡…`;
 }
 
 /* 模式三：直接呼叫 API */
-async function runApi(){
-  const provider=document.getElementById('apiTarget').value;
-  const cfg=getSettings();
-  const prompt=buildPrompt();
-  if(provider==='openai' && !cfg.openaiKey){ toast('請先在 ⚙️ AI 設定 填入 OpenAI 金鑰');openSettings();return; }
-  if(provider==='gemini' && !cfg.geminiKey){ toast('請先在 ⚙️ AI 設定 填入 Gemini 金鑰');openSettings();return; }
-  document.getElementById('aiRunBtn').style.display='none';
-  document.getElementById('aiLoading').style.display='block';
-  document.getElementById('aiResult').style.display='none';
-  document.getElementById('aiApplyBtn').style.display='none';
-  // 草稿分析時附上佐證圖片（vision），且結果為建議不可直接套用
-  const imgs = (aiCtx.fid==='__draft__'||aiCtx.fid==='__merged__') ? (photoStore[aiCtx.tid]||[]).map(p=>p.src) : [];
-  const isAnalysis = aiCtx.fid==='__draft__';
-  try{
-    let out;
-    if(provider==='openai') out=await callOpenAI(prompt,cfg,imgs);
-    else out=await callGemini(prompt,cfg,imgs);
-    document.getElementById('aiLoading').style.display='none';
-    showResult(out, isAnalysis?null:out);
-  }catch(err){
-    document.getElementById('aiLoading').style.display='none';
-    document.getElementById('aiRunBtn').style.display='inline-flex';
-    showResult('❌ API 呼叫失敗：'+err.message+'\n\n請確認金鑰正確、額度足夠、模型支援讀圖（gpt-4o／gemini），或改用模式 1／2。', null);
-  }
+async function runApi() {
+  const provider = $('apiTarget').value, cfg = getAiCfg();
+  prefs.apiTarget = provider; savePrefs();
+  if (provider === 'openai' && !cfg.openaiKey) { toast('請先在「⚙️ 設定與備份 → AI 設定」填入 OpenAI 金鑰', 'error'); openSettings('ai'); return; }
+  if (provider === 'gemini' && !cfg.geminiKey) { toast('請先在「⚙️ 設定與備份 → AI 設定」填入 Gemini 金鑰', 'error'); openSettings('ai'); return; }
+  const prompt = buildPrompt();
+  const withImg = aiCtx.fid === '__draft__' || aiCtx.fid === '__merged__';
+  const imgs = [];
+  if (withImg) for (const p of doc(aiCtx.tid).photos.slice(0, 4)) { const b = await getPhotoBlob(p.id); if (b) imgs.push(await blobToDataURL(b)); }
+  $('aiRunBtn').hidden = true; $('aiLoading').hidden = false; $('aiResultWrap').hidden = true;
+  const t0 = Date.now(); $('aiElapsed').textContent = '0';
+  aiTimer = setInterval(() => { $('aiElapsed').textContent = Math.round((Date.now() - t0) / 1000); }, 1000);
+  aiAbort = new AbortController();
+  const killer = setTimeout(() => aiAbort && aiAbort.abort('timeout'), AI_TIMEOUT);
+  const model = provider === 'gemini' ? geminiModelName(cfg) : openaiModelName(cfg);
+  try {
+    const out = provider === 'openai' ? await callOpenAI(prompt, cfg, imgs, aiAbort.signal) : await callGemini(prompt, cfg, imgs, aiAbort.signal);
+    aiCtx.provider = provider; aiCtx.model = model;
+    $('aiLoading').hidden = true; $('aiRunBtn').hidden = false; $('aiRunBtn').textContent = '重新呼叫';
+    showAIResult(out, null);
+  } catch (e) {
+    $('aiLoading').hidden = true; $('aiRunBtn').hidden = false;
+    const msg = aiAbort?.signal.aborted ? (aiAbort.signal.reason === 'timeout' ? '等候超過 3 分鐘，已自動停止。' : '已取消。') : friendlyApiError(e);
+    showAIResult('', `❌ ${msg}\n\n可以再試一次，或改用「本機規則」／「複製提示詞」。`, { editable: true, label: '（沒有結果）' });
+  } finally { clearInterval(aiTimer); clearTimeout(killer); aiAbort = null; }
 }
-async function callOpenAI(prompt,cfg,imgs){
-  const content=[{type:'text',text:prompt}];
-  (imgs||[]).slice(0,4).forEach(src=>content.push({type:'image_url',image_url:{url:src}}));
-  const res=await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.openaiKey},
-    body:JSON.stringify({model:openaiModelName(cfg),
-      messages:[{role:'system',content:'你是台灣升學備審資料的資深指導老師，使用繁體中文（台灣用語）。'},
-                {role:'user',content:(imgs&&imgs.length)?content:prompt}],
-      temperature:0.7})
+function friendlyApiError(e) {
+  const m = str(e?.message || e), st = e?.status;
+  if (st === 401 || st === 403) return `金鑰無效或沒有權限（HTTP ${st}）。請到 AI 設定確認金鑰。`;
+  if (st === 404) return `找不到這個模型（HTTP 404）。請到 AI 設定改選其他模型或確認自填的模型名稱。`;
+  if (st === 429) return `額度用完或呼叫太頻繁（HTTP 429）。請稍後再試或確認帳戶額度。`;
+  if (st === 400) return `請求被拒絕（HTTP 400）：${m.slice(0, 200)}`;
+  if (/Failed to fetch|NetworkError/i.test(m)) return '無法連線到 AI 服務，請檢查網路。';
+  return 'API 呼叫失敗：' + m.slice(0, 220);
+}
+async function apiFetch(url, opts) {
+  const res = await fetch(url, opts);
+  if (!res.ok) { let t = ''; try { t = await res.text(); } catch {} const e = new Error(t.slice(0, 300) || ('HTTP ' + res.status)); e.status = res.status; throw e; }
+  return res.json();
+}
+async function callOpenAI(prompt, cfg, imgs, signal) {
+  const content = [{ type: 'text', text: prompt }];
+  imgs.forEach(src => content.push({ type: 'image_url', image_url: { url: src } }));
+  const d = await apiFetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST', signal,
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.openaiKey },
+    body: JSON.stringify({ model: openaiModelName(cfg), messages: [
+      { role: 'system', content: '你是台灣升學備審資料的資深指導老師，使用繁體中文（台灣用語）。' },
+      { role: 'user', content: imgs.length ? content : prompt }] })
   });
-  if(!res.ok){const e=await res.text();throw new Error('HTTP '+res.status+' '+e.slice(0,180));}
-  const d=await res.json();
-  return d.choices[0].message.content.trim();
+  const out = d?.choices?.[0]?.message?.content;
+  if (!out) throw new Error('AI 沒有回傳內容');
+  return str(out).trim();
 }
-async function callGemini(prompt,cfg,imgs){
-  const model=geminiModelName(cfg);
-  const parts=[{text:prompt}];
-  (imgs||[]).slice(0,4).forEach(src=>{
-    const m=/^data:(image\/\w+);base64,(.+)$/.exec(src);
-    if(m)parts.push({inline_data:{mime_type:m[1],data:m[2]}});
+async function callGemini(prompt, cfg, imgs, signal) {
+  const parts = [{ text: prompt }];
+  imgs.forEach(src => { const m = /^data:(image\/[\w+.-]+);base64,(.+)$/.exec(src); if (m) parts.push({ inline_data: { mime_type: m[1], data: m[2] } }); });
+  const d = await apiFetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModelName(cfg))}:generateContent`, {
+    method: 'POST', signal,
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': cfg.geminiKey },
+    body: JSON.stringify({ contents: [{ parts }] })
   });
-  const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=`+cfg.geminiKey,{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({contents:[{parts:parts}]})
+  const out = (d?.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+  if (!out) throw new Error('AI 沒有回傳內容' + (d?.promptFeedback?.blockReason ? `（${d.promptFeedback.blockReason}）` : ''));
+  return out.trim();
+}
+function aiApply() {
+  const text = $('aiResult').value; if (!text.trim()) return;
+  const tid = aiCtx.tid, fid = aiCtx.fid, d = doc(tid), before = clone(d);
+  d.fields[fid] = text.trim();
+  keepAI(false);
+  $('aiDlg').close();
+  touch(); if (state.current === tid) { renderNav(); renderHead(); renderBadges(); setTab('write'); }
+  undoDoc('已採用到「' + (typeOf(tid).fields.find(f => f.id === fid)?.label || '') + '」', tid, before);
+}
+function keepAI(notify = true) {
+  const text = $('aiResult').value; if (!text.trim()) return;
+  const d = doc(aiCtx.tid);
+  d.ai = { text, at: Date.now(), mode: aiCtx.mode, provider: aiCtx.provider || '', model: aiCtx.model || '', target: aiCtx.fid, targetLabel: aiTargetLabel(typeOf(aiCtx.tid), aiCtx.fid) };
+  touch();
+  if (notify) { $('aiDlg').close(); if (state.current === aiCtx.tid) { renderBadges(); setTab('ai'); setTimeout(() => $('aiOutBox')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); } toast('已存到「② 草稿與 AI」的 AI 輸出區'); }
+}
+
+/* ---------- AI 設定（金鑰不寫進資料夾與備份） ---------- */
+function getAiCfg() {
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem(AI_KEY) || '{}') || {}; } catch {}
+  if (c.remember === false) { try { Object.assign(c, JSON.parse(sessionStorage.getItem(AI_KEY) || '{}')); } catch {} }
+  return c;
+}
+function openaiModelName(c) { return str(c.openaiModelCustom).trim() || c.openaiModel || 'gpt-5.4-mini'; }
+function geminiModelName(c) { return str(c.geminiModelCustom).trim() || c.geminiModel || 'gemini-3.5-flash'; }
+function loadAiConfig() {
+  const c = getAiCfg();
+  $('openaiKey').value = c.openaiKey || ''; $('openaiModel').value = c.openaiModel || 'gpt-5.4-mini'; $('openaiModelCustom').value = c.openaiModelCustom || '';
+  $('geminiKey').value = c.geminiKey || ''; $('geminiModel').value = c.geminiModel || 'gemini-3.5-flash'; $('geminiModelCustom').value = c.geminiModelCustom || '';
+  $('keyRemember').checked = c.remember !== false;
+}
+function saveAiConfig() {
+  const remember = $('keyRemember').checked;
+  const models = { openaiModel: $('openaiModel').value, openaiModelCustom: $('openaiModelCustom').value.trim(), geminiModel: $('geminiModel').value, geminiModelCustom: $('geminiModelCustom').value.trim() };
+  const keys = { openaiKey: $('openaiKey').value.trim(), geminiKey: $('geminiKey').value.trim() };
+  try {
+    if (remember) { localStorage.setItem(AI_KEY, JSON.stringify({ ...models, ...keys, remember: true })); sessionStorage.removeItem(AI_KEY); }
+    else { localStorage.setItem(AI_KEY, JSON.stringify({ ...models, remember: false })); sessionStorage.setItem(AI_KEY, JSON.stringify(keys)); }
+    toast(remember ? 'AI 設定已儲存在這台電腦' : 'AI 設定已儲存；金鑰只在這次開啟期間有效');
+  } catch (e) { toast('AI 設定儲存失敗：' + e.message, 'error'); }
+}
+
+/* =========================================================
+   範例
+   ========================================================= */
+function renderSampleOptions() {
+  $('sampleSelect').innerHTML = TYPES.filter(t => BUILTIN_SAMPLES[t.id]).map((t, i) =>
+    `<option value="${t.id}">${i + 1}. ${esc(t.title)}（${esc(BUILTIN_SAMPLES[t.id].filename.replace(/^\d+_[^_]+_|\.docx$/g, ''))}）</option>`).join('');
+}
+function renderSampleBody() {
+  const v = $('sampleSelect').value, s = BUILTIN_SAMPLES[v], t = typeOf(v); if (!s) return;
+  $('sampleBody').innerHTML = `<p class="hint">範例學生：${esc(s.studentName)}｜${esc(s.targetDept)}</p>` + t.fields.map(f => s.data[f.id] ? `
+    <div class="split-row"><div class="hd" style="justify-content:space-between"><span>${esc(f.label)}</span>
+      <button type="button" class="btn sub sm" data-action="sample-copy" data-field="${f.id}">複製這段</button></div>
+      <div class="tx" style="max-height:160px;color:var(--ink)">${esc(s.data[f.id])}</div></div>` : '').join('');
+}
+function openSample() {
+  renderSampleOptions();
+  $('sampleSelect').value = BUILTIN_SAMPLES[state.current] ? state.current : TYPES[0].id;
+  renderSampleBody(); $('sampleDlg').showModal();
+}
+async function applySample() {
+  const v = $('sampleSelect').value, s = BUILTIN_SAMPLES[v], t = typeOf(v); if (!s) return;
+  const d = doc(v);
+  if (docHas(d) && !await confirmBox(`取代你的「${t.title}」？`, `<p>你的「${esc(t.title)}」已經有內容，套用範例會取代所有欄位（草稿、圖片不受影響）。</p><p>套用前會留一個還原點，也可以按提示上的「復原」。</p>`, '取代為範例', 'danger')) return;
+  const before = clone(d);
+  if (docHas(d)) await makeSnapshot(`套用範例前：${t.title}`);
+  t.fields.forEach(f => { d.fields[f.id] = str(s.data[f.id]); });
+  if (!d.draft.trim()) {
+    d.draft = `學習歷程檔案示範草稿\n\n【基本資料】\n姓名：${s.studentName}\n目標校系：${s.targetDept}\n\n` + t.fields.map(f => `【${f.label}】\n${str(s.data[f.id])}`).join('\n\n');
+    d.draftName = s.filename + '（範例）';
+  }
+  let note = '';
+  if (!state.profile.name.trim() && !state.profile.targetDept.trim()) { state.profile.targetDept = s.targetDept; note = '，並把目標校系暫填為範例的校系'; }
+  $('sampleDlg').close();
+  state.current = v; touch(); renderAll(); setTab('write');
+  undoDoc(`已套用「${t.title}」範例${note}`, v, before);
+}
+function sampleWord() {
+  const s = BUILTIN_SAMPLES[$('sampleSelect').value]; if (!s) return;
+  const a = document.createElement('a'); a.href = SAMPLE_DIR + encodeURIComponent(s.filename); a.download = s.filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('下載範例 Word：若沒有反應，請確認「學習歷程示範」資料夾和本程式放在同一層');
+}
+
+/* =========================================================
+   儲存層（IndexedDB＋localStorage 鏡像＋資料夾正本）
+   ========================================================= */
+let booted = false;
+const meta = { rev: 0, savedAt: 0 };
+const store = { mode: 'idb', mirrorOk: true, persisted: null, error: '', lastSavedAt: 0, saving: false };
+let dirty = false, saveTimer = null, savingPromise = null, conflictOpen = false, navTimer = null;
+const bc = ('BroadcastChannel' in window) ? new BroadcastChannel(IDB_NAME) : null;
+const tabId = uid('tab');
+function deviceName() {
+  try { let n = localStorage.getItem(DEVICE_KEY); if (!n) { n = '電腦-' + Math.random().toString(36).slice(2, 6).toUpperCase(); localStorage.setItem(DEVICE_KEY, n); } return n; }
+  catch { return '電腦'; }
+}
+let dbPromise = null;
+function idbOpen() {
+  if (dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined' || !indexedDB) return reject(new Error('瀏覽器不支援或停用了 IndexedDB'));
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = () => { const db = req.result; ['kv', 'snapshots', 'photos'].forEach(s => { if (!db.objectStoreNames.contains(s)) db.createObjectStore(s); }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('IndexedDB 開啟失敗'));
+    req.onblocked = () => reject(new Error('IndexedDB 被其他分頁鎖住'));
   });
-  if(!res.ok){const e=await res.text();throw new Error('HTTP '+res.status+' '+e.slice(0,180));}
-  const d=await res.json();
-  return d.candidates[0].content.parts[0].text.trim();
+  dbPromise.catch(() => { dbPromise = null; });
+  return dbPromise;
 }
-
-let aiApplyText=null, aiResultText='';
-function showResult(display, applyText){
-  const r=document.getElementById('aiResult');
-  r.textContent=display;r.style.display='block';
-  document.getElementById('aiRunBtn').style.display='inline-flex';
-  aiApplyText=applyText;
-  aiResultText=display||'';
-  const has=!!(display&&display.trim());
-  document.getElementById('aiApplyBtn').style.display=applyText?'inline-flex':'none';
-  document.getElementById('aiCopyBtn').style.display=has?'inline-flex':'none';
-  // 匯出到草稿下方：草稿分析或整份優化時提供
-  document.getElementById('aiExportBtn').style.display=(has&&(aiCtx.fid==='__draft__'||aiCtx.fid==='__merged__'))?'inline-flex':'none';
-}
-/* 複製分析視窗全部輸出文字（含排版/換行） */
-function copyAIResult(){
-  if(!aiResultText){toast('沒有可複製的內容');return;}
-  const done=()=>toast('✓ 已複製全部輸出文字');
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(aiResultText).then(done).catch(()=>fallbackCopy(aiResultText,done));
-  }else fallbackCopy(aiResultText,done);
-}
-function fallbackCopy(text,cb){
-  const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');cb&&cb();}catch(e){toast('複製失敗，請手動選取');}
-  document.body.removeChild(ta);
-}
-/* 匯出優化文字到該頁草稿欄位下方的輸出對話框 */
-function exportAIResult(){
-  if(!aiResultText){toast('沒有可匯出的內容');return;}
-  const tid=aiCtx.tid;
-  const box=document.getElementById('draftOutput_'+tid);
-  if(!box){toast('找不到輸出區');return;}
-  renderDraftOutput(tid,aiResultText);
-  bigData[tid]=bigData[tid]||{}; bigData[tid].__draftOutput=aiResultText;
-  closeAI();
-  toast('✓ 已匯出到草稿下方的輸出框');
-  const el=document.getElementById('draftOutputText_'+tid);
-  if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
-}
-function renderDraftOutput(tid,text){
-  const box=document.getElementById('draftOutput_'+tid);
-  if(!box)return;
-  box.innerHTML=`<div class="merged" style="margin-top:16px">
-    <div class="step-label" style="font-size:14px;justify-content:space-between">
-      <span>📤 AI 優化輸出（可編輯）</span>
-      <span style="display:flex;gap:6px">
-        <button class="btn btn-ghost" style="padding:5px 12px;font-size:12.5px" onclick="copyDraftOutput('${tid}')">📋 複製</button>
-        <button class="btn btn-ghost" style="padding:5px 12px;font-size:12.5px;color:var(--red);border-color:#fecaca" onclick="clearDraftOutput('${tid}')">✕ 清除</button>
-      </span>
-    </div>
-    <textarea id="draftOutputText_${tid}" rows="12" oninput="bigData['${tid}']=bigData['${tid}']||{};bigData['${tid}'].__draftOutput=this.value"></textarea>
-  </div>`;
-  document.getElementById('draftOutputText_'+tid).value=text;
-}
-function copyDraftOutput(tid){
-  const el=document.getElementById('draftOutputText_'+tid);
-  if(!el||!el.value){toast('輸出框是空的');return;}
-  const done=()=>toast('✓ 已複製輸出框文字');
-  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(el.value).then(done).catch(()=>fallbackCopy(el.value,done));
-  else fallbackCopy(el.value,done);
-}
-function clearDraftOutput(tid){
-  if(!confirm('清除此輸出框？'))return;
-  document.getElementById('draftOutput_'+tid).innerHTML='';
-  if(bigData[tid])delete bigData[tid].__draftOutput;
-}
-function applyAIResult(){
-  if(aiApplyText==null)return;
-  if(aiCtx.fid==='__merged__'){
-    const mt=document.getElementById('mergedText_'+aiCtx.tid);
-    if(mt)mt.value=aiApplyText;
-  }else{
-    const el=document.getElementById(`f_${aiCtx.tid}_${aiCtx.fid}`);
-    if(el){el.value=aiApplyText;el.dispatchEvent(new Event('input'));}
-  }
-  toast('✓ 已套用優化結果');
-  closeAI();
-}
-
-/* ---------- 設定 ---------- */
-function getSettings(){ try{return JSON.parse(localStorage.getItem('lp_settings')||'{}');}catch{return{};} }
-function openSettings(){
-  const c=getSettings();
-  document.getElementById('openaiKey').value=c.openaiKey||'';
-  document.getElementById('openaiModel').value=c.openaiModel||'gpt-5.4-mini';
-  document.getElementById('openaiModelCustom').value=c.openaiModelCustom||'';
-  document.getElementById('geminiKey').value=c.geminiKey||'';
-  document.getElementById('geminiModel').value=c.geminiModel||'gemini-3.5-flash';
-  document.getElementById('geminiModelCustom').value=c.geminiModelCustom||'';
-  document.getElementById('setOverlay').classList.add('show');
-}
-function closeSettings(){document.getElementById('setOverlay').classList.remove('show');}
-function saveSettings(){
-  const c={openaiKey:val('openaiKey'),openaiModel:val('openaiModel'),openaiModelCustom:val('openaiModelCustom').trim(),
-    geminiKey:val('geminiKey'),geminiModel:val('geminiModel'),geminiModelCustom:val('geminiModelCustom').trim()};
-  localStorage.setItem('lp_settings',JSON.stringify(c));
-  toast('✓ AI 設定已儲存於本機');closeSettings();
-}
-function openaiModelName(c){return (c.openaiModelCustom&&c.openaiModelCustom.trim())||c.openaiModel||'gpt-5.4-mini';}
-function geminiModelName(c){return (c.geminiModelCustom&&c.geminiModelCustom.trim())||c.geminiModel||'gemini-3.5-flash';}
-
-/* ---------- 照片 ---------- */
-const photoStore={}; // {tid:[{src,caption}]}
-function handlePhotos(tid){
-  const files=document.getElementById('ev_file_'+tid).files;
-  if(!photoStore[tid])photoStore[tid]=[];
-  [...files].forEach(file=>{
-    if(!file.type.startsWith('image/'))return;
-    const r=new FileReader();
-    r.onload=e=>{photoStore[tid].push({src:e.target.result,caption:''});renderPhotos(tid);};
-    r.readAsDataURL(file);
+async function idbTx(storeName, mode, fn) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, mode);
+    const req = fn(tx.objectStore(storeName));
+    let out; if (req) req.onsuccess = () => { out = req.result; };
+    tx.oncomplete = () => resolve(out);
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error || new Error('交易中止'));
   });
 }
-function renderPhotos(tid){
-  const g=document.getElementById('photos_'+tid);
-  if(!g)return;
-  const arr=photoStore[tid]||[];
-  g.innerHTML=arr.map((p,i)=>`
-    <div class="photo-item">
-      <button class="del" onclick="delPhoto('${tid}',${i})">✕</button>
-      <img src="${p.src}">
-      <input type="text" placeholder="圖說（標出自己是哪位）" value="${(p.caption||'').replace(/"/g,'&quot;')}"
-        oninput="photoStore['${tid}'][${i}].caption=this.value">
-    </div>`).join('');
+const idbGet = (s, k) => idbTx(s, 'readonly', st => st.get(k));
+const idbPut = (s, k, v) => idbTx(s, 'readwrite', st => st.put(v, k));
+const idbDel = (s, k) => idbTx(s, 'readwrite', st => st.delete(k));
+const idbAll = s => idbTx(s, 'readonly', st => st.getAll());
+
+async function commitLocal(data, savedAt) {
+  const payload = { ...data, savedAt, rev: meta.rev + 1, appVersion: APP_VERSION, app: APP_ID };
+  let ok = false;
+  if (store.mode === 'idb') {
+    try { await idbPut('kv', 'state', payload); ok = true; dailySnapshot(payload).catch(() => {}); }
+    catch (e) { store.mode = 'ls'; console.warn('IndexedDB 寫入失敗，改用 localStorage 後援', e); }
+  }
+  try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); store.mirrorOk = true; if (store.mode === 'ls') ok = true; }
+  catch { store.mirrorOk = false; }
+  if (!ok) throw new Error('IndexedDB 與 localStorage 都無法寫入');
+  meta.rev = payload.rev; meta.savedAt = savedAt;
+  store.lastSavedAt = Date.now(); store.error = '';
+  if (bc) bc.postMessage({ type: 'saved', rev: meta.rev, from: tabId });
+  return payload;
 }
-function delPhoto(tid,i){
-  if(confirm('刪除此圖片？')){photoStore[tid].splice(i,1);renderPhotos(tid);}
+function touch() { const d = state.docs[state.current]; if (d) d.updatedAt = Date.now(); saveLocal(); }
+function touchLight() {
+  touch();
+  clearTimeout(navTimer); navTimer = setTimeout(() => { renderNav(); renderBadges(); renderWho(); renderHead(); }, 300);
+}
+function saveLocal() {
+  if (!booted) return;
+  dirty = true; folder.dirty = true;
+  clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 300);
+  renderSaveTag();
+}
+async function flushSave() {
+  clearTimeout(saveTimer);
+  if (!booted || !dirty) return;
+  if (savingPromise) { await savingPromise; return flushSave(); }
+  savingPromise = doSave().finally(() => { savingPromise = null; renderSaveTag(); });
+  return savingPromise;
+}
+async function doSave() {
+  store.saving = true; renderSaveTag();
+  try {
+    if (store.mode === 'idb') {
+      let c = null; try { c = await idbGet('kv', 'state'); } catch {}
+      if (c && (c.rev || 0) > meta.rev) { await handleTabConflict(c); return; }
+    }
+    dirty = false;
+    await commitLocal(currentData(), Date.now());
+    scheduleFolderWrite();
+  } catch (e) {
+    dirty = true; store.error = '儲存失敗';
+    toast('⚠ 儲存失敗：' + (e.message || e) + '　請先下載備份，勿關閉頁面。', 'error');
+  } finally { store.saving = false; }
+}
+async function handleTabConflict(c) {
+  if (conflictOpen) return;
+  conflictOpen = true;
+  const choice = await askChoice('另一個分頁已修改資料',
+    `<p>這台電腦上另一個分頁在 ${esc(fmtTime(c.savedAt))} 儲存過資料，與本頁內容不同。</p><p>另一分頁：${esc(countsText(c))}<br>本頁：${esc(countsText(currentData()))}</p>`,
+    [{ value: 'reload', label: '載入最新資料', style: 'primary' }, { value: 'overwrite', label: '以本頁內容覆蓋', style: 'danger' }, { value: 'download', label: '先下載本頁備份', style: 'plain' }]);
+  conflictOpen = false;
+  if (choice === 'reload') {
+    const d = normalizeData(c); meta.rev = c.rev || 0; meta.savedAt = c.savedAt || 0; dirty = false;
+    if (d) applyData(d); toast('已載入另一分頁的最新資料');
+  } else if (choice === 'overwrite') {
+    await makeSnapshot('被本頁覆蓋前（另一分頁）', c); meta.rev = c.rev || 0; dirty = true; setTimeout(flushSave, 0);
+  } else { await exportBackup(); dirty = true; }
+}
+async function saveNow() {
+  dirty = true; folder.dirty = true;
+  await flushSave();
+  if (folder.handle && ['ok', 'error'].includes(folder.status)) { clearTimeout(folder.timer); await writeMaster(); }
+  if (!store.error) toast(folder.status === 'ok' ? '已儲存（本機＋資料夾）' : '已儲存到這台電腦');
+}
+function applyData(d) {
+  state = { profile: d.profile, docs: d.docs, current: d.current };
+  renderAll();
+  if ($('setDlg').open) renderSettings();
 }
 
-/* ---------- 草稿上傳 / 擷取 / 檢視 / 分項 ---------- */
-async function handleDraftUpload(tid){
-  const input=document.getElementById('draft_file_'+tid);
-  const file=input.files[0];
-  if(!file)return;
-  const status=document.getElementById('draftStatus_'+tid);
-  status.textContent='⏳ 正在擷取文字…';
-  try{
-    let text='';
-    const ext=(file.name.split('.').pop()||'').toLowerCase();
-    if(ext==='pdf'){
-      text=await extractPDF(file);
-    }else if(ext==='docx'||ext==='doc'){
-      if(!window.mammoth)throw new Error('Word 擷取元件未載入，請檢查網路');
-      const ab=await file.arrayBuffer();
-      const res=await window.mammoth.extractRawText({arrayBuffer:ab});
-      text=res.value;
-    }else{ text=await file.text(); }
-    text=(text||'').replace(/\n{3,}/g,'\n\n').trim();
-    if(!text){status.textContent='⚠️ 未擷取到文字（可能是掃描圖檔的 PDF），請手動貼上草稿。';}
-    else{status.textContent=`✅ 已擷取「${file.name}」約 ${text.replace(/\s/g,'').length} 字`;}
-    document.getElementById('draftArea_'+tid).style.display='block';
-    document.getElementById('draft_'+tid).value=text;
-    bigData[tid]=bigData[tid]||{}; bigData[tid].__draft=text; bigData[tid].__draftName=file.name;
-  }catch(e){
-    status.textContent='❌ 擷取失敗：'+e.message+'（可手動貼上草稿）';
-    document.getElementById('draftArea_'+tid).style.display='block';
-  }
+/* ---------- 自動還原點 ---------- */
+async function dailySnapshot(payload) {
+  const id = 'day-' + dayStamp();
+  if (!await idbGet('snapshots', id)) await idbPut('snapshots', id, { id, at: Date.now(), reason: '每日自動', data: payload });
+  await pruneSnapshots();
 }
-async function extractPDF(file){
-  if(!window.pdfjsLib)throw new Error('PDF 擷取元件未載入，請檢查網路');
-  const ab=await file.arrayBuffer();
-  const pdf=await window.pdfjsLib.getDocument({data:ab}).promise;
-  let out='';
-  for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const c=await page.getTextContent();
-    out+=c.items.map(it=>it.str).join(' ')+'\n\n';
-  }
-  return out;
+async function makeSnapshot(reason, data) {
+  if (store.mode !== 'idb' || !booted) return false;
+  try {
+    const id = `evt-${minuteStamp()}-${Date.now() % 100000}`;
+    await idbPut('snapshots', id, { id, at: Date.now(), reason, data: clone(data || currentData()) });
+    await pruneSnapshots();
+    if ($('setDlg').open) renderSnapshots();
+    return true;
+  } catch { return false; }
 }
-let draftCollapsed={};
-function toggleDraftView(tid){
-  const ta=document.getElementById('draft_'+tid);
-  const outline=document.getElementById('draftOutline_'+tid);
-  const btn=document.getElementById('draftToggle_'+tid);
-  draftCollapsed[tid]=!draftCollapsed[tid];
-  if(draftCollapsed[tid]){
-    const text=ta.value;
-    const paras=text.split(/\n+/).filter(p=>p.trim());
-    const len=text.replace(/\s/g,'').length;
-    const photoN=(photoStore[tid]||[]).length;
-    let html=`<b>📊 檔案全貌（縮寫檢視）</b><br>全文約 ${len} 字、${paras.length} 段、佐證圖片 ${photoN} 張。<hr style="border:none;border-top:1px solid var(--teal-l);margin:8px 0"><b>段落綱要：</b><ol style="margin:6px 0;padding-left:20px">`;
-    paras.slice(0,12).forEach(p=>{ const lead=p.trim().replace(/\s+/g,' ').slice(0,40); html+=`<li style="margin:3px 0">${esc(lead)}${p.length>40?'…':''}</li>`; });
-    if(paras.length>12)html+=`<li>…（還有 ${paras.length-12} 段）</li>`;
-    html+='</ol>';
-    outline.innerHTML=html; outline.style.display='block';
-    ta.style.display='none'; btn.textContent='📄 展開完整草稿';
-  }else{
-    outline.style.display='none'; ta.style.display='block'; btn.textContent='🔍 縮寫檢視全貌';
-  }
+async function pruneSnapshots() {
+  const all = await idbAll('snapshots');
+  const days = all.filter(s => s.id.startsWith('day-')).sort((a, b) => b.id.localeCompare(a.id));
+  const evts = all.filter(s => s.id.startsWith('evt-')).sort((a, b) => b.at - a.at);
+  for (const s of [...days.slice(DAILY_SNAP_KEEP), ...evts.slice(EVENT_SNAP_KEEP)]) await idbDel('snapshots', s.id);
 }
-function restoreDraft(tid){
-  const d=bigData[tid]||{};
-  if(d.__draft){
-    document.getElementById('draftArea_'+tid).style.display='block';
-    document.getElementById('draft_'+tid).value=d.__draft;
-    if(d.__draftName)document.getElementById('draftStatus_'+tid).textContent=`✅ 已載入「${d.__draftName}」`;
-  }
-  if(d.__draftOutput){
-    document.getElementById('draftArea_'+tid).style.display='block';
-    renderDraftOutput(tid,d.__draftOutput);
-  }
+async function renderSnapshots() {
+  const box = $('snapshotList'); if (!box) return;
+  if (store.mode !== 'idb') { box.innerHTML = '<p class="hint">此瀏覽器目前無法使用 IndexedDB，因此沒有自動還原點。請定期下載備份。</p>'; return; }
+  let list = []; try { list = (await idbAll('snapshots')).sort((a, b) => b.at - a.at); } catch {}
+  if (!list.length) { box.innerHTML = '<p class="hint">目前還沒有還原點。開始使用後每天會自動留一份。</p>'; return; }
+  box.innerHTML = `<div class="snap-wrap"><table class="snap"><thead><tr><th>時間</th><th>原因</th><th>內容</th><th></th></tr></thead><tbody>${list.map(s =>
+    `<tr><td style="white-space:nowrap">${esc(fmtTime(s.at))}</td><td>${esc(s.reason)}</td><td>${esc(countsText(s.data))}</td><td style="white-space:nowrap"><button type="button" class="btn sub sm" data-action="snap-restore" data-snap="${esc(s.id)}">還原</button> <button type="button" class="btn sub sm" data-action="snap-dl" data-snap="${esc(s.id)}">下載</button></td></tr>`).join('')}</tbody></table></div>`;
 }
-/* ---------- 儲存 / 讀取 ---------- */
-function val(id){const e=document.getElementById(id);return e?e.value:'';}
-let bigData={}; // 全部欄位資料 {tid:{fid:val}}
+async function snapAct(act, id) {
+  let snap = null; try { snap = await idbGet('snapshots', id); } catch {} if (!snap) return;
+  if (act === 'dl') { await exportBackup(snap.data, `學習歷程_還原點_${snap.id}.json`); return; }
+  if (!await confirmBox('還原這個還原點？', `<p>時間：${esc(fmtTime(snap.at))}（${esc(snap.reason)}）</p><p>還原點：${esc(countsText(snap.data))}<br>目前：${esc(countsText(currentData()))}</p><p>還原前會先把目前資料存成還原點。</p>`, '還原')) { $('setDlg').open || openSettings(); return; }
+  const d = normalizeData(snap.data); if (!d) { toast('還原點內容無法讀取', 'error'); return; }
+  await makeSnapshot('還原前');
+  applyData(d); saveLocal(); renderSnapshots(); toast('已還原');
+  if (!$('setDlg').open) openSettings();
+}
 
-function saveCurrentFields(){
-  const t=TYPES.find(x=>x.id===currentType);
-  if(!t)return;
-  bigData[t.id]=bigData[t.id]||{};
-  t.fields.forEach(f=>{ bigData[t.id][f.id]=val(`f_${t.id}_${f.id}`); });
-  bigData[t.id].__evtheme=val('ev_theme_'+t.id);
-  const mt=document.getElementById('mergedText_'+t.id);
-  if(mt)bigData[t.id].__merged=mt.value;
-  const dr=document.getElementById('draft_'+t.id);
-  if(dr)bigData[t.id].__draft=dr.value;
-  const dout=document.getElementById('draftOutputText_'+t.id);
-  if(dout)bigData[t.id].__draftOutput=dout.value;
+/* ---------- 資料夾正本（File System Access API，Chrome／Edge） ---------- */
+const fsSupported = typeof window.showDirectoryPicker === 'function';
+const folder = { handle: null, name: '', status: fsSupported ? 'none' : 'unsupported', known: null, dirty: false, timer: null, writing: null, histCount: 0, errMsg: '', warned: false, lastWrite: 0, photoDone: new Set(), photoCount: 0 };
+async function readMaster(dir) {
+  try {
+    const fh = await dir.getFileHandle(FOLDER_FILE), file = await fh.getFile(), text = await file.text();
+    let obj = null; try { obj = JSON.parse(text); } catch {}
+    return { exists: true, text, obj, lastModified: file.lastModified };
+  } catch (e) { if (e && e.name === 'NotFoundError') return { exists: false }; throw e; }
 }
-function restoreFields(t){
-  const d=bigData[t.id]||{};
-  t.fields.forEach(f=>{
-    const el=document.getElementById(`f_${t.id}_${f.id}`);
-    if(el){el.value=d[f.id]||'';updateCount(t.id,f.id);}
+async function writeFileSafe(dir, name, data) {
+  const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable();
+  try { await w.write(data); await w.close(); } catch (e) { try { await w.abort(); } catch {} throw e; }
+  return (await fh.getFile()).lastModified;
+}
+const knownOf = (c, lm) => ({ lastModified: lm ?? c.lastModified, rev: c.obj?.rev ?? 0, savedAt: c.obj?.savedAt ?? 0, savedBy: c.obj?.savedBy ?? '' });
+function masterChanged(c) {
+  if (!c.exists) return false;
+  const k = folder.known; if (!k) return true;
+  if (c.lastModified === k.lastModified) return false;
+  return (c.obj?.rev ?? 0) !== k.rev || (c.obj?.savedAt ?? 0) !== k.savedAt || (c.obj?.savedBy ?? '') !== k.savedBy;
+}
+async function rememberKnown(k) { folder.known = k; try { await idbPut('kv', 'folderKnown', k); } catch {} }
+async function ensureDailyHistory(c) {
+  if (!c.exists) return;
+  const hist = await folder.handle.getDirectoryHandle(FOLDER_HIST, { create: true });
+  const name = `學習歷程資料_${dayStamp()}.json`;
+  let has = true; try { await hist.getFileHandle(name); } catch { has = false; }
+  if (!has) await writeFileSafe(hist, name, c.text);
+  const names = []; for await (const [n, h] of hist.entries()) if (h.kind === 'file' && FOLDER_HIST_RE.test(n)) names.push(n);
+  names.sort().reverse();
+  for (const n of names.slice(HIST_KEEP)) await hist.removeEntry(n);
+  folder.histCount = Math.min(names.length, HIST_KEEP);
+}
+async function countHistory() {
+  try { const hist = await folder.handle.getDirectoryHandle(FOLDER_HIST); let n = 0; for await (const [name, h] of hist.entries()) if (h.kind === 'file' && FOLDER_HIST_RE.test(name)) n++; folder.histCount = n; }
+  catch { folder.histCount = 0; }
+}
+/* 圖片：資料夾內「學習歷程圖片/」每張一個 jpg（只新增不刪除，避免誤刪） */
+async function syncPhotosToFolder() {
+  const ids = referencedPhotos(); if (!ids.size) { folder.photoCount = 0; return; }
+  const dir = await folder.handle.getDirectoryHandle(FOLDER_PHOTOS, { create: true });
+  for (const id of ids) {
+    if (folder.photoDone.has(id)) continue;
+    const name = id + '.jpg';
+    let exists = true; try { await dir.getFileHandle(name); } catch { exists = false; }
+    if (!exists) { const b = await getPhotoBlob(id); if (!b) continue; await writeFileSafe(dir, name, b); }
+    folder.photoDone.add(id);
+  }
+  folder.photoCount = ids.size;
+}
+async function pullPhotosFromFolder(dir, docs) {
+  let dirP = null; try { dirP = await dir.getDirectoryHandle(FOLDER_PHOTOS); } catch { return 0; }
+  let n = 0;
+  for (const id of referencedPhotos(docs)) {
+    if (await getPhotoBlob(id)) continue;
+    try { const f = await (await dirP.getFileHandle(id + '.jpg')).getFile(); await storePhoto(f, id); folder.photoDone.add(id); n++; } catch {}
+  }
+  return n;
+}
+const masterPayload = () => ({ ...currentData(), savedAt: meta.savedAt || Date.now(), rev: meta.rev, savedBy: deviceName(), appVersion: APP_VERSION, app: APP_ID });
+async function writeConflictFile(text, who) {
+  const name = `學習歷程資料_衝突_${safeName(who)}_${minuteStamp()}.json`;
+  await writeFileSafe(folder.handle, name, text); return name;
+}
+async function writeMaster({ force = false } = {}) {
+  if (!folder.handle || !['ok', 'error', 'paused'].includes(folder.status)) return;
+  if (folder.status === 'paused' && !force) return;
+  if (folder.writing) { await folder.writing; return writeMaster({ force }); }
+  folder.writing = (async () => {
+    try {
+      const c = await readMaster(folder.handle);
+      if (!force && masterChanged(c)) { await folderConflict(c); return; }
+      await ensureDailyHistory(c);
+      await syncPhotosToFolder();
+      const payload = masterPayload();
+      const lm = await writeFileSafe(folder.handle, FOLDER_FILE, JSON.stringify(payload, null, 2));
+      await rememberKnown({ lastModified: lm, rev: payload.rev, savedAt: payload.savedAt, savedBy: payload.savedBy });
+      Object.assign(folder, { dirty: false, status: 'ok', errMsg: '', warned: false, lastWrite: Date.now() });
+      countHistory().then(renderFolder);
+    } catch (e) {
+      folder.status = 'error'; folder.errMsg = e?.message || String(e);
+      if (!folder.warned) { toast('📁 寫入資料夾失敗，資料仍保存在本機，下次儲存會自動重試', 'error'); folder.warned = true; }
+    }
+  })();
+  try { await folder.writing; } finally { folder.writing = null; renderFolder(); renderSaveTag(); }
+}
+function scheduleFolderWrite() {
+  if (!folder.handle || !['ok', 'error'].includes(folder.status)) return;
+  clearTimeout(folder.timer); folder.timer = setTimeout(() => writeMaster(), 2000); renderFolder();
+}
+async function loadFromMaster(c, reason) {
+  const d = normalizeData(c.obj);
+  if (!d) { toast('資料夾內的資料檔無法讀取', 'error'); return false; }
+  if (!isEmptyAll()) await makeSnapshot(reason || '載入資料夾資料前');
+  await pullPhotosFromFolder(folder.handle, d.docs);
+  applyData(d); dirty = false;
+  await commitLocal(currentData(), d.savedAt || Date.now());
+  await rememberKnown(knownOf(c)); folder.dirty = false;
+  return true;
+}
+function compareTable(fd, ld, lat) {
+  const row = (label, d, at, by) => `<tr><td><b>${label}</b></td><td>${esc(countsText(d))}</td><td>${esc(fmtTime(at))}${by ? '｜' + esc(by) : ''}</td></tr>`;
+  return `<table class="snap">${row('資料夾', fd, fd?.savedAt, fd?.savedBy)}${row('這台電腦', ld, lat, deviceName())}</table>`;
+}
+async function folderConflict(c) {
+  if (conflictOpen) return;
+  conflictOpen = true;
+  const other = c.obj || {};
+  const choice = await askChoice('資料夾內的資料已被另一台電腦更新',
+    `<p>「${esc(other.savedBy || '另一台電腦')}」在 ${esc(fmtTime(other.savedAt))} 更新了資料夾內的資料，本頁也有尚未寫入的修改。</p>${compareTable(other, currentData(), meta.savedAt)}`,
+    [{ value: 'load', label: '載入資料夾版本', style: 'primary' }, { value: 'overwrite', label: '以這台覆蓋', style: 'danger' }, { value: 'later', label: '另存衝突檔並暫停同步', style: 'plain' }]);
+  conflictOpen = false; hideBanner();
+  try {
+    if (choice === 'load') { await loadFromMaster(c, '載入資料夾資料前（本頁未寫入的內容）'); folder.status = 'ok'; toast('已載入資料夾內的最新資料；本頁原內容已存成還原點'); }
+    else if (choice === 'overwrite') { const n = await writeConflictFile(c.text, other.savedBy || '另一台電腦'); folder.status = 'ok'; await rememberKnown(knownOf(c)); setTimeout(() => writeMaster({ force: true }), 0); toast(`資料夾原檔已另存為 ${n}`); }
+    else { const n = await writeConflictFile(JSON.stringify(masterPayload(), null, 2), deviceName()); folder.status = 'paused'; toast(`本頁內容已另存為 ${n}，資料夾同步暫停`, 'error'); }
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); }
+  renderFolder(); renderSaveTag();
+}
+async function reconcile(dir, firstLink) {
+  const c = await readMaster(dir);
+  const prevHandle = folder.handle, prevKnown = folder.known;
+  folder.handle = dir; folder.name = dir.name;
+  if (firstLink) { folder.known = null; folder.photoDone.clear(); }
+  const commit = async () => { folder.status = 'ok'; try { await idbPut('kv', 'folderHandle', dir); } catch {} await countHistory(); };
+  if (!c.exists) { await commit(); await writeMaster({ force: true }); if (folder.status === 'ok') toast(`已在資料夾建立「${FOLDER_FILE}」`); return true; }
+  if (!c.obj || !normalizeData(c.obj)) {
+    folder.handle = prevHandle; folder.known = prevKnown;
+    await askChoice('資料夾內的資料檔無法讀取', `<p>${esc(FOLDER_FILE)} 不是本程式可讀的格式。請檢查檔案，或改選其他資料夾。</p>`, [{ value: 'ok', label: '知道了', style: 'primary' }]);
+    return false;
+  }
+  const localEmpty = isEmptyAll();
+  const mChanged = masterChanged(c);
+  const lChanged = !folder.known || meta.savedAt > (folder.known.savedAt || 0) || dirty;
+  if (!firstLink && !mChanged) { await commit(); await rememberKnown(knownOf(c)); if (lChanged) await writeMaster(); return true; }
+  if (localEmpty || (!firstLink && !lChanged)) { await commit(); await loadFromMaster(c); toast(`已載入資料夾內的資料（${countsText(c.obj)}）`); return true; }
+  const choice = await askChoice(firstLink ? '資料夾內已有學習歷程資料' : '這台電腦與資料夾的資料不同',
+    `<p>${firstLink ? '選擇的資料夾中已經有學習歷程資料，這台電腦也有資料。' : '上次沒連上資料夾時這台電腦改過資料，資料夾內的資料也被更新過。'}請選擇要使用哪一份：</p>${compareTable(c.obj, currentData(), meta.savedAt)}<p class="hint" style="margin-top:10px">沒被選用的一份不會遺失：本機資料會存成還原點；資料夾資料會另存成衝突檔。</p>`,
+    [{ value: 'folder', label: '使用資料夾內的資料', style: 'primary' }, { value: 'local', label: '用本機資料覆蓋資料夾', style: 'danger' }, { value: 'cancel', label: '取消', style: 'plain' }]);
+  if (choice === 'folder') { await commit(); await loadFromMaster(c, '改用資料夾資料前'); toast('已改用資料夾內的資料；本機原資料已存成還原點'); return true; }
+  if (choice === 'local') { await commit(); const n = await writeConflictFile(c.text, c.obj.savedBy || '資料夾原檔'); await rememberKnown(knownOf(c)); await writeMaster({ force: true }); toast(`已用本機資料覆蓋；資料夾原檔另存為 ${n}`); return true; }
+  if (firstLink) { folder.handle = prevHandle; folder.known = prevKnown; if (!prevHandle) folder.status = 'none'; } else folder.status = 'paused';
+  return false;
+}
+async function pickFolder() {
+  if (!fsSupported) { toast('這個瀏覽器不支援選擇資料夾，請改用電腦版 Chrome 或 Edge', 'error'); return; }
+  let dir;
+  try { dir = await window.showDirectoryPicker({ id: APP_ID, mode: 'readwrite' }); }
+  catch (e) { if (e?.name !== 'AbortError') toast('無法開啟資料夾：' + (e?.message || e), 'error'); return; }
+  try {
+    if (typeof dir.queryPermission === 'function' && (await dir.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+      if ((await dir.requestPermission({ mode: 'readwrite' })) !== 'granted') { toast('沒有取得資料夾寫入權限', 'error'); return; }
+    }
+    await flushSave(); await reconcile(dir, true);
+  } catch (e) { toast('連結資料夾失敗：' + (e?.message || e), 'error'); }
+  hideBanner(); renderFolder(); renderSaveTag();
+}
+async function disconnectFolder() {
+  if (!await confirmBox('中斷資料夾連結？', '<p>資料夾內的檔案不會被刪除，這台電腦的資料也會保留；之後只存在這台電腦的瀏覽器。</p>', '中斷連結', 'danger')) { openSettings(); return; }
+  clearTimeout(folder.timer);
+  try { await idbDel('kv', 'folderHandle'); await idbDel('kv', 'folderKnown'); } catch {}
+  Object.assign(folder, { handle: null, name: '', status: 'none', known: null, dirty: false, errMsg: '', histCount: 0, lastWrite: 0 });
+  folder.photoDone.clear();
+  hideBanner(); openSettings(); renderSaveTag(); toast('已中斷資料夾連結');
+}
+async function grantFolder() {
+  if (!folder.handle) return;
+  try {
+    if (typeof folder.handle.requestPermission === 'function' && (await folder.handle.requestPermission({ mode: 'readwrite' })) !== 'granted') { toast('沒有取得資料夾權限，目前仍使用本機資料', 'error'); return; }
+    await flushSave(); await reconcile(folder.handle, false); hideBanner();
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); toast('無法讀取資料夾，目前仍使用本機資料', 'error'); }
+  renderFolder(); renderSaveTag();
+}
+async function reloadFromFolder() {
+  if (!folder.handle) return;
+  try {
+    const c = await readMaster(folder.handle);
+    if (!c.exists) { toast('資料夾內還沒有資料檔'); return; }
+    await loadFromMaster(c, '從資料夾重新載入前'); folder.status = 'ok'; hideBanner(); toast('已從資料夾重新載入');
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); toast('讀取資料夾失敗', 'error'); }
+  renderFolder(); renderSaveTag();
+}
+async function writeNow() { if (!folder.handle) return; folder.dirty = true; clearTimeout(folder.timer); await flushSave(); await writeMaster({ force: folder.status === 'paused' }); toast(folder.status === 'ok' ? '已寫入資料夾' : '寫入失敗，請看狀態說明', folder.status === 'ok' ? '' : 'error'); }
+async function initFolder() {
+  if (!fsSupported || store.mode !== 'idb') { renderFolder(); return; }
+  let dir = null;
+  try { dir = await idbGet('kv', 'folderHandle'); folder.known = (await idbGet('kv', 'folderKnown')) || null; } catch {}
+  if (!dir) { renderFolder(); return; }
+  folder.handle = dir; folder.name = dir.name;
+  let perm = 'granted';
+  if (typeof dir.queryPermission === 'function') { perm = 'prompt'; try { perm = await dir.queryPermission({ mode: 'readwrite' }); } catch {} }
+  if (perm === 'granted') {
+    try { await reconcile(dir, false); }
+    catch (e) {
+      folder.status = 'error'; folder.errMsg = e?.message || String(e);
+      showBanner(`⚠ 無法讀取資料夾「${esc(folder.name)}」（可能已被移動、刪除或雲端硬碟未啟動），目前使用本機資料。`, [{ label: '重試', fn: grantFolder }, { label: '更換資料夾', fn: pickFolder }]);
+    }
+  } else {
+    folder.status = 'needPermission';
+    showBanner(`📁 請點「重新授權」以使用「${esc(folder.name)}」內的資料——授權前畫面顯示的是這台電腦的本機資料，可能不是最新。`, [{ label: '重新授權', fn: grantFolder }]);
+  }
+  renderFolder(); renderSaveTag();
+}
+let checkingFolder = false;
+async function checkFolderUpdate() {
+  if (checkingFolder || folder.status !== 'ok' || !folder.handle || folder.writing || conflictOpen) return;
+  checkingFolder = true;
+  try {
+    const c = await readMaster(folder.handle);
+    if (!masterChanged(c)) return;
+    if (dirty || folder.dirty) { await folderConflict(c); return; }
+    showBanner(`🔄 另一台電腦（${esc(c.obj?.savedBy || '另一台電腦')}）已於 ${esc(fmtTime(c.obj?.savedAt))} 更新了學習歷程資料。`, [{ label: '載入', fn: reloadFromFolder }]);
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); renderFolder(); renderSaveTag(); }
+  finally { checkingFolder = false; }
+}
+
+/* ---------- 儲存狀態與設定頁 ---------- */
+function saveTagInfo() {
+  if (!booted) return ['💾 讀取中…', ''];
+  if (store.error) return ['⚠️ 儲存失敗', 'err'];
+  if (folder.status === 'needPermission') return ['⚠️ 資料夾需重新授權', 'warn'];
+  if (folder.status === 'error') return ['⚠️ 資料夾寫入失敗', 'err'];
+  if (folder.status === 'paused') return ['⏸ 資料夾同步暫停', 'warn'];
+  if (store.saving || dirty) return ['💾 儲存中…', ''];
+  const last = store.lastSavedAt || meta.savedAt, t = last ? new Date(last) : null, hm = t ? ` ${pad(t.getHours())}:${pad(t.getMinutes())}` : '';
+  if (store.mode === 'ls') return ['💾 已存本機（後援）' + hm, 'warn'];
+  if (folder.status === 'ok') return ['✓ 已存本機＋資料夾' + hm, ''];
+  return ['✓ 已存本機' + hm, ''];
+}
+function renderSaveTag() { const [t, c] = saveTagInfo(), el = $('saveTag'); el.textContent = t; el.className = 'savetag' + (c ? ' ' + c : ''); }
+function renderStoreInfo() {
+  $('storeInfo').innerHTML = `
+    <dt>本機儲存</dt><dd>${store.mode === 'idb' ? '<span class="pill on">IndexedDB</span>' : '<span class="pill warn">localStorage 後援（圖片無法長期保存）</span>'}</dd>
+    <dt>持久儲存</dt><dd>${store.persisted === true ? '<span class="pill on">已啟用</span> 瀏覽器不會自動清除' : store.persisted === false ? '<span class="pill warn">未啟用</span> 空間不足時瀏覽器可能清除資料，建議連接資料夾' : '—'}</dd>
+    <dt>目前內容</dt><dd>${esc(countsText(currentData()))}</dd>
+    <dt>最後儲存</dt><dd>${esc(fmtTime(store.lastSavedAt || meta.savedAt))}</dd>
+    <dt>這台電腦</dt><dd>${esc(deviceName())}</dd>`;
+}
+function renderFolder() {
+  const box = $('folderCard'); if (!box) return;
+  if (folder.status === 'unsupported') { box.innerHTML = '<h3>📁 雲端資料夾長期保存</h3><p class="hint">這個瀏覽器（手機、iPad Safari、Firefox）不支援資料夾儲存。請用下方「下載完整備份」定期保存，其他功能照常使用。</p>'; return; }
+  if (store.mode !== 'idb') { box.innerHTML = '<h3>📁 雲端資料夾長期保存</h3><p class="hint">IndexedDB 無法使用，資料夾儲存也暫停。請改用下載備份。</p>'; return; }
+  const st = { none: ['未連接', ''], ok: ['同步中', 'on'], error: ['寫入失敗', 'err'], paused: ['同步暫停', 'warn'], needPermission: ['需要重新授權', 'warn'] }[folder.status] || ['—', ''];
+  if (!folder.handle) {
+    box.innerHTML = `<h3>📁 雲端資料夾長期保存 <span class="pill">未連接</span></h3>
+      <p class="hint">建議選雲端硬碟（Google Drive、OneDrive）裡的一個資料夾，例如「我的學習歷程」。程式會在裡面建立：<br>
+      ・<code>${esc(FOLDER_FILE)}</code>（全部文字內容）<br>・<code>${esc(FOLDER_PHOTOS)}/</code>（佐證圖片，每張一個 jpg，可以直接拿去用）<br>・<code>${esc(FOLDER_HIST)}/</code>（每天一份歷史備份，保留 ${HIST_KEEP} 份）<br>
+      之後每次修改都會自動寫入；換電腦時選同一個資料夾就能接著寫。上傳的 PDF／Word 原檔與 API 金鑰不會寫入資料夾。</p>
+      <div class="actions"><button type="button" class="btn sm" data-action="folder-pick">選擇資料夾</button></div>`;
+    return;
+  }
+  box.innerHTML = `<h3>📁 雲端資料夾長期保存 <span class="pill ${st[1]}">${st[0]}</span></h3>
+    <dl class="kv"><dt>資料夾</dt><dd>${esc(folder.name)}</dd><dt>最後寫入</dt><dd>${esc(fmtTime(folder.lastWrite || folder.known?.savedAt))}</dd>
+    <dt>歷史備份</dt><dd>${folder.histCount} 份</dd><dt>圖片</dt><dd>${folder.photoCount} 張</dd>
+    ${folder.errMsg ? `<dt>錯誤</dt><dd style="color:var(--danger)">${esc(folder.errMsg)}</dd>` : ''}</dl>
+    <div class="actions">
+      ${folder.status === 'needPermission' || folder.status === 'error' ? '<button type="button" class="btn sm" data-action="folder-grant">重新授權／重試</button>' : ''}
+      <button type="button" class="btn sub sm" data-action="folder-write">${folder.status === 'paused' ? '恢復同步並寫入' : '立即寫入'}</button>
+      <button type="button" class="btn sub sm" data-action="folder-reload">從資料夾重新載入</button>
+      <button type="button" class="btn sub sm" data-action="folder-pick">更換資料夾</button>
+      <button type="button" class="btn danger sm" data-action="folder-off">中斷連結</button>
+    </div>`;
+}
+function renderLegacy() {
+  const list = readLegacyList();
+  $('legacySec').hidden = !list.length;
+  $('legacyList').innerHTML = list.length ? `<p class="hint">瀏覽器裡還留有舊版用「儲存」存下的資料。匯入會取代目前內容（會先留還原點）；舊資料本身不會被刪除。</p>` +
+    list.map(it => `<div class="split-row" style="display:flex;align-items:center;gap:10px"><div style="flex:1"><b>${esc(it.name)}</b><div class="hint">${it.dept ? '目標校系：' + esc(it.dept) + '　' : ''}${it.ts ? '儲存：' + esc(fmtTime(Date.parse(it.ts))) : ''}</div></div>
+      <button type="button" class="btn sub sm" data-action="legacy-import" data-key="${esc(it.key)}">匯入</button></div>`).join('') : '';
+}
+function renderSettings() {
+  renderStoreInfo(); renderFolder(); renderSnapshots(); renderLegacy(); loadAiConfig();
+  $('themeSel').value = prefs.theme; $('bigText').checked = !!prefs.big;
+}
+function openSettings(focus) {
+  renderSettings();
+  if (!$('setDlg').open) $('setDlg').showModal();
+  if (focus === 'ai') setTimeout(() => $('openaiKey').scrollIntoView({ block: 'center' }), 50);
+}
+
+/* =========================================================
+   備份檔匯出／匯入（含圖片，不含金鑰）
+   ========================================================= */
+async function exportBackup(data = null, filename = null) {
+  await flushSave();
+  const src = data ? normalizeData(data) : currentData();
+  if (!src) { toast('資料無法匯出', 'error'); return; }
+  const photos = {};
+  for (const id of referencedPhotos(src.docs)) { const b = await getPhotoBlob(id); if (b) photos[id] = await blobToDataURL(b); }
+  const out = { app: APP_ID, version: 3, exportedAt: Date.now(), exportedBy: deviceName(), data: { profile: src.profile, docs: src.docs, current: src.current }, photos };
+  const name = filename || `${safeName(src.profile?.name || '學生')}_學習歷程_完整備份_${dayStamp()}.json`;
+  downloadBlob(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' }), name);
+  toast('已下載備份檔');
+}
+async function importBackup(file) {
+  let obj; try { obj = JSON.parse(await file.text()); } catch { toast('檔案不是正確的 JSON', 'error'); return; }
+  let d = null, photos = {};
+  if (obj && obj.app === APP_ID && obj.data) { d = normalizeData(obj.data); photos = obj.photos || {}; }
+  else if (obj && obj.data && obj.photos && !obj.app) { const r = await fromV2(obj); d = r; }
+  if (!d) { toast('看不懂這個檔案的格式', 'error'); return; }
+  if (!await confirmBox('匯入備份？', `<p>備份檔：${esc(countsText(d))}<br>目前：${esc(countsText(currentData()))}</p><p>匯入會取代目前全部內容；匯入前會先留一個還原點。</p>`, '匯入並取代', 'danger')) { openSettings(); return; }
+  await makeSnapshot('匯入備份前');
+  for (const [id, u] of Object.entries(photos)) { try { if (typeof u === 'string' && u.startsWith('data:image')) await storePhoto(await dataURLToBlob(u), id); } catch {} }
+  applyData(d); saveLocal(); toast('已匯入：' + countsText(d));
+  openSettings();
+}
+
+/* =========================================================
+   舊版（2.0）資料：localStorage 的 lp_<姓名>
+   ========================================================= */
+function readLegacyList() {
+  const out = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith('lp_') || k === AI_KEY) continue;
+      let ts = '', dept = '';
+      try { const s = JSON.parse(localStorage.getItem(k)); ts = s.ts || ''; dept = s.targetDept || ''; } catch { continue; }
+      out.push({ key: k, name: k.slice(3), ts, dept });
+    }
+  } catch {}
+  return out.sort((a, b) => str(b.ts).localeCompare(str(a.ts)));
+}
+async function fromV2(s) {
+  if (!s || typeof s !== 'object') return null;
+  const docs = {};
+  for (const t of TYPES) {
+    const o = (s.data || {})[t.id] || {}, d = blankDoc();
+    t.fields.forEach(f => { if (o[f.id]) d.fields[f.id] = str(o[f.id]); });
+    d.evTheme = str(o.__evtheme); d.draft = str(o.__draft); d.draftName = str(o.__draftName);
+    const legacyAi = str(o.__draftOutput).trim() || str(o.__merged).trim();
+    if (legacyAi) d.ai = { text: str(o.__draftOutput).trim() ? o.__draftOutput : o.__merged, at: Date.parse(s.ts) || Date.now(), mode: 'legacy', target: o.__draftOutput ? '__draft__' : '__merged__', targetLabel: o.__draftOutput ? '舊版 AI 優化輸出' : '舊版合併結果' };
+    for (const p of ((s.photos || {})[t.id] || [])) {
+      if (!p || typeof p.src !== 'string' || !p.src.startsWith('data:image')) continue;
+      try { const raw = await dataURLToBlob(p.src); let b = raw; try { b = await compressImage(raw); } catch {} const id = await storePhoto(b, newPhotoId(t.id)); d.photos.push({ id, caption: str(p.caption) }); } catch {}
+    }
+    d.updatedAt = Date.parse(s.ts) || 0;
+    docs[t.id] = d;
+  }
+  return normalizeData({ profile: { name: str(s.studentName), targetDept: str(s.targetDept) }, docs, current: TYPES.find(t => docHas(docs[t.id]))?.id || TYPES[0].id, savedAt: Date.parse(s.ts) || 0 });
+}
+async function importLegacy(key) {
+  let s = null; try { s = JSON.parse(localStorage.getItem(key)); } catch {}
+  if (!s) { toast('讀不到這筆舊資料', 'error'); return; }
+  const d = await fromV2(s); if (!d) { toast('舊資料格式無法轉換', 'error'); return; }
+  if (!isEmptyAll() && !await confirmBox('匯入舊版資料？', `<p>舊版：${esc(countsText(d))}<br>目前：${esc(countsText(currentData()))}</p><p>匯入會取代目前內容；匯入前會先留一個還原點。</p>`, '匯入並取代', 'danger')) { openSettings(); return; }
+  await makeSnapshot('匯入舊版資料前');
+  applyData(d); saveLocal(); toast('已匯入舊版資料：' + countsText(d)); openSettings();
+}
+
+/* =========================================================
+   事件
+   ========================================================= */
+function bindEvents() {
+  document.addEventListener('click', async e => {
+    const tab = e.target.closest('.tab[data-tab]');
+    if (tab && !tab.dataset.action) { setTab(tab.dataset.tab); return; }
+    const nav = e.target.closest('.nav-item[data-type]');
+    if (nav) { switchType(nav.dataset.type); return; }
+    const mode = e.target.closest('#aiModes .mode');
+    if (mode) { pickMode(mode.dataset.mode); resetAIResult(); return; }
+    const el = e.target.closest('[data-action]'); if (!el) return;
+    const a = el.dataset.action, d = doc();
+    switch (a) {
+      case 'tab': setTab(el.dataset.tab); break;
+      case 'savenow': saveNow(); break;
+      case 'open-settings': openSettings(); break;
+      case 'set-close': $('setDlg').close(); break;
+      case 'welcome-close': prefs.welcomed = true; savePrefs(); $('welcome').hidden = true; break;
+      case 'welcome-folder': prefs.welcomed = true; savePrefs(); $('welcome').hidden = true; openSettings(); break;
+      case 'ai-field': openAI(el.dataset.field); break;
+      case 'ai-merged': openAI('__merged__'); break;
+      case 'ai-draft': openAI('__draft__'); break;
+      case 'ai-run': runAI(); break;
+      case 'ai-cancel': if (aiAbort) aiAbort.abort('user'); break;
+      case 'ai-close': if (aiAbort) aiAbort.abort('user'); $('aiDlg').close(); break;
+      case 'ai-copyresult': copyText($('aiResult').value); break;
+      case 'ai-keep': keepAI(); break;
+      case 'ai-apply': aiApply(); break;
+      case 'ai-split': { const txt = $('aiResult').value; keepAI(false); $('aiDlg').close(); openSplit(txt, 'AI 回覆'); break; }
+      case 'mic': toggleMic(el.dataset.field); break;
+      case 'pick-photo': photoInput.click(); break;
+      case 'pick-draft': draftInput.click(); break;
+      case 'zoom': if (el.src) { $('lightImg').src = el.src; $('lightbox').showModal(); } break;
+      case 'ph-move': { const i = +el.dataset.i, j = i + (+el.dataset.dir); if (j < 0 || j >= d.photos.length) return; [d.photos[i], d.photos[j]] = [d.photos[j], d.photos[i]]; touch(); renderPhotos(); break; }
+      case 'ph-del': { const before = clone(d); d.photos.splice(+el.dataset.i, 1); touch(); renderPhotos(); undoDoc('已移除圖片', state.current, before); break; }
+      case 'split-draft': openSplit(d.draft, '草稿'); break;
+      case 'split-close': $('splitDlg').close(); splitPending = null; break;
+      case 'split-do': doSplit(); break;
+      case 'draft-clear': { const before = clone(d); d.draft = ''; d.draftName = ''; touch(); renderBadges(); renderAIPane(); undoDoc('已清除草稿', state.current, before); break; }
+      case 'aiout-copy': copyText(d.ai?.text || ''); break;
+      case 'aiout-split': openSplit(d.ai?.text || '', 'AI 輸出'); break;
+      case 'aiout-clear': { const before = clone(d); d.ai = null; touch(); renderBadges(); renderAIPane(); undoDoc('已清除 AI 輸出', state.current, before); break; }
+      case 'goto': gotoTarget(el.dataset.go); break;
+      case 'word': exportWord(); break;
+      case 'print': printPDF(); break;
+      case 'copyall': copyText(gatherType(curType(), d), '已複製全文'); break;
+      case 'open-sample': openSample(); break;
+      case 'sample-close': $('sampleDlg').close(); break;
+      case 'sample-apply': applySample(); break;
+      case 'sample-word': sampleWord(); break;
+      case 'sample-copy': { const s = BUILTIN_SAMPLES[$('sampleSelect').value]; if (s) copyText(str(s.data[el.dataset.field]), '已複製這段範例'); break; }
+      case 'export-all': exportBackup(); break;
+      case 'import': $('importInput').click(); break;
+      case 'snap-restore': snapAct('restore', el.dataset.snap); break;
+      case 'snap-dl': snapAct('dl', el.dataset.snap); break;
+      case 'legacy-import': importLegacy(el.dataset.key); break;
+      case 'folder-pick': pickFolder(); break;
+      case 'folder-grant': grantFolder(); break;
+      case 'folder-write': writeNow(); break;
+      case 'folder-reload': reloadFromFolder(); break;
+      case 'folder-off': disconnectFolder(); break;
+      case 'ai-savecfg': saveAiConfig(); break;
+      case 'ai-clearkey': $('openaiKey').value = ''; $('geminiKey').value = ''; saveAiConfig(); toast('已清除金鑰'); break;
+      case 'clear-all': {
+        if (!await confirmBox('清除這台電腦的全部資料？', `<p>目前：${esc(countsText(currentData()))}。清除前會留一個還原點${folder.handle ? '；資料夾內的檔案不會被刪除，但之後會被空白資料覆蓋，建議先「中斷連結」' : ''}。</p>`, '全部清除', 'danger')) { openSettings(); return; }
+        await makeSnapshot('清除全部資料前');
+        applyData({ profile: { name: '', targetDept: '' }, docs: Object.fromEntries(TYPES.map(t => [t.id, blankDoc()])), current: TYPES[0].id });
+        saveLocal(); toast('已清除（可在「自動還原點」救回）'); openSettings();
+        break;
+      }
+    }
   });
-  const ev=document.getElementById('ev_theme_'+t.id);
-  if(ev)ev.value=d.__evtheme||'';
-  if(d.__merged){
-    document.getElementById('merged_'+t.id).innerHTML=
-      `<label style="font-weight:700;font-size:14px">合併結果（可再編輯）</label><textarea id="mergedText_${t.id}">${d.__merged}</textarea>`;
+  document.addEventListener('input', e => {
+    const el = e.target;
+    if (el.dataset.field && el.id === 'f_' + el.dataset.field) { doc().fields[el.dataset.field] = el.value; updateCount(el.dataset.field); touchLight(); }
+    else if (el.dataset.cap != null) { const p = doc().photos[+el.dataset.cap]; if (p) { p.caption = el.value; el.closest('.ph')?.classList.toggle('nocap', !el.value.trim()); touchLight(); } }
+    else if (el.id === 'evTheme') { doc().evTheme = el.value; touchLight(); }
+    else if (el.id === 'draftText') { doc().draft = el.value; updateDraftInfo(); touchLight(); }
+    else if (el.id === 'aiOutText') { const d = doc(); if (d.ai) { d.ai.text = el.value; d.ai.edited = true; touchLight(); } }
+    else if (el.dataset.profile) { state.profile[el.dataset.profile] = el.value; saveLocal(); renderWho(); }
+    else if (el.id === 'aiResult') refreshAIButtons();
+  });
+  document.addEventListener('change', e => {
+    const el = e.target;
+    if (el.id === 'apiTarget') pickMode('api');
+    else if (el.id === 'sampleSelect') renderSampleBody();
+    else if (el.id === 'themeSel') { prefs.theme = el.value; savePrefs(); applyPrefs(); }
+    else if (el.id === 'bigText') { prefs.big = el.checked; savePrefs(); applyPrefs(); }
+  });
+  $('importInput').addEventListener('change', () => { const f = $('importInput').files?.[0]; $('importInput').value = ''; if (f) importBackup(f); });
+  // 拖曳上傳
+  document.addEventListener('dragover', e => { const z = e.target.closest?.('.dropzone'); if (z) { e.preventDefault(); z.classList.add('over'); } });
+  document.addEventListener('dragleave', e => { const z = e.target.closest?.('.dropzone'); if (z) z.classList.remove('over'); });
+  document.addEventListener('drop', e => {
+    const z = e.target.closest?.('.dropzone'); if (!z) return;
+    e.preventDefault(); z.classList.remove('over');
+    const files = Array.from(e.dataTransfer?.files || []); if (!files.length) return;
+    if (z.dataset.drop === 'photo') addPhotos(files); else handleDraftFile(files[0]);
+  });
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => { if (!e.target.closest?.('.dropzone')) e.preventDefault(); });
+  $('lightbox').addEventListener('click', () => $('lightbox').close());
+  ['setDlg', 'sampleDlg', 'splitDlg'].forEach(id => $(id).addEventListener('click', e => { if (e.target === $(id)) $(id).close(); }));
+  $('aiDlg').addEventListener('close', () => { if (aiAbort) aiAbort.abort('user'); });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveNow(); } });
+
+  function flushOnHide() {
+    if (!booted) return;
+    if (dirty) { try { localStorage.setItem(LS_KEY, JSON.stringify({ ...currentData(), savedAt: Date.now(), rev: meta.rev, appVersion: APP_VERSION, app: APP_ID })); } catch {} flushSave(); }
+    if (folder.dirty && folder.status === 'ok') { clearTimeout(folder.timer); writeMaster(); }
   }
-}
-function snapshot(){
-  saveCurrentFields();
-  return {studentName:val('studentName'),targetDept:val('targetDept'),
-    data:bigData,photos:photoStore,ts:new Date().toISOString()};
-}
-function saveAll(){
-  const name=val('studentName');
-  if(!name){toast('請先輸入學生姓名再儲存');return;}
-  const key='lp_'+name;
-  try{
-    localStorage.setItem(key,JSON.stringify(snapshot()));
-    toast('✓ 已儲存「'+name+'」的所有檔案');
-  }catch(e){toast('儲存失敗：'+e.message);}
-}
-function listSaves(){return Object.keys(localStorage).filter(k=>k.startsWith('lp_')&&k!=='lp_settings');}
-
-/* 以表單列出所有已儲存檔案 */
-let fileModalMode='load';
-function loadAll(){openFileModal('load');}
-function deleteAll(){openFileModal('delete');}
-function openFileModal(mode){
-  fileModalMode=mode;
-  if(!listSaves().length){toast('目前沒有已儲存的檔案');return;}
-  document.getElementById('fileModalTitle').textContent= mode==='load'?'📂 讀取檔案':'🗑️ 刪除檔案';
-  document.getElementById('fileModalDesc').textContent= mode==='load'
-    ? '下方為所有已儲存的檔案，點「讀取」載入。' : '下方為所有已儲存的檔案，點「刪除」移除（無法復原）。';
-  renderFileList();
-  document.getElementById('fileOverlay').classList.add('show');
-}
-function closeFileModal(){document.getElementById('fileOverlay').classList.remove('show');}
-function renderFileList(){
-  const box=document.getElementById('fileList');
-  const keys=listSaves();
-  if(!keys.length){box.innerHTML='<div class="file-empty">目前沒有已儲存的檔案</div>';return;}
-  // 依儲存時間新到舊
-  const items=keys.map(k=>{ let ts=''; let dept='';
-    try{const s=JSON.parse(localStorage.getItem(k));ts=s.ts||'';dept=s.targetDept||'';}catch{}
-    return {key:k,name:k.slice(3),ts,dept};
-  }).sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
-  box.innerHTML=items.map(it=>{
-    const when=it.ts?new Date(it.ts).toLocaleString('zh-TW'):'';
-    return `<div class="file-row">
-      <div><div class="fi-name">${esc(it.name)}</div>
-        <div class="fi-meta">${it.dept?'目標校系：'+esc(it.dept)+'　|　':''}${when?'儲存：'+when:''}</div></div>
-      <div class="fi-act">
-        ${fileModalMode==='load'
-          ? `<button class="fi-load" onclick="doLoadFile('${encodeURIComponent(it.name)}')">讀取</button>`
-          : `<button class="fi-del" onclick="doDeleteFile('${encodeURIComponent(it.name)}')">刪除</button>`}
-      </div></div>`;
-  }).join('');
-}
-function doLoadFile(encName){
-  const name=decodeURIComponent(encName);
-  const raw=localStorage.getItem('lp_'+name);
-  if(!raw){toast('找不到「'+name+'」');return;}
-  const s=JSON.parse(raw);
-  document.getElementById('studentName').value=s.studentName||'';
-  document.getElementById('targetDept').value=s.targetDept||'';
-  bigData=s.data||{};
-  for(const k in photoStore)delete photoStore[k];
-  Object.assign(photoStore,s.photos||{});
-  renderPage();
-  closeFileModal();
-  toast('✓ 已讀取「'+name+'」');
-}
-function doDeleteFile(encName){
-  const name=decodeURIComponent(encName);
-  if(!confirm('確定刪除「'+name+'」的所有檔案？此動作無法復原。'))return;
-  localStorage.removeItem('lp_'+name);
-  toast('已刪除「'+name+'」');
-  renderFileList();
-  if(!listSaves().length)closeFileModal();
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushOnHide(); else checkFolderUpdate(); });
+  window.addEventListener('pagehide', flushOnHide);
+  window.addEventListener('beforeunload', flushOnHide);
+  window.addEventListener('focus', checkFolderUpdate);
+  setInterval(checkFolderUpdate, 60000);
+  setInterval(renderSaveTag, 30000);
+  if (bc) bc.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.type === 'saved' && m.from !== tabId && m.rev > meta.rev) {
+      const load = async () => { try { const c = await idbGet('kv', 'state'), d = normalizeData(c); if (d) { meta.rev = c.rev || 0; meta.savedAt = c.savedAt || 0; dirty = false; applyData(d); renderSaveTag(); } } catch {} };
+      if (!dirty) { load().then(() => toast('另一個分頁更新了資料，已同步')); return; }
+      showBanner('🔄 另一個分頁剛儲存了學習歷程資料。', [{ label: '載入最新資料', fn: async () => { await load(); hideBanner(); toast('已載入最新資料'); } }]);
+    }
+  };
 }
 
-/* ---------- toast ---------- */
-let toastTimer;
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
+/* =========================================================
+   啟動
+   ========================================================= */
+async function boot() {
+  loadPrefs(); applyPrefs(); bindEvents();
+  let idbData = null, lsData = null;
+  try { await idbOpen(); idbData = await idbGet('kv', 'state'); store.mode = 'idb'; }
+  catch (e) { store.mode = 'ls'; console.warn('IndexedDB 不可用，改用 localStorage', e); }
+  try { const raw = localStorage.getItem(LS_KEY); if (raw) lsData = JSON.parse(raw); } catch {}
+  const nIdb = idbData ? normalizeData(idbData) : null, nLs = lsData ? normalizeData(lsData) : null;
+  let chosen = null, from = '';
+  if (nIdb && nLs) { if ((nLs.savedAt || 0) > (nIdb.savedAt || 0)) { chosen = nLs; from = 'ls'; } else { chosen = nIdb; from = 'idb'; } }
+  else if (nIdb) { chosen = nIdb; from = 'idb'; } else if (nLs) { chosen = nLs; from = 'ls'; }
+  meta.rev = Math.max(idbData?.rev || 0, lsData?.rev || 0);
+  let migrated = null;
+  if (!chosen) {
+    const legacy = readLegacyList();
+    if (legacy.length) {
+      $('boot')?.remove();
+      let key = legacy[0].key;
+      if (legacy.length > 1) {
+        key = await askChoice('找到舊版儲存的資料',
+          `<p>這台電腦有 ${legacy.length} 筆舊版（2.0）存檔。新版一台裝置只放一位學生的資料，請選擇要帶入哪一筆（其他筆之後可在「⚙️ 設定與備份 → 舊版資料」匯入）：</p>`,
+          [...legacy.slice(0, 6).map(it => ({ value: it.key, label: `${it.name}${it.ts ? '（' + fmtTime(Date.parse(it.ts)) + '）' : ''}`, style: 'primary' })), { value: null, label: '都不要，從空白開始', style: 'plain' }]);
+      }
+      if (key) {
+        try {
+          let s = null; try { s = JSON.parse(localStorage.getItem(key)); } catch {}
+          const d = await fromV2(s);
+          if (d) { chosen = d; from = 'v2'; migrated = legacy.find(x => x.key === key); }
+        } catch (e) { console.warn('舊版資料轉換失敗', e); }
+      }
+    }
+  }
+  if (chosen) state = { profile: chosen.profile, docs: chosen.docs, current: chosen.current };
+  else state = normalizeData({ docs: {} });
+  meta.savedAt = chosen?.savedAt || 0;
+  booted = true;
+  if (from === 'ls' || from === 'v2') {
+    try {
+      const before = countsText(currentData());
+      await commitLocal(currentData(), chosen.savedAt || Date.now());
+      if (store.mode === 'idb') { const back = await idbGet('kv', 'state'); if (!back || countsText(back) !== before) { toast('⚠ 搬移到 IndexedDB 後比對不一致，暫用 localStorage', 'error'); store.mode = 'ls'; } }
+    } catch { store.mode = 'ls'; }
+  }
+  try { if (navigator.storage && navigator.storage.persist) store.persisted = await navigator.storage.persist(); } catch {}
+  $('boot')?.remove();
+  ui.tab = TABS.includes(prefs.tab) ? prefs.tab : 'write';
+  renderAll(); renderSaveTag();
+  $('welcome').hidden = !!prefs.welcomed || !isEmptyAll();
+  if (migrated) {
+    prefs.welcomed = true; savePrefs(); $('welcome').hidden = true;
+    await askChoice('已帶入舊版的資料',
+      `<p>已把「${esc(migrated.name)}」的舊版存檔轉入新版，佐證圖片也一起搬過來了。舊資料仍保留在瀏覽器中不動。</p>
+       <p>3.0 起內容會<b>自動儲存</b>，不用再按「儲存」。建議到「⚙️ 設定與備份」選一個雲端硬碟資料夾長期保存。</p>`,
+      [{ value: 'ok', label: '知道了', style: 'primary' }]);
+  }
+  await initFolder();
+  gcPhotos();
 }
-
-/* ---------- init ---------- */
-window.addEventListener('beforeunload',saveCurrentFields);
-buildNav();
-renderPage();
+window.addEventListener('error', e => console.warn('頁面錯誤：', e.message));
+boot();
 </script>
 </body>
 </html>

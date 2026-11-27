@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>升學路徑工作室使用說明</title>
+<style>
+  :root { --forest:#183f3a; --ink:#1a2724; --muted:#4b5a53; --paper:#f5f2e9; --card:#fbfaf6; --line:#d6d5ca; --accent:#c45a40; --sun:#fdf3d8; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --forest:#a9dccb; --ink:#e4ebe7; --muted:#a9b8b1; --paper:#141b19; --card:#1c2623; --line:#34443f; --accent:#f0a08c; --sun:#2c2618; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.8 -apple-system, BlinkMacSystemFont, 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 60px; }
+  h1 { font: 600 30px 'Noto Serif TC', 'Songti TC', serif; color: var(--forest); margin: 0 0 6px; }
+  h2 { font: 600 21px 'Noto Serif TC', 'Songti TC', serif; color: var(--forest); margin: 34px 0 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+  h3 { font-size: 17px; margin: 18px 0 6px; color: var(--forest); }
+  .lead { color: var(--muted); margin: 0 0 18px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 12px 0; }
+  .tip { background: var(--sun); border-radius: 8px; padding: 10px 14px; margin: 12px 0; }
+  ol, ul { padding-left: 1.4em; margin: 6px 0; }
+  li { margin: 4px 0; }
+  kbd, code { font: 14px SFMono-Regular, Menlo, Consolas, monospace; background: rgba(127,127,127,.15); padding: 1px 6px; border-radius: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; border-top: 1px solid var(--line); padding: 8px 6px; vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .steps div { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .steps b { color: var(--accent); font-family: SFMono-Regular, Menlo, monospace; }
+  a { color: var(--forest); }
+</style>
+</head>
+<body>
+<main>
+  <h1>升學路徑工作室（特選個申）使用說明</h1>
+  <p class="lead">v3.0｜2026-11-27｜檔案：<code>index.html</code>（單一檔案，直接用 Chrome 或 Edge 開啟）</p>
+
+  <div class="tip"><b>先記住三件事：</b>① 內容會自動儲存在這台電腦的瀏覽器；② 想長期保存或換電腦，請到「💾 資料與設定」選一個雲端硬碟資料夾；③ 招生規定一律以當年度官方簡章為準，AI 只是幫你整理與挑錯。</div>
+
+  <h2>一、整體流程</h2>
+  <div class="steps">
+    <div><b>01</b> 盤點與探索<br>寫下興趣與經驗，加入目標校系</div>
+    <div><b>02</b> 備審與自我推薦<br>2-1 校系規格 → 2-2 我的證據 → 2-3 推薦信 → 2-4 AI 協作</div>
+    <div><b>03</b> 筆試與面試<br>記錄官方通知，請 AI 擔任模擬考官</div>
+  </div>
+  <p>左側（手機在底部）的步驟列會顯示進度：<b style="color:#3c9a63">綠點</b>＝主要欄位都填了，<b style="color:#c9902a">橘點</b>＝部分完成，空心＝還沒開始。</p>
+
+  <h2>二、第一次使用</h2>
+  <ol>
+    <li>開啟後會看到「第一次使用嗎？」提示卡，可選：<b>直接開始</b>、<b>先看示範</b>、<b>設定資料夾</b>。</li>
+    <li>在 01 填寫「感興趣的領域」，按「＋ 新增校系」加入要準備的校系。</li>
+    <li>按校系卡片上的「準備這個校系 →」，就會進入 02 開始準備該校系。</li>
+  </ol>
+
+  <h2>三、每個欄位的小幫手</h2>
+  <table>
+    <tr><th>按鈕／顯示</th><th>用途</th></tr>
+    <tr><td>🏷️ 關鍵字</td><td>點進欄位時會自動展開快速關鍵字與起手句；點一下關鍵字就會加入欄位。按「🏷️ 關鍵字」可固定展開或收合。</td></tr>
+    <tr><td>✨ 先問 AI 靈感</td><td>還不知道怎麼寫時，產生一段提問詞，可複製或直接開啟 Claude／ChatGPT／Gemini。</td></tr>
+    <tr><td>🤖 複製給 AI 優化</td><td>寫好初稿後，產生「只修飾、不虛構」的優化提問詞。</td></tr>
+    <tr><td>字數提示</td><td>例如「120 字・建議 60–300 字」：橘色＝太短，綠色＝剛好，紅色＝太長。</td></tr>
+    <tr><td>還沒填：…</td><td>頁面底部列出這一步還沒寫的欄位，點一下就跳過去。</td></tr>
+  </table>
+
+  <h2>四、準備多個校系</h2>
+  <ul>
+    <li>02、03 頁面頂端的「<b>正在準備</b>」可以切換校系，每個校系的筆記分開保存。</li>
+    <li>2-2 右上角「<b>從其他校系帶入經驗</b>」：把另一個校系寫好的經驗、角色、證據、反思帶過來，再依新校系的特色修改。可選「只填入空白欄位」或「全部覆蓋」，按提示訊息的「復原」就能取消。</li>
+    <li>校系卡片上會顯示「備審 n/10・面試 n/3」，一眼看出每個校系準備到哪裡。</li>
+  </ul>
+
+  <h2>五、和 AI 協作（2-4、03）</h2>
+  <ol>
+    <li>選擇協作模式，例如架構診斷、文句潤飾、審查委員挑刺，或三輪模擬面試、MMI、一分鐘自我介紹。</li>
+    <li>想把自己的經歷加入提示詞時，要勾選「本次同意…」。<b>這個勾選不會被保存</b>，每次重新開啟、切換校系都要重新確認。送出前請自行刪除姓名、學號等可識別資料。</li>
+    <li>按「開啟 Claude／ChatGPT／Gemini」，提示詞會自動複製，到新分頁貼上即可。</li>
+    <li>把 AI 的回覆貼回右側「對照盒」，一邊看一邊改自己的文字。</li>
+  </ol>
+
+  <h2>六、看示範資料</h2>
+  <p>按右上角「✨ 看示範」會打開另一份<b>示範工作檔</b>（臺大生科特選、成大醫工個申的完整範本）。你的資料不會被覆蓋。</p>
+  <ul>
+    <li>看示範時，頂端會顯示「📘 正在看示範資料」，按「回到我的資料」切回。</li>
+    <li>示範資料可以隨意改；下次再按「看示範」時，可選擇「還原成原始示範」。</li>
+  </ul>
+
+  <h2>七、存檔、長期保存與換電腦</h2>
+  <div class="card">
+    <h3>📁 資料夾長期儲存（建議，電腦版 Chrome／Edge）</h3>
+    <ol>
+      <li>按右上角「💾 資料與設定」→「選擇資料夾」，選雲端硬碟（Google Drive、OneDrive）裡的資料夾，例如「我的升學資料」。</li>
+      <li>之後每次修改都會自動寫入 <code>特選個申資料.json</code>，並在 <code>特選個申資料_歷史/</code> 每天留一份（14 份）。</li>
+      <li>重新開啟瀏覽器時，頂端可能出現「重新授權」，按一下即可繼續同步。</li>
+      <li>換電腦時，在新電腦選<b>同一個資料夾</b>就能接著寫。兩台都改過時，會詢問要用哪一份，沒選的那份會另外保存，不會遺失。</li>
+    </ol>
+    <h3>💾 備份檔（手機、iPad、Safari、Firefox 適用）</h3>
+    <p>「下載完整備份」會得到一個 <code>.json</code> 檔。到另一台裝置用「匯入備份檔…」載入時，可選<b>合併</b>（加入備份中的校系）或<b>取代</b>。</p>
+    <h3>⏪ 自動還原點</h3>
+    <p>每天自動留一份，匯入、移除校系、清除之前也會各留一份。在「資料與設定」可以還原或下載。</p>
+  </div>
+  <p>右上角的儲存狀態會顯示「已存本機」或「已存本機＋資料夾」。按 <kbd>Ctrl</kbd>／<kbd>⌘</kbd>＋<kbd>S</kbd> 可以立即儲存。</p>
+
+  <h2>八、顯示設定</h2>
+  <p>「💾 資料與設定 → 顯示」可以切換外觀（跟隨系統／淺色／深色）、大字模式，以及「點進欄位時自動展開關鍵字」。</p>
+
+  <h2>九、常見問題</h2>
+  <h3>舊版的資料還在嗎？</h3>
+  <p>第一次開啟 v3.0 時，會自動把舊版資料帶入，並跳出說明；舊資料仍原樣留在瀏覽器中。若舊資料損壞，頁面會提供 <code>.txt</code> 救援檔下載。</p>
+  <h3>不小心刪掉校系或清除資料？</h3>
+  <p>先按提示訊息中的「復原」；來不及的話，到「資料與設定 → 自動還原點」還原。</p>
+  <h3>按了 AI 按鈕卻沒有貼上提示詞？</h3>
+  <p>有些瀏覽器禁止從本機檔案自動複製。請從提示詞預覽框手動複製，或用 <code>start-server.bat</code> 開啟。</p>
+  <h3>這個工具會把資料傳到網路上嗎？</h3>
+  <p>不會自動上傳。只有你自己複製提示詞貼到 AI 網站時，內容才會送出，所以送出前要先檢查。</p>
+</main>
+</body>
+</html>

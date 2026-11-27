@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎓 學習歷程檔案輔助程式 2.0 使用說明與指南</title>
+  <title>🎓 學習歷程檔案輔助程式 3.0 使用說明與指南</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -266,7 +266,7 @@
 
   <header>
     <div class="container">
-      <h1>🎓 學習歷程檔案輔助程式 2.0 使用說明與指南</h1>
+      <h1>🎓 學習歷程檔案輔助程式 3.0 使用說明與指南</h1>
       <p>輔助高中生高效撰寫符合 108 課綱與升學指南規格的備審資料、多元表現與學習歷程自述。</p>
       <a href="https://froglssh.github.io/learning-portfolio-assistant-online/" class="btn-online" target="_blank">🔗 開啟線上版程式</a>
     </div>
@@ -274,44 +274,50 @@
 
   <div class="container">
     
-    <!-- 1. 基本資料與核心架構 -->
+    <!-- 1. 開始使用 -->
     <div class="card">
-      <h2>👤 1. 基礎設定與基本資料</h2>
-      <p>在使用程式填寫任何內容前，建議先在左側邊欄的 **👤 基本資料** 中填入以下欄位，這將會大幅優化 AI 自動寫作的客製化效果：</p>
+      <h2>👤 1. 開始使用：三步驟</h2>
+      <p>3.0 版的畫面分成左邊「基本資料＋檔案類型」，右邊每一類都有三個分頁：<b>① 填寫 → ② 草稿與 AI → ③ 匯出</b>。</p>
       <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
         <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
-          <strong style="color: var(--teal-dark)">👤 學生姓名</strong>
-          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">用以生成個人化的成果報告與 Word/PDF 檔中的署名資訊。</p>
+          <strong style="color: var(--teal-dark)">① 填基本資料</strong>
+          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">在左邊填<b>姓名</b>與<b>目標校系</b>（如「台大資工系」）。AI 會依目標校系調整建議；姓名會出現在 Word／PDF 上。</p>
         </div>
         <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
-          <strong style="color: var(--teal-dark)">🎯 目標校系</strong>
-          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">如「台大資工系」、「師大生科系」。AI 優化時會主動以此校系特質做連結，調整論述深度。</p>
+          <strong style="color: var(--teal-dark)">② 選類型、一格一格寫</strong>
+          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">左邊選檔案類型，每一類後面會顯示 ○ 未寫／◐ 寫了一部分／● 全部寫完 與欄位數。寫不出來可以先按「💡 看範例」。</p>
+        </div>
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
+          <strong style="color: var(--teal-dark)">③ AI 優化、匯出</strong>
+          <p style="font-size: 0.9rem; color: var(--ink-light); margin-top: 6px;">到「② 草稿與 AI」請 AI 分析或優化，最後在「③ 匯出」看完整度檢查，下載 Word 或存成 PDF。</p>
         </div>
       </div>
+      <p style="margin-top: 16px; font-size: 0.95rem; color: var(--ink-light);">手機上，三個分頁會移到畫面最下方；檔案類型可以左右滑動選擇。設定裡也有<b>深色模式</b>與<b>大字模式</b>。</p>
     </div>
 
-    <!-- 2. 四大控制按鈕與資料存取 -->
+    <!-- 2. 自動儲存與長期保存 -->
     <div class="card">
-      <h2>⚙️ 2. 主控制區功能操作</h2>
-      <p>頁首右上角的四大功能按鈕能有效管理您的所有寫作資料：</p>
+      <h2>💾 2. 自動儲存與雲端資料夾長期保存</h2>
+      <p>3.0 版<b>不用再按「儲存」</b>：每次輸入都會自動存到這台電腦的瀏覽器（IndexedDB）。右上角的「✓ 已存本機 14:32」顯示最後儲存時間，點它可以立即儲存（也可以按 Ctrl／⌘＋S）。</p>
       <div class="btn-grid" style="margin-top: 20px;">
         <div class="btn-explain-box">
-          <h3>⚙️ AI 設定</h3>
-          <p>設定 OpenAI/Gemini 的 API 金鑰與模型偏好。您可以輸入個人 API Key 進行直接串接，或者自訂 AI 提示詞架構，使 AI 輸出的風格最符合您的調性。</p>
+          <h3>📁 選擇雲端資料夾（建議）</h3>
+          <p>在「⚙️ 設定與備份」按「選擇資料夾」，選雲端硬碟（Google Drive、OneDrive）裡的一個資料夾，例如「我的學習歷程」。之後每次修改都會自動寫入：<br>・<code>學習歷程資料.json</code>：全部文字內容<br>・<code>學習歷程圖片/</code>：佐證圖片，每張一個 jpg 檔<br>・<code>學習歷程資料_歷史/</code>：每天一份歷史備份（保留 14 份）<br>換電腦時，選同一個資料夾就能接著寫。需要電腦版 Chrome 或 Edge。</p>
         </div>
         <div class="btn-explain-box">
-          <h3>💾 儲存</h3>
-          <p>一鍵將目前**所有分頁的文字資料與佐證圖片欄位**儲存至您的瀏覽器本地暫存（LocalStorage）。即使不小心關閉瀏覽器，資料也不會遺失。</p>
+          <h3>🔄 兩台電腦都改過時</h3>
+          <p>程式回到頁面時與每分鐘會檢查資料夾。另一台電腦更新過會出現提示列；兩邊都改過時會詢問要「載入資料夾版本」「以這台覆蓋」或「另存衝突檔並暫停同步」，沒被選用的一份會另外保存，不會遺失。</p>
         </div>
         <div class="btn-explain-box">
-          <h3>📂 讀取</h3>
-          <p>從本機瀏覽器中還原上一次儲存的所有輸入狀態，方便隨時繼續編輯。</p>
+          <h3>⏪ 自動還原點</h3>
+          <p>每天自動留一份（保留 7 天）；套用範例、匯入、還原、載入資料夾、清除前也會各留一份（保留 10 份）。在「⚙️ 設定與備份 → 自動還原點」可以還原或下載。</p>
         </div>
         <div class="btn-explain-box">
-          <h3>🗑️ 刪除</h3>
-          <p>完全清空目前輸入的所有內容，並清除本地瀏覽器的暫存紀錄，重新開始撰寫新檔案。</p>
+          <h3>⬇️ 備份檔</h3>
+          <p>手機、iPad、Firefox 無法選資料夾，請用「下載完整備份」（含圖片的 .json 檔）定期保存，到別台裝置再「匯入備份檔」。</p>
         </div>
       </div>
+      <p style="margin-top: 16px; font-size: 0.95rem; color: var(--ink-light);">🔒 不會保存、也不會寫進資料夾或備份檔的東西：<b>上傳的 PDF／Word 原檔</b>（只保存擷取出的文字）與 <b>API 金鑰</b>。<br>📦 舊版（2.0）用「儲存」存下的資料，第一次開啟 3.0 時會自動轉入（有多筆時讓你選一筆）；其他筆可在「⚙️ 設定與備份 → 舊版資料」匯入。舊資料本身不會被刪除。</p>
     </div>
 
     <!-- 3. 十大檔案類型功能詳解 -->
@@ -424,61 +430,75 @@
       </div>
     </div>
 
-    <!-- 4. 單一欄位輔助工具與 AI 優化 -->
+    <!-- 4. 填寫與 AI -->
     <div class="card">
-      <h2>✨ 4. 欄位寫作與 AI 優化工具</h2>
-      <p>在每個輸入欄位的右下角，皆設有三個便捷的輔助按鈕：</p>
+      <h2>✨ 4. 填寫、草稿分析與 AI 優化</h2>
+      <p>「① 填寫」的每一欄右邊有兩個按鈕，下方會即時顯示字數（有字數上限的欄位超過時會變紅）：</p>
       <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-        <div style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; background: var(--bg);">
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
+          <strong style="font-size: 1.1rem; color: var(--teal-dark)">✨ AI 優化這一欄</strong>
+          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">左邊顯示原文、右邊顯示 AI 結果，可以先修改再按「✓ 採用到欄位」。採用後畫面下方會出現「復原」，按了就回到原本的文字。</p>
+        </div>
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: 8px; background: var(--bg);">
           <strong style="font-size: 1.1rem; color: var(--teal-dark)">🎤 語音輸入</strong>
-          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">呼叫瀏覽器語音辨識 API，用說的也能快速打字，最適合靈感爆發時的隨筆記錄。</p>
+          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">按一下開始聆聽（按鈕變紅色），說完再按一次停止。建議用 Chrome。</p>
         </div>
-        <div style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; background: var(--bg);">
-          <strong style="font-size: 1.1rem; color: var(--teal-dark)">✨ AI 優化此欄</strong>
-          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">針對該特定輸入欄位進行內容升級，共支援三種靈活的工作模式：</p>
-          <div class="ai-modes-list">
-            <div class="ai-mode-card">
-              <h4>1. 本地系統優化 <span class="badge badge-local">離線・免金鑰</span></h4>
-              <p style="font-size: 0.85rem; color: var(--ink-light)">內建演算法自動修復常見錯別字、贅字清理、字數檢查，並自動提供台灣升學術語的校正建議。</p>
-            </div>
-            <div class="ai-mode-card">
-              <h4>2. 產生提示詞並複製 <span class="badge badge-copy">手動貼上</span></h4>
-              <p style="font-size: 0.85rem; color: var(--ink-light)">一鍵生成最精準的優化 Prompt 指令，包裝你的原文，直接複製後開啟網頁版 ChatGPT 或 Gemini 進行問答。</p>
-            </div>
-            <div class="ai-mode-card">
-              <h4>3. 直接呼叫 API <span class="badge badge-api">即時完成</span></h4>
-              <p style="font-size: 0.85rem; color: var(--ink-light)">直接在程式視窗內呼叫 AI API 進行流暢潤飾，滿意後即可一鍵套用回原欄位。</p>
-            </div>
-          </div>
+      </div>
+      <h3 style="margin-top: 24px; color: var(--teal-dark);">三種 AI 模式</h3>
+      <div class="ai-modes-list">
+        <div class="ai-mode-card">
+          <h4>🛠️ 本機規則 <span class="badge badge-local">離線・免金鑰</span></h4>
+          <p style="font-size: 0.85rem; color: var(--ink-light)">校正中國用語（信息→資訊、視頻→影片…）與半形標點、找出「學到很多」「收穫滿滿」等空洞語句、檢查有沒有數字與字數。</p>
         </div>
-        <div style="border: 1px solid var(--border); padding: 20px; border-radius: 12px; background: var(--bg);">
-          <strong style="font-size: 1.1rem; color: var(--teal-dark)">✕ 清除</strong>
-          <p style="font-size: 0.95rem; color: var(--ink-light); margin-top: 8px;">快速清空該欄位的文字內容，方便重新填寫。</p>
+        <div class="ai-mode-card">
+          <h4>📋 複製提示詞 <span class="badge badge-copy">ChatGPT／Gemini／Claude</span></h4>
+          <p style="font-size: 0.85rem; color: var(--ink-light)">複製包含原文與撰寫原則的提示詞並開啟網站；把網站的回覆貼回程式，就能採用或保存。</p>
+        </div>
+        <div class="ai-mode-card">
+          <h4>🤖 直接呼叫 API <span class="badge badge-api">需金鑰</span></h4>
+          <p style="font-size: 0.85rem; color: var(--ink-light)">在程式內直接取得結果，等候時會顯示秒數，可隨時取消（3 分鐘自動停止）。分析草稿或整份時，會連同最多 4 張佐證圖片一起送出。金鑰在「⚙️ 設定與備份 → AI 設定」填寫；共用電腦請取消「記住金鑰」。</p>
+        </div>
+      </div>
+      <h3 style="margin-top: 24px; color: var(--teal-dark);">② 草稿與 AI</h3>
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 12px;">
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 6px;">🔎 上傳已完成的草稿</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">點選或拖曳 PDF／Word（.docx）檔，程式會擷取文字放進草稿欄（已有草稿時會問要取代或接在後面）。原始檔案不會保存。掃描成圖片的 PDF 無法擷取，請直接貼上文字。</p>
+        </div>
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 6px;">🤖 AI 分析草稿 → 📥 分欄填入</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">AI 會依該類型的製作原則逐條診斷，並在回覆最後用「【欄位名稱】」整理好分欄草稿。按「📥 依欄位分欄填入」，勾選要填入的欄位，就會自動放進「① 填寫」的各欄（已有內容的欄位會標示「會取代」，填入後可復原）。草稿本身已經有【欄位名稱】標題時，也可以直接分欄。</p>
+        </div>
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 6px;">✨ AI 優化整份</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">把各欄位合併後交給 AI，一次修順前後呼應；回覆同樣以欄位標題分段，可以直接分欄填回。</p>
+        </div>
+        <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 6px;">📤 AI 輸出區</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">按「存到 AI 輸出區」的結果會留在「② 草稿與 AI」下方，可以修改、複製或分欄填入；每一類只保留最近一次。</p>
         </div>
       </div>
     </div>
 
-    <!-- 5. 佐證資料與下載/列印 -->
+    <!-- 5. 佐證資料、範例與匯出 -->
     <div class="card">
-      <h2>📎 5. 佐證資料與成果匯出</h2>
-      <p style="margin-bottom: 20px;">當您完成各個欄位的填寫後，可以使用底部的匯出與佐證資料上傳卡：</p>
-      
+      <h2>📎 5. 佐證資料、範例與匯出</h2>
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
-          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">📷 佐證資料上傳與圖說</h3>
-          <p style="font-size: 0.95rem; color: var(--ink-light);">您可多張上傳相關照片，並為每張照片填寫簡短圖說（圖說非常關鍵，務必寫明照片中的活動主題與你所在的具體位置）。所有上傳的圖片均會轉為本機編碼，保存於您當前的瀏覽器中，並能完美的整合輸出到 PDF。</p>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">📷 佐證資料（在「① 填寫」最下方）</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">點選或拖曳圖片（可多張），圖片會自動壓縮後保存。每張都要寫圖說（標出自己是哪一位），沒寫圖說的會以橘框提醒；可用 ← → 調整順序，刪除後可復原。「多元表現綜整心得」超過 3 張圖會提醒。</p>
         </div>
         <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
-          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">🔗 合併本檔內容</h3>
-          <p style="font-size: 0.95rem; color: var(--ink-light);">快速將這份學習歷程下所有的填寫欄位，依格式組裝成一篇結構分明、具易讀性的排版文章，供您預覽或直接複製全文。</p>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">💡 看範例</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">十種類型各有一份完整範例，可以逐段「複製這段」，或在該類型還沒寫時「整份套用」（已有內容時會先詢問並留還原點，可復原）。範例不會改掉你的姓名。也可以下載範例 Word（需和「學習歷程示範」資料夾放在一起）。</p>
         </div>
         <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
-          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">📝 下載 Word</h3>
-          <p style="font-size: 0.95rem; color: var(--ink-light);">將整篇學習歷程打包下載為 Word 格式的 `.doc` 文件，供您在 Microsoft Word 中進一步精修、調整格式或合併至其他大型文件中。</p>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">✅ ③ 匯出：完整度檢查</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">列出姓名、每個欄位、字數上限與圖說的完成狀況，沒完成的項目按「前往」會直接跳到那一欄。下方有全文預覽。</p>
         </div>
         <div style="border-left: 4px solid var(--teal); padding-left: 16px;">
-          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">🖨️ 列印／下載 PDF</h3>
-          <p style="font-size: 0.95rem; color: var(--ink-light);">觸發列印友善版面。在彈出的列印視窗中，將目的地設為「另存為 PDF」，即可輸出包含主題文字、摘要、完整段落，以及佐證圖片的排版學習歷程成果檔案！</p>
+          <h3 style="font-size: 1.15rem; margin-bottom: 6px;">📝 下載 Word／🖨️ 列印成 PDF／📋 複製全文</h3>
+          <p style="font-size: 0.95rem; color: var(--ink-light);">Word（.doc）可再編輯，含佐證圖片與圖說；PDF 請在列印視窗選「儲存為 PDF」。圖片依原始比例縮放，不會超出頁面。</p>
         </div>
       </div>
     </div>
@@ -487,7 +507,7 @@
 
   <footer>
     <div class="container">
-      <p>學習歷程檔案輔助程式 © 2026</p>
+      <p>學習歷程檔案輔助程式 3.0 © 2026</p>
       <p style="margin-top: 8px; font-size: 0.8rem; opacity: 0.8;">製作者：臺北市立麗山高中 林獻升老師 | 聯絡信箱：frog@lssh.tp.edu.tw</p>
     </div>
   </footer>

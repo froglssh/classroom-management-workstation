@@ -2,11 +2,13 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0b1020">
 <title>旅遊記帳 · 貨幣換算</title>
+<!-- v3.0（2026-11-26）：照片改存 IndexedDB、輸入即換算、常用金額對照、紀錄可編輯、日期欄、刪除可復原、待換算機制、每個帳本各自的換算幣別 -->
 <style>
   :root{
+    color-scheme:dark;
     --bg:#0b1020;
     --bg2:#131a30;
     --glass:rgba(255,255,255,0.07);
@@ -20,8 +22,6 @@
     --warn:#ffb84d;
     --radius:18px;
     --safe-b:env(safe-area-inset-bottom,0px);
-    --cat-food:#ff8a65; --cat-transport:#4dd0e1; --cat-lodging:#9575cd;
-    --cat-shopping:#f06292; --cat-entertainment:#ffd54f; --cat-grocery:#81c784; --cat-other:#90a4ae;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
@@ -32,38 +32,35 @@
       radial-gradient(1200px 600px at 10% -10%,#1b2a55 0%,transparent 55%),
       radial-gradient(1000px 600px at 110% 10%,#1d3a4d 0%,transparent 50%),
       linear-gradient(160deg,var(--bg) 0%,var(--bg2) 100%);
+    background-color:var(--bg);
     background-attachment:fixed;
     min-height:100vh;
     -webkit-font-smoothing:antialiased;
   }
+  body.modal-open{overflow:hidden;}
+  button:focus-visible,.chip:focus-visible,.rec:focus-visible,.ref-row:focus-visible,.card-click:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
   .app{max-width:540px;margin:0 auto;padding:14px 14px calc(96px + var(--safe-b));}
-  header.top{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:8px 4px 14px;
-  }
-  header.top .title{font-size:1.25rem;font-weight:800;letter-spacing:.5px;}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 4px 14px;}
+  header.top .title{font-size:1.25rem;font-weight:800;letter-spacing:.5px;white-space:nowrap;}
   header.top .ledger-pill{
-    display:flex;align-items:center;gap:6px;
+    display:flex;align-items:center;gap:6px;min-width:0;
     background:var(--glass);border:1px solid var(--stroke);
     padding:7px 12px;border-radius:999px;font-size:.85rem;color:var(--muted);
-    cursor:pointer;backdrop-filter:blur(10px);
+    cursor:pointer;backdrop-filter:blur(10px);font-family:inherit;
   }
-  .ledger-pill b{color:var(--txt);font-weight:700;}
+  .ledger-pill b{color:var(--txt);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw;}
 
   .card{
-    background:var(--glass);
-    border:1px solid var(--stroke);
-    border-radius:var(--radius);
-    padding:16px;
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
-    box-shadow:0 8px 30px rgba(0,0,0,.25);
-    margin-bottom:14px;
+    background:var(--glass);border:1px solid var(--stroke);border-radius:var(--radius);padding:16px;
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    box-shadow:0 8px 30px rgba(0,0,0,.25);margin-bottom:14px;
   }
+  .card-click{cursor:pointer;}
   .card h2{margin:0 0 12px;font-size:1rem;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:8px;}
-  .card h2 .sub{font-size:.75rem;color:var(--muted);font-weight:500;margin-left:auto;}
+  .card h2 .sub{font-size:.75rem;color:var(--muted);font-weight:500;margin-left:auto;text-align:right;}
 
   label{display:block;font-size:.82rem;color:var(--muted);margin:0 0 6px;font-weight:600;}
+  label small{font-weight:500;opacity:.85;}
   input,select,textarea{
     width:100%;background:rgba(0,0,0,.25);color:var(--txt);
     border:1.5px solid var(--stroke);border-radius:12px;
@@ -71,16 +68,16 @@
     font-family:inherit;
   }
   input:focus,select:focus,textarea:focus{border-color:var(--accent);background:rgba(0,0,0,.35);}
-  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2393a0c2' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;}
+  select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2393a0c2' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;}
   .row{display:flex;gap:10px;}
   .row>*{flex:1;min-width:0;}
   .field{margin-bottom:12px;}
 
   .stepper{display:flex;align-items:stretch;gap:8px;}
-  .stepper input{text-align:center;font-weight:700;font-size:1.15rem;}
+  .stepper input{text-align:center;font-weight:800;font-size:1.35rem;}
   .stepper button{
-    width:48px;flex:0 0 48px;border:1.5px solid var(--stroke);background:var(--glass-strong);
-    color:var(--txt);font-size:1.5rem;border-radius:12px;cursor:pointer;line-height:1;font-weight:600;
+    width:52px;flex:0 0 52px;border:1.5px solid var(--stroke);background:var(--glass-strong);
+    color:var(--txt);font-size:1.5rem;border-radius:12px;cursor:pointer;line-height:1;font-weight:600;font-family:inherit;
   }
   .stepper button:active{transform:scale(.95);}
 
@@ -88,19 +85,20 @@
   .chip{
     background:var(--glass);border:1.5px solid var(--stroke);color:var(--muted);
     padding:8px 13px;border-radius:999px;font-size:.85rem;cursor:pointer;transition:.18s;font-weight:600;
-    display:flex;align-items:center;gap:5px;
+    display:flex;align-items:center;gap:5px;font-family:inherit;line-height:1.2;
   }
   .chip:active{transform:scale(.96);}
   .chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
   .chip.cat.active{color:#0b1020;}
 
-  .swap-row{display:flex;align-items:flex-end;gap:8px;}
-  .swap-row .field{flex:1;margin-bottom:0;}
+  .swap-row{display:flex;align-items:flex-end;gap:8px;margin-top:14px;}
+  .swap-row .field{flex:1;margin-bottom:0;min-width:0;}
+  .swap-row select,.amount-row select{padding-left:10px;padding-right:28px;background-position:right 9px center;font-size:.95rem;}
   .swap-btn{
-    flex:0 0 46px;height:48px;border-radius:12px;border:1.5px solid var(--stroke);
-    background:var(--glass-strong);color:var(--accent);font-size:1.3rem;cursor:pointer;margin-bottom:0;
+    flex:0 0 46px;height:50px;border-radius:12px;border:1.5px solid var(--stroke);
+    background:var(--glass-strong);color:var(--accent);font-size:1.3rem;cursor:pointer;transition:transform .3s;
   }
-  .swap-btn:active{transform:rotate(180deg);}
+  .swap-btn.spin{transform:rotate(180deg);}
 
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -108,6 +106,7 @@
     cursor:pointer;width:100%;transition:transform .1s,filter .2s;color:#fff;font-family:inherit;
   }
   .btn:active{transform:scale(.985);}
+  .btn:disabled{opacity:.55;cursor:default;}
   .btn-primary{background:linear-gradient(135deg,#5b8cff,#7a6bff);}
   .btn-accent{background:linear-gradient(135deg,#22d3a6,#1aa37e);color:#04241b;}
   .btn-ghost{background:var(--glass-strong);border:1.5px solid var(--stroke);color:var(--txt);}
@@ -116,87 +115,97 @@
   .btn-row{display:flex;gap:10px;}
 
   .result{
-    text-align:center;padding:18px 12px;border-radius:16px;margin-top:14px;
+    text-align:center;padding:16px 12px;border-radius:16px;margin-top:14px;
     background:linear-gradient(135deg,rgba(91,140,255,.18),rgba(34,211,166,.14));
-    border:1px solid var(--stroke);opacity:0;transform:translateY(8px);transition:.35s;
+    border:1px solid var(--stroke);
   }
-  .result.show{opacity:1;transform:translateY(0);}
-  .result .from-amt{font-size:1.3rem;font-weight:700;color:var(--muted);}
-  .result .arrow{font-size:1.2rem;color:var(--muted);margin:4px 0;}
-  .result .to-amt{font-size:2.3rem;font-weight:850;background:linear-gradient(135deg,#7ee8c6,#5b8cff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
-  .result .rate{font-size:.82rem;color:var(--muted);margin-top:8px;}
-  .result .meta{font-size:.9rem;color:var(--accent);margin-bottom:6px;font-weight:600;}
+  .result .from-amt{font-size:1.15rem;font-weight:700;color:var(--muted);}
+  .result .arrow{font-size:1.1rem;color:var(--muted);margin:2px 0;}
+  .result .to-amt{font-size:2.3rem;font-weight:850;line-height:1.2;word-break:break-all;background:linear-gradient(135deg,#7ee8c6,#5b8cff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .result .rate{font-size:.8rem;color:var(--muted);margin-top:8px;line-height:1.6;}
 
-  .rate-live{font-size:.82rem;color:var(--muted);text-align:center;margin-top:6px;min-height:1.1em;}
+  .rate-live{font-size:.8rem;color:var(--muted);text-align:center;margin-top:8px;min-height:1.1em;line-height:1.6;}
   .rate-live .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent2);margin-right:5px;vertical-align:middle;}
   .rate-live.offline .dot{background:var(--warn);}
+  .link-btn{background:none;border:none;color:var(--accent);font:inherit;font-size:.8rem;cursor:pointer;text-decoration:underline;padding:0 0 0 6px;}
+
+  .ref-list{display:flex;flex-direction:column;gap:6px;}
+  .ref-row{
+    display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border-radius:12px;
+    background:var(--glass);border:1px solid var(--stroke);color:var(--txt);font:inherit;font-size:.98rem;cursor:pointer;text-align:left;
+  }
+  .ref-row:active{transform:scale(.99);}
+  .ref-row .l{flex:1;color:var(--muted);}
+  .ref-row .eq{color:var(--muted);}
+  .ref-row b{font-weight:800;}
 
   /* records */
-  .budget-wrap{margin-top:4px;}
   .budget-bar{height:10px;border-radius:999px;background:rgba(0,0,0,.3);overflow:hidden;margin:8px 0 6px;}
   .budget-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#22d3a6,#5b8cff);transition:width .5s;}
   .budget-fill.over{background:linear-gradient(90deg,#ffb84d,#ff6b6b);}
   .budget-nums{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);}
   .budget-nums b{color:var(--txt);}
+  .pending-note{font-size:.8rem;color:var(--warn);margin-top:8px;}
 
   .day-group{margin-bottom:14px;}
   .day-head{display:flex;justify-content:space-between;align-items:baseline;padding:4px 2px 8px;font-size:.85rem;color:var(--muted);font-weight:600;}
   .day-head .day-total{color:var(--txt);font-weight:700;}
   .rec{
-    display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;
+    display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;cursor:pointer;
     background:var(--glass);border:1px solid var(--stroke);margin-bottom:8px;
   }
+  .rec:active{background:var(--glass-strong);}
   .rec .ic{width:42px;height:42px;flex:0 0 42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:rgba(255,255,255,.08);}
   .rec .info{flex:1;min-width:0;}
   .rec .info .name{font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .rec .info .sub{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .rec .amt{text-align:right;}
+  .rec .amt{text-align:right;flex:0 0 auto;}
   .rec .amt .home{font-weight:800;font-size:1.02rem;}
   .rec .amt .orig{font-size:.76rem;color:var(--muted);}
-  .rec .del{flex:0 0 auto;background:none;border:none;color:var(--danger);font-size:1.2rem;cursor:pointer;padding:4px 2px;opacity:.7;}
+  .rec .del{flex:0 0 auto;background:none;border:none;color:var(--danger);font-size:1.15rem;cursor:pointer;padding:6px 2px;opacity:.75;}
+  .pend{color:var(--warn);font-size:.85rem;}
 
-  .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:.92rem;}
+  .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:.92rem;line-height:1.6;}
   .empty .big{font-size:2.4rem;display:block;margin-bottom:8px;opacity:.6;}
 
   /* stats */
   .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .stat-box{background:var(--glass);border:1px solid var(--stroke);border-radius:14px;padding:13px;}
+  .stat-box{background:var(--glass);border:1px solid var(--stroke);border-radius:14px;padding:13px;min-width:0;}
   .stat-box .k{font-size:.76rem;color:var(--muted);}
-  .stat-box .v{font-size:1.35rem;font-weight:800;margin-top:3px;}
+  .stat-box .v{font-size:1.25rem;font-weight:800;margin-top:3px;word-break:break-all;}
   .donut-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;}
   .legend{flex:1;min-width:140px;}
   .legend .li{display:flex;align-items:center;gap:8px;font-size:.85rem;padding:4px 0;}
   .legend .sw{width:12px;height:12px;border-radius:4px;flex:0 0 12px;}
   .legend .li .pct{margin-left:auto;color:var(--muted);font-weight:600;}
-  .bars{display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;}
-  .bars .b{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;}
+  .bars{display:flex;align-items:flex-end;gap:6px;height:140px;padding-top:10px;}
+  .bars .b{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;min-width:0;}
+  .bars .b .val{font-size:.6rem;color:var(--muted);white-space:nowrap;}
   .bars .b .col{width:100%;max-width:26px;border-radius:6px 6px 0 0;background:linear-gradient(180deg,#5b8cff,#22d3a6);min-height:3px;transition:height .4s;}
   .bars .b .lab{font-size:.68rem;color:var(--muted);}
 
   /* settings list */
-  .list-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--stroke);}
+  .list-item{display:flex;align-items:center;gap:6px;padding:11px 0;border-bottom:1px solid var(--stroke);flex-wrap:wrap;}
   .list-item:last-child{border-bottom:none;}
-  .list-item .t{flex:1;}
-  .list-item .t .n{font-weight:600;}
+  .list-item .t{flex:1;min-width:120px;}
+  .list-item .t .n{font-weight:600;word-break:break-all;}
   .list-item .t .d{font-size:.78rem;color:var(--muted);}
-  .tag{font-size:.68rem;padding:2px 8px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;}
+  .tag{font-size:.68rem;padding:2px 8px;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;white-space:nowrap;}
 
   /* bottom nav */
   nav.tabbar{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
     display:flex;justify-content:space-around;
     padding:8px 8px calc(8px + var(--safe-b));
-    background:rgba(11,16,32,.78);
-    border-top:1px solid var(--stroke);
+    background:rgba(11,16,32,.78);border-top:1px solid var(--stroke);
     backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   }
   nav.tabbar .tab{
     flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-    background:none;border:none;color:var(--muted);font-size:.7rem;cursor:pointer;padding:6px 2px;font-family:inherit;font-weight:600;
+    background:none;border:none;color:var(--muted);font-size:.72rem;cursor:pointer;padding:6px 2px;font-family:inherit;font-weight:600;
   }
   nav.tabbar .tab .i{font-size:1.35rem;line-height:1;}
   nav.tabbar .tab.active{color:var(--accent);}
-  nav.tabbar .tab.active .i{transform:translateY(-1px);}
 
   .page{display:none;animation:fade .3s ease;}
   .page.active{display:block;}
@@ -208,28 +217,37 @@
   .modal{
     width:100%;max-width:540px;background:linear-gradient(160deg,#161d33,#10162a);
     border:1px solid var(--stroke);border-radius:22px 22px 0 0;padding:20px 16px calc(20px + var(--safe-b));
-    animation:slideup .3s ease;max-height:88vh;overflow-y:auto;
+    animation:slideup .3s ease;max-height:90vh;overflow-y:auto;
   }
   @keyframes slideup{from{transform:translateY(100%);}to{transform:translateY(0);}}
   .modal h3{margin:0 0 14px;font-size:1.1rem;}
   .modal .grab{width:40px;height:4px;border-radius:999px;background:var(--stroke);margin:0 auto 14px;}
+  .amount-row{display:flex;gap:8px;}
+  .amount-row input{flex:1;min-width:0;font-size:1.6rem;font-weight:800;padding:10px 14px;}
+  .amount-row select{flex:0 0 132px;font-size:.92rem;}
+  .qty-field{flex:0 0 84px !important;}
+  .rec-preview{font-size:.9rem;color:var(--accent2);margin:-2px 0 14px;font-weight:600;min-height:1.3em;line-height:1.5;}
+  .rec-preview.warn{color:var(--warn);}
 
   .voice{flex:0 0 48px;width:48px;height:48px;border-radius:12px;border:1.5px solid var(--stroke);background:var(--glass-strong);color:var(--accent2);font-size:1.2rem;cursor:pointer;}
   .voice.rec{background:var(--danger);color:#fff;}
   .with-voice{display:flex;gap:8px;}
-  .with-voice input{flex:1;}
+  .with-voice input{flex:1;min-width:0;}
 
   .toast{
     position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%) translateY(20px);
-    background:rgba(20,28,50,.95);border:1px solid var(--stroke);color:var(--txt);
-    padding:11px 18px;border-radius:999px;font-size:.9rem;z-index:200;opacity:0;transition:.3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);
+    background:rgba(20,28,50,.97);border:1px solid var(--stroke);color:var(--txt);max-width:92vw;
+    padding:11px 18px;border-radius:999px;font-size:.9rem;z-index:200;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.has-action{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:7px 7px 7px 18px;}
+  .toast.has-action span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .toast button{flex:0 0 auto;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;cursor:pointer;}
   .hint{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.5;}
-  .photo-preview{position:relative;display:inline-block;}
+  .photo-preview{position:relative;display:block;}
   .photo-preview img{width:100%;max-height:200px;object-fit:cover;border-radius:12px;border:1px solid var(--stroke);display:block;}
-  .photo-preview .rm{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:1rem;cursor:pointer;}
-  .rec-thumb{width:40px;height:40px;flex:0 0 40px;border-radius:9px;object-fit:cover;cursor:pointer;border:1px solid var(--stroke);}
+  .photo-preview .rm{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:#fff;font-size:1rem;cursor:pointer;}
+  .rec-thumb{width:40px;height:40px;flex:0 0 40px;border-radius:9px;object-fit:cover;cursor:zoom-in;border:1px solid var(--stroke);background:var(--glass);}
   .split-out{margin-top:12px;padding:14px;border-radius:14px;background:var(--glass);border:1px solid var(--stroke);text-align:center;}
   .split-out .per{font-size:2rem;font-weight:850;color:var(--accent2);}
 </style>
@@ -238,9 +256,9 @@
 <div class="app">
   <header class="top">
     <div class="title">✈️ 旅遊記帳</div>
-    <div class="ledger-pill" onclick="openLedgerModal()">
+    <button type="button" class="ledger-pill" onclick="openLedgerModal()" aria-label="切換帳本">
       <span>📒</span><b id="activeLedgerName">預設帳本</b><span>▾</span>
-    </div>
+    </button>
   </header>
 
   <!-- ============ 換算 ============ -->
@@ -248,75 +266,71 @@
     <div class="card">
       <h2>💱 貨幣換算 <span class="sub" id="homeCurHint"></span></h2>
 
-      <div class="field">
-        <label>金額</label>
+      <div class="field" style="margin-bottom:0">
+        <label for="amount">金額 <small id="stepHint"></small></label>
         <div class="stepper">
-          <button onclick="adjustAmount(-1)">−</button>
-          <input type="number" id="amount" inputmode="decimal" min="0" step="0.01" value="100">
-          <button onclick="adjustAmount(1)">+</button>
+          <button type="button" id="stepMinus" onclick="adjustAmount(-1)" aria-label="減少">−</button>
+          <input type="number" id="amount" inputmode="decimal" min="0" step="any" value="1000">
+          <button type="button" id="stepPlus" onclick="adjustAmount(1)" aria-label="增加">+</button>
         </div>
-        <div class="chips">
-          <span class="chip" onclick="setAmount(10)">10</span>
-          <span class="chip" onclick="setAmount(50)">50</span>
-          <span class="chip" onclick="setAmount(100)">100</span>
-          <span class="chip" onclick="setAmount(500)">500</span>
-          <span class="chip" onclick="setAmount(1000)">1000</span>
-          <span class="chip" onclick="setAmount(5000)">5000</span>
-          <span class="chip" onclick="setAmount(10000)">10000</span>
-        </div>
+        <div class="chips" id="quickChips"></div>
       </div>
 
       <div class="swap-row">
         <div class="field">
-          <label>從</label>
-          <select id="fromCurrency" onchange="updateLiveRate()"></select>
+          <label for="fromCurrency">從（看到的價格）</label>
+          <select id="fromCurrency"></select>
         </div>
-        <button class="swap-btn" onclick="swapCurrencies()" title="對調">⇄</button>
+        <button type="button" class="swap-btn" id="swapBtn" onclick="swapCurrencies()" title="對調" aria-label="對調兩種貨幣">⇄</button>
         <div class="field">
-          <label>到</label>
-          <select id="toCurrency" onchange="updateLiveRate()"></select>
+          <label for="toCurrency">換成</label>
+          <select id="toCurrency"></select>
         </div>
+      </div>
+
+      <div class="result" id="resultBox" aria-live="polite">
+        <div class="from-amt" id="resultFrom"></div>
+        <div class="arrow">↓</div>
+        <div class="to-amt" id="resultTo">—</div>
+        <div class="rate" id="resultRate"></div>
       </div>
       <div class="rate-live" id="liveRate"></div>
 
-      <div class="result" id="resultBox">
-        <div class="meta" id="resultMeta"></div>
-        <div class="from-amt" id="resultFrom"></div>
-        <div class="arrow">↓</div>
-        <div class="to-amt" id="resultTo"></div>
-        <div class="rate" id="resultRate"></div>
+      <div style="margin-top:14px;">
+        <button type="button" class="btn btn-accent" onclick="openRecordModal({fromConverter:true})">＋ 記下這筆</button>
       </div>
+    </div>
 
-      <div class="btn-row" style="margin-top:14px;">
-        <button class="btn btn-primary" onclick="convertCurrency()">換算</button>
-        <button class="btn btn-accent" onclick="openRecordModal()">＋ 記下這筆</button>
-      </div>
+    <div class="card">
+      <h2>📋 常用金額對照 <span class="sub" id="refTitleSub"></span></h2>
+      <div class="ref-list" id="refTable"></div>
+      <div class="hint">點一列可帶入上方金額。參考匯率為每日更新的市場中價，不含銀行換匯價差與刷卡手續費。</div>
     </div>
 
     <div class="card">
       <h2>🔎 快速工具</h2>
       <div class="btn-row">
-        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="searchRate()">Google 匯率</button>
-        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openTranslate()">翻譯</button>
+        <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="searchRate()">Google 匯率</button>
+        <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="openTranslate()">翻譯</button>
       </div>
     </div>
   </section>
 
   <!-- ============ 記帳 ============ -->
   <section class="page" id="page-records">
-    <div class="card">
+    <div class="card card-click" role="button" tabindex="0" onclick="setBudget()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setBudget();}" aria-label="設定此帳本預算">
       <h2>📊 預算 <span class="sub" id="budgetSub"></span></h2>
-      <div class="budget-wrap">
-        <div class="budget-bar"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
-        <div class="budget-nums">
-          <span>已花 <b id="spentNum">0</b></span>
-          <span>剩餘 <b id="remainNum">—</b></span>
-        </div>
+      <div class="budget-bar"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
+      <div class="budget-nums">
+        <span>已花 <b id="spentNum">0</b></span>
+        <span>剩餘 <b id="remainNum">—</b></span>
       </div>
+      <div class="pending-note" id="pendingNote"></div>
     </div>
 
     <div class="card">
       <h2>🧾 消費紀錄 <span class="sub" id="recCount"></span></h2>
+      <button type="button" class="btn btn-accent btn-sm" style="width:100%" onclick="openRecordModal()">＋ 新增一筆</button>
       <div class="chips" id="filterChips"></div>
       <div id="recordList" style="margin-top:12px;"></div>
     </div>
@@ -325,23 +339,24 @@
   <!-- ============ 統計 ============ -->
   <section class="page" id="page-stats">
     <div class="card">
-      <h2>📈 總覽</h2>
+      <h2>📈 總覽 <span class="sub" id="statsSub"></span></h2>
       <div class="stat-grid">
         <div class="stat-box"><div class="k">總支出</div><div class="v" id="stTotal">—</div></div>
         <div class="stat-box"><div class="k">天數</div><div class="v" id="stDays">—</div></div>
         <div class="stat-box"><div class="k">日均</div><div class="v" id="stAvg">—</div></div>
         <div class="stat-box"><div class="k">筆數</div><div class="v" id="stCount">—</div></div>
       </div>
+      <div class="pending-note" id="statsPending"></div>
     </div>
     <div class="card">
       <h2>🍩 分類佔比</h2>
       <div class="donut-wrap">
-        <svg id="donut" width="150" height="150" viewBox="0 0 42 42"></svg>
+        <svg id="donut" width="150" height="150" viewBox="0 0 42 42" role="img" aria-label="分類佔比圓餅圖"></svg>
         <div class="legend" id="donutLegend"></div>
       </div>
     </div>
     <div class="card">
-      <h2>📅 每日花費</h2>
+      <h2>📅 每日花費 <span class="sub">最近 10 天</span></h2>
       <div class="bars" id="dailyBars"></div>
     </div>
   </section>
@@ -349,19 +364,19 @@
   <!-- ============ 設定/工具 ============ -->
   <section class="page" id="page-settings">
     <div class="card">
-      <h2>🌐 本國貨幣</h2>
-      <label>記帳統一換算為</label>
-      <select id="homeCurrency" onchange="setHomeCurrency()"></select>
-      <div class="hint">所有紀錄會依當下匯率換算成本國貨幣，方便統計總支出。</div>
+      <h2>🌐 換算幣別 <span class="sub" id="homeLedgerName"></span></h2>
+      <label for="homeCurrency">這個帳本的支出統一換算為</label>
+      <select id="homeCurrency" onchange="changeHomeCurrency()"></select>
+      <div class="hint">每個帳本可以有自己的換算幣別。改了之後，此帳本的紀錄與預算會依目前參考匯率重新換算。</div>
     </div>
 
     <div class="card">
       <h2>💸 AA 分帳計算機</h2>
       <div class="row">
-        <div class="field"><label>總金額</label><input type="number" id="splitTotal" inputmode="decimal" placeholder="0"></div>
-        <div class="field"><label>人數</label><input type="number" id="splitPeople" inputmode="numeric" min="1" value="2"></div>
+        <div class="field"><label for="splitTotal">總金額</label><input type="number" id="splitTotal" inputmode="decimal" placeholder="0"></div>
+        <div class="field"><label for="splitPeople">人數</label><input type="number" id="splitPeople" inputmode="numeric" min="1" value="2"></div>
       </div>
-      <button class="btn btn-accent" onclick="calcSplit()">計算每人應付</button>
+      <button type="button" class="btn btn-accent" onclick="calcSplit()">計算每人應付</button>
       <div class="split-out" id="splitOut" style="display:none;">
         <div>每人應付</div><div class="per" id="splitPer">—</div>
       </div>
@@ -370,83 +385,91 @@
     <div class="card">
       <h2>📒 帳本管理</h2>
       <div id="ledgerList"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="addLedger()">＋ 新增旅程帳本</button>
+      <button type="button" class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="addLedger()">＋ 新增旅程帳本</button>
     </div>
 
     <div class="card">
       <h2>🏷️ 分類管理</h2>
       <div id="categoryMgmtList"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="addCategory(false)">＋ 新增類別</button>
+      <button type="button" class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="addCategory(false)">＋ 新增類別</button>
     </div>
 
     <div class="card">
       <h2>💱 貨幣管理</h2>
       <div id="currencyMgmtList"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="addCurrency()">＋ 新增貨幣</button>
+      <button type="button" class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%" onclick="addCurrency()">＋ 新增貨幣</button>
     </div>
 
     <div class="card">
       <h2>🔒 資料記憶狀態</h2>
       <div id="storageStatus"></div>
-      <div class="hint">資料會在每次操作後自動儲存於此瀏覽器，關閉瀏覽器或手機後仍會保留，下次開啟自動還原。<br>
-      ⚠️ 注意：iOS Safari 若超過約 7～14 天完全沒開啟此頁面，系統可能清除資料；長期保存或換手機前，請用下方「備份 JSON」匯出。</div>
+      <div class="hint">資料會在每次操作後自動儲存於此瀏覽器，關閉瀏覽器或手機後仍會保留，下次開啟自動還原。照片另外存在瀏覽器的 IndexedDB，空間比舊版大很多。<br>
+      ⚠️ 注意：iOS Safari 若超過約 7～14 天完全沒開啟此頁面，系統可能清除資料；長期保存或換手機前，請用下方「備份 JSON」匯出（備份檔含照片）。</div>
     </div>
 
     <div class="card">
       <h2>💾 資料</h2>
       <div class="btn-row" style="margin-bottom:10px;">
-        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="exportCSV()">匯出 CSV</button>
-        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="exportJSON()">備份 JSON</button>
+        <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="exportCSV()">匯出 CSV</button>
+        <button type="button" class="btn btn-ghost btn-sm" style="flex:1" onclick="exportJSON()">備份 JSON</button>
       </div>
-      <button class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:10px;" onclick="document.getElementById('importFile').click()">⤴️ 還原備份 (JSON)</button>
+      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:10px;" onclick="document.getElementById('importFile').click()">⤴️ 還原備份 (JSON)</button>
       <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importJSON(event)">
-      <button class="btn btn-danger" onclick="clearAllData()">清除目前帳本紀錄</button>
-      <div class="hint">資料儲存在此瀏覽器（localStorage），不會上傳雲端。換手機請先備份。</div>
+      <button type="button" class="btn btn-danger" onclick="clearAllData()">清除目前帳本紀錄</button>
+      <div class="hint">資料儲存在此瀏覽器，不會上傳雲端。換手機請先備份。可還原舊版（v2）的備份檔。</div>
     </div>
   </section>
 </div>
 
 <!-- bottom nav -->
-<nav class="tabbar">
-  <button class="tab active" data-tab="convert" onclick="switchTab('convert')"><span class="i">💱</span>換算</button>
-  <button class="tab" data-tab="records" onclick="switchTab('records')"><span class="i">🧾</span>記帳</button>
-  <button class="tab" data-tab="stats" onclick="switchTab('stats')"><span class="i">📈</span>統計</button>
-  <button class="tab" data-tab="settings" onclick="switchTab('settings')"><span class="i">⚙️</span>設定</button>
+<nav class="tabbar" aria-label="分頁">
+  <button type="button" class="tab active" data-tab="convert" onclick="switchTab('convert')"><span class="i">💱</span>換算</button>
+  <button type="button" class="tab" data-tab="records" onclick="switchTab('records')"><span class="i">🧾</span>記帳</button>
+  <button type="button" class="tab" data-tab="stats" onclick="switchTab('stats')"><span class="i">📈</span>統計</button>
+  <button type="button" class="tab" data-tab="settings" onclick="switchTab('settings')"><span class="i">⚙️</span>設定</button>
 </nav>
 
 <!-- record modal -->
 <div class="modal-bg" id="recordModalBg">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="recModalTitle">
     <div class="grab"></div>
-    <h3>＋ 新增一筆消費</h3>
+    <h3 id="recModalTitle">＋ 新增一筆消費</h3>
+    <div class="row">
+      <div class="field">
+        <label for="recAmount">金額</label>
+        <div class="amount-row">
+          <input type="number" id="recAmount" inputmode="decimal" step="any" min="0" placeholder="0">
+          <select id="recCurrency" aria-label="幣別"></select>
+        </div>
+      </div>
+      <div class="field qty-field"><label for="recQty">數量</label><input type="number" id="recQty" inputmode="numeric" min="1" value="1" style="font-size:1.2rem;padding:12px 10px;text-align:center;"></div>
+    </div>
+    <div class="rec-preview" id="recPreview" aria-live="polite"></div>
     <div class="field">
       <label>分類</label>
       <div class="chips" id="catChips"></div>
     </div>
     <div class="field">
-      <label>名稱</label>
+      <label for="recName">名稱</label>
       <div class="with-voice">
-        <input type="text" id="recName" placeholder="例如：拉麵、地鐵票">
-        <button class="voice" onclick="voice('recName',this)">🎤</button>
+        <input type="text" id="recName" placeholder="例如：拉麵、地鐵票" list="nameSuggest" autocomplete="off">
+        <button type="button" class="voice" onclick="voice('recName',this)" aria-label="語音輸入名稱">🎤</button>
       </div>
+      <datalist id="nameSuggest"></datalist>
     </div>
     <div class="field">
-      <label>地點（選填）</label>
+      <label for="recTime">日期時間</label>
+      <input type="datetime-local" id="recTime">
+    </div>
+    <div class="field">
+      <label for="recLocation">地點（選填）</label>
       <div class="with-voice">
         <input type="text" id="recLocation" placeholder="例如：東京、新宿">
-        <button class="voice" onclick="voice('recLocation',this)">🎤</button>
+        <button type="button" class="voice" onclick="voice('recLocation',this)" aria-label="語音輸入地點">🎤</button>
       </div>
     </div>
-    <div class="row">
-      <div class="field"><label>金額</label><input type="number" id="recAmount" inputmode="decimal" step="0.01"></div>
-      <div class="field"><label>數量</label><input type="number" id="recQty" inputmode="numeric" min="1" value="1"></div>
-    </div>
     <div class="field">
-      <label>幣別</label>
-      <select id="recCurrency"></select>
-    </div>
-    <div class="field">
-      <label>備註（選填）</label>
+      <label for="recNote">備註（選填）</label>
       <input type="text" id="recNote" placeholder="想記下的細節">
     </div>
     <div class="field">
@@ -455,36 +478,43 @@
       <div id="photoArea"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="closeRecordModal()">取消</button>
-      <button class="btn btn-accent" onclick="saveRecord()">儲存</button>
+      <button type="button" class="btn btn-ghost" onclick="closeRecordModal()">取消</button>
+      <button type="button" class="btn btn-accent" id="recSaveBtn" onclick="saveRecord()">儲存</button>
     </div>
+    <button type="button" class="btn btn-ghost" id="recDeleteBtn" style="margin-top:10px;color:var(--danger);display:none" onclick="deleteFromModal()">🗑 刪除這筆</button>
   </div>
 </div>
 
 <!-- ledger switch modal -->
 <div class="modal-bg" id="ledgerModalBg">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="切換帳本">
     <div class="grab"></div>
     <h3>📒 切換帳本</h3>
     <div id="ledgerSwitchList"></div>
-    <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%" onclick="addLedger()">＋ 新增旅程帳本</button>
-    <button class="btn btn-ghost" style="margin-top:10px" onclick="closeLedgerModal()">關閉</button>
+    <button type="button" class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%" onclick="addLedger()">＋ 新增旅程帳本</button>
+    <button type="button" class="btn btn-ghost" style="margin-top:10px" onclick="closeModal('ledgerModalBg')">關閉</button>
   </div>
 </div>
 
 <!-- photo viewer -->
-<div class="modal-bg" id="photoViewBg" style="align-items:center;z-index:150;" onclick="closePhotoView()">
+<div class="modal-bg" id="photoViewBg" style="align-items:center;z-index:150;" onclick="closeModal('photoViewBg')">
   <img id="photoViewImg" alt="照片" style="max-width:92%;max-height:86vh;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.6);">
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /* =========================================================
-   旅遊記帳 · 貨幣換算  —  純前端，資料存 localStorage
+   旅遊記帳 · 貨幣換算 v3.0 — 純前端
+   資料：IndexedDB（主）＋ localStorage（鏡像）；照片只存 IndexedDB
    ========================================================= */
-const STORE_KEY = 'travelExpenseApp_v2';
-const RATE_API = base => `https://open.er-api.com/v6/latest/${base}`;
+const APP_ID = 'lssh-travel-expense';
+const STORE_KEY = 'travelExpenseApp_v3';          // localStorage 鏡像
+const LEGACY_KEY = 'travelExpenseApp_v2';         // v2 舊資料（保留不刪）
+const RATE_KEY = 'travelExpenseApp_rates';        // 匯率快取（與帳務資料分開）
+const PHOTO_FALLBACK_KEY = 'travelExpenseApp_v3_photos'; // 不支援 IndexedDB 時的照片後援
+const RATE_API = 'https://open.er-api.com/v6/latest/USD';
+const RATE_TTL = 6 * 3600 * 1000;                 // 匯率 6 小時內不重抓
 
 const DEFAULT_CATEGORIES = [
   {id:'food',          name:'餐飲', icon:'🍜', color:'#ff8a65'},
@@ -496,8 +526,6 @@ const DEFAULT_CATEGORIES = [
   {id:'other',         name:'其他', icon:'💡', color:'#90a4ae'}
 ];
 const CAT_PALETTE = ['#5b8cff','#22d3a6','#ff6b6b','#ffb84d','#ba68c8','#4db6ac','#f48fb1','#aed581','#7986cb','#ffd54f'];
-const catById = id => state.categories.find(c=>c.id===id) || state.categories[state.categories.length-1];
-
 const DEFAULT_CURRENCIES = [
   {code:'TWD',name:'新台幣',flag:'🇹🇼'},{code:'JPY',name:'日圓',flag:'🇯🇵'},
   {code:'USD',name:'美元',flag:'🇺🇸'},{code:'KRW',name:'韓元',flag:'🇰🇷'},
@@ -506,652 +534,1117 @@ const DEFAULT_CURRENCIES = [
   {code:'HKD',name:'港幣',flag:'🇭🇰'},{code:'SGD',name:'新加坡幣',flag:'🇸🇬'},
   {code:'AUD',name:'澳幣',flag:'🇦🇺'},{code:'VND',name:'越南盾',flag:'🇻🇳'}
 ];
+// 沒有匯率時，加減按鈕的預設級距
+const STEP_FALLBACK = {JPY:100,KRW:1000,VND:10000,IDR:10000,TWD:10,THB:10,PHP:10,INR:10,CNY:1,HKD:1};
+
+const $ = id => document.getElementById(id);
+const clone = o => JSON.parse(JSON.stringify(o));
+const isCode = c => typeof c === 'string' && /^[A-Z]{3}$/.test(c);
+const num = (v,d=0) => { const n = Number(v); return Number.isFinite(n) ? n : d; };
+const str = (v,max=200) => (v == null ? '' : String(v)).slice(0,max);
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function parseSafe(raw){ if(raw && typeof raw === 'object') return raw; try{ return raw ? JSON.parse(raw) : null; }catch(e){ return null; } }
 
 /* ---------- state ---------- */
-let state = {
-  settings:{ homeCurrency:'TWD' },
-  categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-  currencies: JSON.parse(JSON.stringify(DEFAULT_CURRENCIES)),
-  ledgers:[],
-  activeLedgerId:null,
-  records:[],          // {id,ledgerId,catId,name,location,amount,currency,qty,note,homeAmount,rate,ts}
-  ratesCache:{}        // base -> {rates,ts}
-};
+function defaultState(){
+  return { version:3, settings:{ homeCurrency:'TWD', lastSaved:0 },
+    categories:clone(DEFAULT_CATEGORIES), currencies:clone(DEFAULT_CURRENCIES),
+    ledgers:[], activeLedgerId:null, records:[] };
+}
+let state = defaultState();
+// record: {id,ledgerId,catId,name,location,amount,currency,qty,note,hasPhoto,rate,homeAmount,pending,ts,updatedAt}
+// ledger: {id,name,budget,homeCurrency,travelCurrency,convFrom,convTo,createdAt}
 let activeFilter = 'all';
 let selectedCat = 'food';
 
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+const catById = id => state.categories.find(c=>c.id===id) || state.categories[state.categories.length-1];
+const curInfo = code => state.currencies.find(c=>c.code===code) || {code, name:code, flag:'🏳️'};
+const ledgerById = id => state.ledgers.find(l=>l.id===id) || state.ledgers[0];
+function activeLedger(){ return ledgerById(state.activeLedgerId); }
+function ledgerRecords(id){ const lid = id || state.activeLedgerId; return state.records.filter(r=>r.ledgerId===lid); }
 
-/* ---------- persistence (long-term browser memory) ---------- */
-let storageOK = true;        // 上次寫入是否成功
-let persistGranted = null;   // 瀏覽器是否授予持久化儲存
+function pickTravel(s, l){
+  const cnt = {};
+  s.records.forEach(r=>{ if(r.ledgerId===l.id && r.currency!==l.homeCurrency) cnt[r.currency]=(cnt[r.currency]||0)+1; });
+  const top = Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+  if(top && s.currencies.some(c=>c.code===top[0])) return top[0];
+  if(l.homeCurrency!=='JPY' && s.currencies.some(c=>c.code==='JPY')) return 'JPY';
+  const other = s.currencies.find(c=>c.code!==l.homeCurrency);
+  return other ? other.code : l.homeCurrency;
+}
+function makeLedger(s, name, home, travel){
+  const l = { id:uid(), name, budget:0, homeCurrency:home, travelCurrency:travel||null, convFrom:null, convTo:null, createdAt:Date.now() };
+  if(!l.travelCurrency) l.travelCurrency = pickTravel(s, l);
+  l.convFrom = l.travelCurrency; l.convTo = l.homeCurrency;
+  return l;
+}
+
+/* 驗證並轉換任何來源（v3 state、v2 state、備份檔）的資料；照片抽出來另外存 */
+function normalize(raw){
+  const s = defaultState(); const photos = {};
+  if(!raw || typeof raw !== 'object'){ s.ledgers.push(makeLedger(s,'預設帳本','TWD')); s.activeLedgerId=s.ledgers[0].id; return {state:s, photos}; }
+  const isV3 = raw.version === 3;
+  const home = isCode(raw.settings && raw.settings.homeCurrency) ? raw.settings.homeCurrency : 'TWD';
+  s.settings.homeCurrency = home;
+  s.settings.lastSaved = num(raw.settings && raw.settings.lastSaved);
+  if(raw.settings && raw.settings.migratedFromV2) s.settings.migratedFromV2 = true;
+
+  if(Array.isArray(raw.categories)){
+    const cats = raw.categories.filter(c=>c && c.id!=null).map(c=>({
+      id:str(c.id,60), name:str(c.name,30).trim()||'未命名', icon:str(c.icon,8).trim()||'🏷️',
+      color:/^#[0-9a-fA-F]{3,8}$/.test(c.color)?c.color:'#90a4ae', custom:!!c.custom }));
+    if(cats.length) s.categories = cats;
+  }
+  if(Array.isArray(raw.currencies)){
+    const seen = new Set();
+    const cs = raw.currencies.filter(c=>c && isCode(c.code) && !seen.has(c.code) && seen.add(c.code))
+      .map(c=>({ code:c.code, name:str(c.name,30).trim()||c.code, flag:str(c.flag,8).trim()||'🏳️' }));
+    if(cs.length>=2) s.currencies = cs;
+  }
+  if(Array.isArray(raw.ledgers)){
+    const seen = new Set();
+    s.ledgers = raw.ledgers.filter(l=>l && l.id!=null && !seen.has(String(l.id)) && seen.add(String(l.id))).map(l=>({
+      id:str(l.id,60), name:str(l.name,60).trim()||'未命名帳本', budget:Math.max(0,num(l.budget)),
+      // v2 的紀錄都是用「全域本國貨幣」換算，所以 v2 帳本一律採用全域設定
+      homeCurrency: isV3 && isCode(l.homeCurrency) ? l.homeCurrency : home,
+      travelCurrency: isCode(l.travelCurrency)?l.travelCurrency:null,
+      convFrom: isCode(l.convFrom)?l.convFrom:null, convTo: isCode(l.convTo)?l.convTo:null,
+      createdAt: num(l.createdAt, Date.now()) }));
+  }
+  if(!s.ledgers.length) s.ledgers.push(makeLedger(s,'預設帳本',home));
+  const lids = new Set(s.ledgers.map(l=>l.id));
+  const rids = new Set();
+  if(Array.isArray(raw.records)) raw.records.forEach(r=>{
+    if(!r || r.id==null || !lids.has(String(r.ledgerId)) || !isCode(r.currency)) return;
+    const amount = num(r.amount); if(!(amount>0)) return;
+    let id = str(r.id,60); if(rids.has(id)) id = uid(); rids.add(id);
+    const hasHome = r.homeAmount!=null && r.homeAmount!=='' && Number.isFinite(Number(r.homeAmount)) && !r.pending;
+    const rec = { id, ledgerId:String(r.ledgerId), catId:str(r.catId,60), name:str(r.name,80), location:str(r.location,80),
+      amount, currency:r.currency, qty:Math.max(1,Math.round(num(r.qty,1))), note:str(r.note,300), hasPhoto:false,
+      rate: hasHome && Number.isFinite(Number(r.rate)) ? Number(r.rate) : null,
+      homeAmount: hasHome ? Number(r.homeAmount) : null, pending: !hasHome,
+      ts: num(r.ts, Date.now()), updatedAt: num(r.updatedAt, 0) };
+    if(typeof r.photo === 'string' && r.photo.startsWith('data:image/')){ photos[id] = r.photo; rec.hasPhoto = true; }
+    else if(r.hasPhoto) rec.hasPhoto = true;
+    s.records.push(rec);
+  });
+  // 紀錄或帳本用到、但貨幣清單裡沒有的幣別，補回清單
+  const need = new Set(); s.ledgers.forEach(l=>need.add(l.homeCurrency)); s.records.forEach(r=>need.add(r.currency));
+  need.forEach(c=>{ if(!s.currencies.some(x=>x.code===c)) s.currencies.push({code:c, name:c, flag:'🏳️'}); });
+  const has = c => s.currencies.some(x=>x.code===c);
+  s.ledgers.forEach(l=>{
+    if(!l.travelCurrency || !has(l.travelCurrency)) l.travelCurrency = pickTravel(s,l);
+    if(!l.convFrom || !has(l.convFrom)) l.convFrom = l.travelCurrency;
+    if(!l.convTo || !has(l.convTo)) l.convTo = l.homeCurrency;
+  });
+  s.activeLedgerId = lids.has(String(raw.activeLedgerId)) ? String(raw.activeLedgerId) : s.ledgers[0].id;
+  return {state:s, photos};
+}
+
+/* ---------- IndexedDB ---------- */
+let idbOK = true, dbPromise = null;
+function idb(){
+  if(dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve,reject)=>{
+    try{
+      if(!window.indexedDB) return reject(new Error('不支援 IndexedDB'));
+      const rq = indexedDB.open(APP_ID, 1);
+      rq.onupgradeneeded = () => {
+        const db = rq.result;
+        if(!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+        if(!db.objectStoreNames.contains('photos')) db.createObjectStore('photos');
+      };
+      rq.onsuccess = () => resolve(rq.result);
+      rq.onerror = () => reject(rq.error);
+      rq.onblocked = () => reject(new Error('IndexedDB blocked'));
+    }catch(e){ reject(e); }
+  });
+  return dbPromise;
+}
+async function idbReq(store, mode, fn){
+  const db = await idb();
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(store, mode); let out;
+    const r = fn(tx.objectStore(store));
+    if(r) r.onsuccess = () => { out = r.result; };
+    tx.oncomplete = () => resolve(out);
+    tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+  });
+}
+const kvGet = k => idbReq('kv','readonly',s=>s.get(k));
+const kvSet = (k,v) => idbReq('kv','readwrite',s=>s.put(v,k));
+
+function fbPhotos(){ try{ return JSON.parse(localStorage.getItem(PHOTO_FALLBACK_KEY)||'{}') || {}; }catch(e){ return {}; } }
+function fbWrite(m){ localStorage.setItem(PHOTO_FALLBACK_KEY, JSON.stringify(m)); }
+const photoCache = new Map();
+const photoStore = {
+  async get(id){
+    if(photoCache.has(id)) return photoCache.get(id);
+    let v = null;
+    if(idbOK){ try{ v = await idbReq('photos','readonly',s=>s.get(id)); }catch(e){} }
+    if(!v) v = fbPhotos()[id] || null;
+    if(v) photoCache.set(id, v);
+    return v;
+  },
+  async put(id, data){
+    if(idbOK){ try{ await idbReq('photos','readwrite',s=>s.put(data,id)); photoCache.set(id,data); return true; }catch(e){ console.warn('photo put',e); } }
+    try{ const m = fbPhotos(); m[id] = data; fbWrite(m); photoCache.set(id,data); return true; }catch(e){ return false; }
+  },
+  async del(id){
+    photoCache.delete(id);
+    if(idbOK){ try{ await idbReq('photos','readwrite',s=>s.delete(id)); }catch(e){} }
+    const m = fbPhotos(); if(m[id]){ delete m[id]; try{ fbWrite(m); }catch(e){} }
+  },
+  async keys(){
+    let k = [];
+    if(idbOK){ try{ k = await idbReq('photos','readonly',s=>s.getAllKeys()); }catch(e){} }
+    return k.concat(Object.keys(fbPhotos()));
+  },
+  async clear(){
+    photoCache.clear();
+    if(idbOK){ try{ await idbReq('photos','readwrite',s=>s.clear()); }catch(e){} }
+    try{ localStorage.removeItem(PHOTO_FALLBACK_KEY); }catch(e){}
+  }
+};
+async function storePhotos(photos){
+  let ok = 0, fail = 0;
+  for(const r of state.records){
+    if(!r.hasPhoto) continue;
+    if(photos[r.id]){ if(await photoStore.put(r.id, photos[r.id])) ok++; else { r.hasPhoto = false; fail++; } }
+  }
+  return {ok, fail};
+}
+
+/* ---------- persistence ---------- */
+let saveTimer = null, storageOK = true, mirrorOK = true, idbWriteOK = true;
+let persistGranted = null;
 
 function save(){
+  state.settings.lastSaved = Date.now();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flush, 300);
+}
+async function flush(){
+  clearTimeout(saveTimer); saveTimer = null;
+  const json = JSON.stringify(state);
+  // 先同步寫 localStorage 鏡像（關閉分頁時也來得及），再寫 IndexedDB
+  try{ localStorage.setItem(STORE_KEY, json); mirrorOK = true; }
+  catch(e){
+    mirrorOK = false;
+    // v2 舊資料含照片且存兩份，可能占滿空間；已轉入 v3 後可釋放 v2 的重複備份鍵
+    if(state.settings.migratedFromV2 && localStorage.getItem(LEGACY_KEY+'_bak')){
+      try{ localStorage.removeItem(LEGACY_KEY+'_bak'); localStorage.setItem(STORE_KEY, json); mirrorOK = true; }catch(e2){}
+    }
+  }
+  idbWriteOK = false;
+  if(idbOK){ try{ await kvSet('state', json); idbWriteOK = true; }catch(e){ console.error('idb save failed', e); } }
+  const ok = idbWriteOK || mirrorOK;
+  if(!ok && storageOK) toast('⚠️ 儲存失敗：瀏覽器空間不足或停用了本機儲存');
+  storageOK = ok;
+  if($('page-settings').classList.contains('active')) renderStorageStatus();
+}
+function flushIfPending(){ if(saveTimer) flush(); }
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushIfPending(); });
+window.addEventListener('pagehide', flushIfPending);
+
+async function load(){
+  let raw = null, src = '';
+  if(idbOK){ try{ raw = parseSafe(await kvGet('state')); if(raw) src = 'idb'; }catch(e){ console.warn(e); } }
+  if(!raw){ raw = parseSafe(localStorage.getItem(STORE_KEY)); if(raw) src = 'mirror'; }
+  let legacy = null;
+  if(!raw){
+    legacy = parseSafe(localStorage.getItem(LEGACY_KEY)) || parseSafe(localStorage.getItem(LEGACY_KEY+'_bak'));
+    if(legacy){ raw = legacy; src = 'v2'; }
+  }
+  const {state:s, photos} = normalize(raw);
+  state = s;
+  let photoInfo = {ok:0, fail:0};
+  if(src==='v2'){
+    state.settings.migratedFromV2 = true;
+    photoInfo = await storePhotos(photos);
+    // v2 的匯率快取轉成 v3 格式
+    if(!rateCache && legacy.ratesCache && typeof legacy.ratesCache==='object'){
+      const best = Object.values(legacy.ratesCache).filter(x=>x && x.rates && x.ts).sort((a,b)=>b.ts-a.ts)[0];
+      if(best){ rateCache = {rates:best.rates, fetchedAt:best.ts, sourceTime:null}; try{ localStorage.setItem(RATE_KEY, JSON.stringify(rateCache)); }catch(e){} }
+    }
+  }
+  return {src, photoInfo};
+}
+// 清掉沒有紀錄對應的照片（例如刪除後關閉頁面、來不及清理）
+async function sweepOrphanPhotos(){
   try{
-    state.settings.lastSaved = Date.now();
-    const json = JSON.stringify(state);
-    localStorage.setItem(STORE_KEY, json);
-    localStorage.setItem(STORE_KEY+'_bak', json); // 備援副本，防主鍵損毀
-    storageOK = true;
-  }catch(e){
-    storageOK = false;
-    console.error('save failed',e);
-    toast('⚠️ 儲存失敗：瀏覽器空間不足或停用了本機儲存');
-  }
-  if(document.getElementById('page-settings').classList.contains('active')) renderStorageStatus();
+    const keep = new Set(state.records.filter(r=>r.hasPhoto).map(r=>r.id));
+    const keys = await photoStore.keys();
+    for(const k of keys){ if(!keep.has(k)) await photoStore.del(k); }
+  }catch(e){}
 }
 
-function parseSafe(raw){ try{ return raw?JSON.parse(raw):null; }catch(e){ return null; } }
-
-function load(){
-  // 先讀主鍵，失敗則用備援副本還原
-  let parsed = parseSafe(localStorage.getItem(STORE_KEY));
-  if(!parsed){
-    parsed = parseSafe(localStorage.getItem(STORE_KEY+'_bak'));
-    if(parsed){ console.warn('主資料損毀，已由備份還原'); }
-  }
-  if(parsed){
-    state = Object.assign(state, parsed);
-    if(!state.currencies||!state.currencies.length) state.currencies=JSON.parse(JSON.stringify(DEFAULT_CURRENCIES));
-    if(!state.categories||!state.categories.length) state.categories=JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-  }
-  if(!state.ledgers.length){
-    const id=uid();
-    state.ledgers=[{id,name:'預設帳本',budget:0,homeCurrency:state.settings.homeCurrency}];
-    state.activeLedgerId=id;
-  }
-  if(!state.activeLedgerId) state.activeLedgerId=state.ledgers[0].id;
+/* ---------- toast（可帶「復原」按鈕） ---------- */
+let toastTimer, toastExpire = null;
+function runExpire(){ if(toastExpire){ const f = toastExpire; toastExpire = null; try{ f(); }catch(e){} } }
+function showToast(msg, action){
+  const t = $('toast');
+  runExpire();
+  t.innerHTML = '';
+  const sp = document.createElement('span'); sp.textContent = msg; t.appendChild(sp);
+  if(action){
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = action.label;
+    b.onclick = () => { toastExpire = null; clearTimeout(toastTimer); t.classList.remove('show','has-action'); action.fn(); };
+    t.appendChild(b); t.classList.add('has-action');
+    toastExpire = action.onExpire || null;
+  }else t.classList.remove('has-action');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show','has-action'); runExpire(); }, action ? 5000 : 2400);
 }
-function activeLedger(){ return state.ledgers.find(l=>l.id===state.activeLedgerId)||state.ledgers[0]; }
-function ledgerRecords(){ return state.records.filter(r=>r.ledgerId===state.activeLedgerId); }
+function toast(msg){ showToast(msg); }
 
-/* ---------- toast ---------- */
-let toastTimer;
-function toast(msg){
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+/* ---------- modals ---------- */
+function openModal(id){ $(id).classList.add('show'); document.body.classList.add('modal-open'); }
+function closeModal(id){
+  $(id).classList.remove('show');
+  if(!document.querySelector('.modal-bg.show')) document.body.classList.remove('modal-open');
 }
+document.querySelectorAll('.modal-bg').forEach(bg=>{
+  bg.addEventListener('click', e=>{ if(e.target===bg) closeModal(bg.id); });
+});
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  for(const id of ['photoViewBg','ledgerModalBg','recordModalBg']){ if($(id).classList.contains('show')){ closeModal(id); break; } }
+});
 
 /* ---------- tabs ---------- */
+function currentTab(){ const p = document.querySelector('.page.active'); return p ? p.id.replace('page-','') : 'convert'; }
 function switchTab(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('.tabbar .tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+  $('page-'+name).classList.add('active');
+  document.querySelectorAll('.tabbar .tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  renderPage(name);
+  window.scrollTo(0,0);
+}
+function renderPage(name){
+  renderHeader();
+  if(name==='convert') renderConverter();
   if(name==='records') renderRecords();
   if(name==='stats') renderStats();
   if(name==='settings') renderSettings();
-  window.scrollTo(0,0);
 }
+function renderCurrent(){ renderPage(currentTab()); }
+function renderHeader(){ $('activeLedgerName').textContent = activeLedger().name; }
 
-/* ---------- currency dropdowns ---------- */
-function curLabel(c){ return `${c.flag} ${c.code} · ${c.name}`; }
-function fillSelect(sel, selected){
-  sel.innerHTML='';
-  state.currencies.forEach(c=> sel.add(new Option(curLabel(c), c.code)));
-  if(selected) sel.value=selected;
-}
-function populateAllSelects(){
-  fillSelect(document.getElementById('fromCurrency'),
-    document.getElementById('fromCurrency').value || state.settings.homeCurrency);
-  fillSelect(document.getElementById('toCurrency'),
-    document.getElementById('toCurrency').value || 'JPY');
-  fillSelect(document.getElementById('recCurrency'),
-    document.getElementById('recCurrency').value || 'JPY');
-  const hc=document.getElementById('homeCurrency');
-  fillSelect(hc, state.settings.homeCurrency);
-  document.getElementById('homeCurHint').textContent='本國：'+state.settings.homeCurrency;
-}
+/* ---------- exchange rates：一次抓 USD 基準，任兩幣以交叉匯率計算 ---------- */
+let rateCache = parseSafe(localStorage.getItem(RATE_KEY));   // {rates, fetchedAt, sourceTime}
+if(!rateCache || !rateCache.rates || !rateCache.fetchedAt) rateCache = null;
+let rateFetching = null;
 
-/* ---------- amount steppers ---------- */
-function setAmount(v){ document.getElementById('amount').value=v; updateLiveRate(); }
-function adjustAmount(d){
-  const el=document.getElementById('amount');
-  let v=parseFloat(el.value)||0; v=Math.max(0,v+d); el.value=v%1===0?v:v.toFixed(2);
+function refreshRates(force){
+  if(!force && rateCache && Date.now()-rateCache.fetchedAt < RATE_TTL) return Promise.resolve(false);
+  if(rateFetching) return rateFetching;
+  rateFetching = (async()=>{
+    let updated = false;
+    try{
+      const ctl = typeof AbortController!=='undefined' ? new AbortController() : null;
+      const timer = ctl ? setTimeout(()=>ctl.abort(), 8000) : null;
+      const res = await fetch(RATE_API, ctl ? {signal:ctl.signal, cache:'no-store'} : {cache:'no-store'});
+      if(timer) clearTimeout(timer);
+      const d = await res.json();
+      if(d && d.result!=='error' && d.rates && d.rates.USD){
+        rateCache = { rates:d.rates, fetchedAt:Date.now(), sourceTime: d.time_last_update_unix ? d.time_last_update_unix*1000 : null };
+        try{ localStorage.setItem(RATE_KEY, JSON.stringify(rateCache)); }catch(e){}
+        updated = true;
+      }
+    }catch(e){ /* 離線 */ }
+    rateFetching = null;
+    return updated;
+  })();
+  return rateFetching;
 }
-function swapCurrencies(){
-  const f=document.getElementById('fromCurrency'), t=document.getElementById('toCurrency');
-  const tmp=f.value; f.value=t.value; t.value=tmp; updateLiveRate(); convertCurrency(true);
+function rateOf(from, to){
+  if(from===to) return 1;
+  const r = rateCache && rateCache.rates;
+  if(!r || !r[from] || !r[to]) return null;
+  return r[to] / r[from];
 }
+async function getRate(from, to){ if(from===to) return 1; await refreshRates(); return rateOf(from,to); }
 
-/* ---------- exchange rates (live + offline cache) ---------- */
-async function getRates(base){
-  // try fresh fetch; fall back to cache
-  try{
-    const res = await fetch(RATE_API(base));
-    const data = await res.json();
-    if(data && data.rates){
-      state.ratesCache[base]={rates:data.rates, ts:Date.now()};
-      save();
-      return {rates:data.rates, live:true};
-    }
-  }catch(e){ /* offline */ }
-  if(state.ratesCache[base]) return {rates:state.ratesCache[base].rates, live:false, ts:state.ratesCache[base].ts};
-  return null;
+// 把「待換算」的紀錄補上匯率
+function resolvePending(){
+  let n = 0;
+  state.records.forEach(r=>{
+    if(!r.pending) return;
+    const L = ledgerById(r.ledgerId); const rate = rateOf(r.currency, L.homeCurrency);
+    if(rate!=null){ r.rate = rate; r.homeAmount = r.amount*r.qty*rate; r.pending = false; n++; }
+  });
+  if(n){ save(); toast(`✅ 已補算 ${n} 筆待換算紀錄`); }
+  return n;
 }
-async function getRate(from,to){
-  if(from===to) return {rate:1, live:true};
-  const r = await getRates(from);
-  if(r && r.rates[to]!=null) return {rate:r.rates[to], live:r.live, ts:r.ts};
-  // try inverse via cache of `to`
-  const r2 = state.ratesCache[to];
-  if(r2 && r2.rates[from]) return {rate:1/r2.rates[from], live:false, ts:r2.ts};
-  return null;
+async function refreshAndApply(force){
+  const updated = await refreshRates(force);
+  if(updated) resolvePending();
+  renderCurrent();
+  return updated;
 }
-
-async function updateLiveRate(){
-  const from=document.getElementById('fromCurrency').value;
-  const to=document.getElementById('toCurrency').value;
-  const box=document.getElementById('liveRate');
-  box.textContent='讀取匯率中…';
-  const r=await getRate(from,to);
-  if(!r){ box.classList.add('offline'); box.innerHTML='<span class="dot"></span>無法取得匯率（離線且無快取）'; return; }
-  box.classList.toggle('offline',!r.live);
-  const tag = r.live ? '即時' : ('離線快取 · '+ (r.ts?new Date(r.ts).toLocaleDateString():'') );
-  box.innerHTML=`<span class="dot"></span>${tag}：1 ${from} = ${fmt(r.rate)} ${to}`;
+async function manualRefresh(){
+  $('liveRate').textContent = '更新匯率中…';
+  const updated = await refreshAndApply(true);
+  toast(updated ? '匯率已更新' : '無法連線，仍使用上次的匯率');
 }
 
 function fmt(n){
-  if(n==null||isNaN(n)) return '—';
-  const a=Math.abs(n);
+  if(n==null || isNaN(n)) return '—';
+  const a = Math.abs(n);
   if(a>=100) return n.toLocaleString('en-US',{maximumFractionDigits:0});
   if(a>=1)   return n.toLocaleString('en-US',{maximumFractionDigits:2});
   return n.toLocaleString('en-US',{maximumFractionDigits:5});
 }
+function pad(n){ return String(n).padStart(2,'0'); }
+function fmtDT(ts){ const d = new Date(ts); return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 
-/* ---------- convert ---------- */
-async function convertCurrency(silent){
-  const amount=parseFloat(document.getElementById('amount').value)||0;
-  const from=document.getElementById('fromCurrency').value;
-  const to=document.getElementById('toCurrency').value;
-  const r=await getRate(from,to);
-  if(!r){ toast('無法取得匯率，請連網後再試'); return; }
-  const result=amount*r.rate;
-  const fc=state.currencies.find(c=>c.code===from), tc=state.currencies.find(c=>c.code===to);
-  document.getElementById('resultMeta').textContent = r.live?'即時匯率':'離線快取匯率';
-  document.getElementById('resultFrom').textContent=`${fc.flag} ${fmt(amount)} ${from}`;
-  document.getElementById('resultTo').textContent=`${tc.flag} ${fmt(result)} ${to}`;
-  document.getElementById('resultRate').textContent=`1 ${from} = ${fmt(r.rate)} ${to}`;
-  const box=document.getElementById('resultBox'); box.classList.add('show');
+/* ---------- currency dropdowns ---------- */
+function curLabel(c){ return `${c.flag} ${c.code} ${c.name}`; }
+function fillSelect(sel, val){
+  sel.innerHTML = '';
+  state.currencies.forEach(c=> sel.add(new Option(curLabel(c), c.code)));
+  sel.value = val;
+  if(sel.value!==val) sel.selectedIndex = 0;
+}
+function populateAllSelects(){
+  const L = activeLedger();
+  fillSelect($('fromCurrency'), L.convFrom);
+  fillSelect($('toCurrency'), L.convTo);
+  fillSelect($('homeCurrency'), L.homeCurrency);
 }
 
-/* ---------- record modal ---------- */
+/* ---------- 換算頁 ---------- */
+function stepFor(code){
+  const u = rateOf('USD', code);
+  if(u==null) return STEP_FALLBACK[code] || 1;
+  return Math.pow(10, Math.max(0, Math.floor(Math.log10(u))));
+}
+function convValues(){ return { amt:parseFloat($('amount').value), from:$('fromCurrency').value, to:$('toCurrency').value }; }
+function onConvCurrencyChange(){
+  const L = activeLedger(); const {from,to} = convValues();
+  L.convFrom = from; L.convTo = to;
+  if(from!==L.homeCurrency) L.travelCurrency = from; else if(to!==L.homeCurrency) L.travelCurrency = to;
+  save(); renderConverter();
+}
+function swapCurrencies(){
+  const f = $('fromCurrency'), t = $('toCurrency'); const tmp = f.value; f.value = t.value; t.value = tmp;
+  const b = $('swapBtn'); b.classList.toggle('spin');
+  onConvCurrencyChange();
+}
+function setAmount(v){ $('amount').value = v; renderConverter(); }
+function adjustAmount(d){
+  const st = stepFor($('fromCurrency').value);
+  let v = parseFloat($('amount').value) || 0;
+  v = Math.max(0, Math.round((v + d*st)*100)/100);
+  $('amount').value = v; renderConverter();
+}
+function renderConverter(){
+  const L = activeLedger();
+  $('homeCurHint').textContent = '記帳換算：' + L.homeCurrency;
+  const {amt, from, to} = convValues();
+  const a = isNaN(amt) ? 0 : amt;
+  const fc = curInfo(from), tc = curInfo(to);
+  const st = stepFor(from);
+  $('stepHint').textContent = `（± 每次 ${fmt(st)}）`;
+  $('stepMinus').setAttribute('aria-label', `減少 ${st}`); $('stepPlus').setAttribute('aria-label', `增加 ${st}`);
+  $('quickChips').innerHTML = [1,5,10,50,100].map(m=>{
+    const v = m*st; return `<button type="button" class="chip${v===a?' active':''}" data-amt="${v}">${fmt(v)}</button>`;
+  }).join('');
+  const rate = rateOf(from, to);
+  $('resultFrom').textContent = `${fc.flag} ${fmt(a)} ${from}`;
+  $('resultTo').textContent = rate==null ? '—' : `${tc.flag} ${fmt(a*rate)} ${to}`;
+  $('resultRate').textContent = rate==null ? '尚無匯率' : `1 ${from} = ${fmt(rate)} ${to} · 1 ${to} = ${fmt(1/rate)} ${from}`;
+  renderRateStatus();
+  renderRefTable(from, to, rate, st);
+}
+function renderRateStatus(){
+  const box = $('liveRate');
+  if(!rateCache){
+    box.className = 'rate-live offline';
+    box.innerHTML = rateFetching ? '讀取匯率中…'
+      : '<span class="dot"></span>尚無匯率：請連上網路（記帳仍可先存成「待換算」）<button type="button" class="link-btn" onclick="manualRefresh()">重試</button>';
+    return;
+  }
+  const stale = Date.now() - rateCache.fetchedAt > RATE_TTL;
+  box.className = 'rate-live' + (stale ? ' offline' : '');
+  box.innerHTML = `<span class="dot"></span>參考匯率 · 來源更新 ${fmtDT(rateCache.sourceTime || rateCache.fetchedAt)}${stale ? ' · 離線中，使用上次的匯率' : ''}<button type="button" class="link-btn" onclick="manualRefresh()">重新整理</button>`;
+}
+function renderRefTable(from, to, rate, st){
+  $('refTitleSub').textContent = `${from} → ${to}`;
+  const el = $('refTable');
+  if(rate==null){ el.innerHTML = '<div class="empty" style="padding:12px">尚無匯率</div>'; return; }
+  el.innerHTML = [1,2,5,10,20,50,100].map(m=>{
+    const v = m*st;
+    return `<button type="button" class="ref-row" data-amt="${v}"><span class="l">${fmt(v)} ${esc(from)}</span><span class="eq">≈</span><b>${fmt(v*rate)} ${esc(to)}</b></button>`;
+  }).join('');
+}
+
+/* ---------- 記帳表單（新增／編輯） ---------- */
+let editingId = null, currentPhoto = null, photoChanged = false, saving = false;
+
+function toLocalInput(ts){ const d = new Date(ts); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 function renderCatChips(){
-  const wrap=document.getElementById('catChips'); wrap.innerHTML='';
+  const wrap = $('catChips'); wrap.innerHTML = '';
   state.categories.forEach(c=>{
-    const el=document.createElement('span');
-    el.className='chip cat'+(c.id===selectedCat?' active':'');
-    el.style.cssText = c.id===selectedCat ? `background:${c.color};border-color:${c.color}` : '';
-    el.innerHTML=`${c.icon} ${c.name}`;
-    el.onclick=()=>{ selectedCat=c.id; renderCatChips(); };
+    const el = document.createElement('button'); el.type = 'button';
+    el.className = 'chip cat' + (c.id===selectedCat ? ' active' : '');
+    if(c.id===selectedCat) el.style.cssText = `background:${c.color};border-color:${c.color}`;
+    el.setAttribute('aria-pressed', c.id===selectedCat);
+    el.textContent = `${c.icon} ${c.name}`;
+    el.onclick = () => { selectedCat = c.id; renderCatChips(); };
     wrap.appendChild(el);
   });
-  const add=document.createElement('span');
-  add.className='chip'; add.style.borderStyle='dashed';
-  add.innerHTML='＋ 新增類別';
-  add.onclick=()=>addCategory(true);
+  const add = document.createElement('button'); add.type = 'button';
+  add.className = 'chip'; add.style.borderStyle = 'dashed'; add.textContent = '＋ 新增類別';
+  add.onclick = () => addCategory(true);
   wrap.appendChild(add);
+}
+function renderNameSuggestions(L){
+  const seen = new Set(), out = [];
+  state.records.filter(r=>r.ledgerId===L.id).sort((a,b)=>b.ts-a.ts).forEach(r=>{
+    if(r.name && !seen.has(r.name) && out.length<20){ seen.add(r.name); out.push(r.name); }
+  });
+  $('nameSuggest').innerHTML = out.map(n=>`<option value="${esc(n)}">`).join('');
+}
+function openRecordModal(opts){
+  opts = opts || {};
+  editingId = opts.id || null;
+  const rec = editingId ? state.records.find(r=>r.id===editingId) : null;
+  if(editingId && !rec) return;
+  const L = rec ? ledgerById(rec.ledgerId) : activeLedger();
+  $('recModalTitle').textContent = rec ? '✏️ 編輯這筆消費' : '＋ 新增一筆消費';
+  $('recDeleteBtn').style.display = rec ? '' : 'none';
+  currentPhoto = null; photoChanged = false;
+  if(rec){
+    selectedCat = state.categories.some(c=>c.id===rec.catId) ? rec.catId : state.categories[0].id;
+    fillSelect($('recCurrency'), rec.currency);
+    $('recAmount').value = rec.amount; $('recQty').value = rec.qty;
+    $('recName').value = rec.name; $('recLocation').value = rec.location; $('recNote').value = rec.note;
+    $('recTime').value = toLocalInput(rec.ts);
+    if(rec.hasPhoto) photoStore.get(rec.id).then(p=>{ if(editingId===rec.id && !photoChanged){ currentPhoto = p; renderPhotoArea(); } });
+  }else{
+    if(!state.categories.some(c=>c.id===selectedCat)) selectedCat = state.categories[0].id;
+    const cur = opts.fromConverter ? $('fromCurrency').value : L.travelCurrency;
+    fillSelect($('recCurrency'), cur);
+    const a = parseFloat($('amount').value);
+    $('recAmount').value = opts.fromConverter && a>0 ? a : '';
+    $('recQty').value = 1;
+    $('recName').value = ''; $('recLocation').value = ''; $('recNote').value = '';
+    $('recTime').value = toLocalInput(Date.now());
+  }
+  renderCatChips(); renderPhotoArea(); renderNameSuggestions(L); updateRecPreview();
+  openModal('recordModalBg');
+  if(!rec && !$('recAmount').value) setTimeout(()=>{ try{ $('recAmount').focus(); }catch(e){} }, 320);
+}
+function closeRecordModal(){ closeModal('recordModalBg'); editingId = null; }
+
+function recRateInfo(){
+  const rec = editingId ? state.records.find(r=>r.id===editingId) : null;
+  const L = rec ? ledgerById(rec.ledgerId) : activeLedger();
+  const cur = $('recCurrency').value;
+  if(rec && rec.currency===cur && !rec.pending && rec.rate!=null) return {L, rate:rec.rate, kept:true};
+  return {L, rate:rateOf(cur, L.homeCurrency), kept:false};
+}
+function updateRecPreview(){
+  const el = $('recPreview');
+  const amt = parseFloat($('recAmount').value) || 0;
+  const qty = Math.max(1, parseInt($('recQty').value) || 1);
+  const cur = $('recCurrency').value;
+  const {L, rate, kept} = recRateInfo();
+  el.classList.remove('warn');
+  if(!amt){ el.textContent = `會自動換算成 ${L.homeCurrency}`; return; }
+  if(rate==null){ el.classList.add('warn'); el.textContent = '⏳ 目前沒有匯率，會先存成「待換算」，連上網路後自動補算'; return; }
+  const total = amt*qty;
+  el.textContent = `${qty>1 ? fmt(amt)+' × '+qty+' = ' : ''}${fmt(total)} ${cur} ≈ ${fmt(total*rate)} ${L.homeCurrency}${kept && cur!==L.homeCurrency ? '（沿用記帳時匯率）' : ''}`;
 }
 
 function addCategory(selectAfter){
-  const name=prompt('新類別名稱（例如：景點門票）：');
-  if(!name||!name.trim()) return;
+  const name = prompt('新類別名稱（例如：景點門票）：');
+  if(!name || !name.trim()) return;
   if(state.categories.some(c=>c.name===name.trim())){ toast('已有同名類別'); return; }
-  const icon=(prompt('類別圖示 emoji（可留空）：')||'🏷️').trim()||'🏷️';
-  const color=CAT_PALETTE[state.categories.length % CAT_PALETTE.length];
-  const cat={ id:'c_'+uid(), name:name.trim(), icon, color, custom:true };
+  const icon = (prompt('類別圖示 emoji（可留空）：')||'🏷️').trim().slice(0,8) || '🏷️';
+  const color = CAT_PALETTE[state.categories.length % CAT_PALETTE.length];
+  const cat = { id:'c_'+uid(), name:name.trim().slice(0,30), icon, color, custom:true };
   state.categories.push(cat); save();
-  if(selectAfter){ selectedCat=cat.id; renderCatChips(); }
-  if(document.getElementById('page-settings').classList.contains('active')) renderSettings();
+  if(selectAfter){ selectedCat = cat.id; renderCatChips(); }
+  if(currentTab()==='settings') renderSettings();
   toast('已新增類別 '+icon+' '+cat.name);
 }
 function removeCategory(id){
-  const c=catById(id);
+  const c = catById(id);
+  if(state.categories.length<=1){ toast('至少要保留一個類別'); return; }
   if(state.records.some(r=>r.catId===id)){ toast('此類別已有紀錄，無法刪除'); return; }
   if(!confirm('刪除類別「'+c.name+'」？')) return;
-  state.categories=state.categories.filter(x=>x.id!==id);
-  if(selectedCat===id) selectedCat=state.categories[0].id;
+  state.categories = state.categories.filter(x=>x.id!==id);
+  if(selectedCat===id) selectedCat = state.categories[0].id;
+  if(activeFilter===id) activeFilter = 'all';
   save(); renderSettings();
 }
-let currentPhoto=null;  // 目前編輯中的照片 dataURL
 
-// 壓縮圖片：縮放至最長邊 1000px、JPEG 品質 0.65，控制體積以便存入瀏覽器
+// 壓縮圖片：最長邊 1000px、JPEG 品質 0.65
 function compressImage(file, maxDim=1000, quality=0.65){
   return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const img=new Image();
-      img.onload=()=>{
-        let w=img.width, h=img.height;
-        if(w>h && w>maxDim){ h=Math.round(h*maxDim/w); w=maxDim; }
-        else if(h>=w && h>maxDim){ w=Math.round(w*maxDim/h); h=maxDim; }
-        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if(w>h && w>maxDim){ h = Math.round(h*maxDim/w); w = maxDim; }
+        else if(h>=w && h>maxDim){ w = Math.round(w*maxDim/h); h = maxDim; }
+        const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img,0,0,w,h);
         try{ resolve(canvas.toDataURL('image/jpeg',quality)); }catch(e){ reject(e); }
       };
-      img.onerror=reject; img.src=reader.result;
+      img.onerror = reject; img.src = reader.result;
     };
-    reader.onerror=reject; reader.readAsDataURL(file);
+    reader.onerror = reject; reader.readAsDataURL(file);
   });
 }
 async function onPhotoSelected(ev){
-  const file=ev.target.files[0]; if(!file) return;
-  if(!file.type.startsWith('image/')){ toast('請選擇圖片檔'); return; }
+  const file = ev.target.files[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('請選擇圖片檔'); ev.target.value=''; return; }
   toast('照片處理中…');
-  try{
-    currentPhoto=await compressImage(file);
-    renderPhotoArea();
-  }catch(e){ console.error(e); toast('照片讀取失敗'); }
-  ev.target.value='';
+  try{ currentPhoto = await compressImage(file); photoChanged = true; renderPhotoArea(); }
+  catch(e){ console.error(e); toast('照片讀取失敗'); }
+  ev.target.value = '';
 }
-function removePhoto(){ currentPhoto=null; renderPhotoArea(); }
+function removePhoto(){ currentPhoto = null; photoChanged = true; renderPhotoArea(); }
 function renderPhotoArea(){
-  const area=document.getElementById('photoArea');
+  const area = $('photoArea');
   if(currentPhoto){
-    const kb=Math.round(currentPhoto.length*0.73/1024);
-    area.innerHTML=`<div class="photo-preview"><img src="${currentPhoto}"><button type="button" class="rm" onclick="removePhoto()">✕</button></div>
+    const kb = Math.round(currentPhoto.length*0.73/1024);
+    area.innerHTML = `<div class="photo-preview"><img src="${esc(currentPhoto)}" alt="照片預覽"><button type="button" class="rm" onclick="removePhoto()" aria-label="移除照片">✕</button></div>
       <div class="hint">約 ${kb} KB，將隨此筆紀錄一起儲存。</div>`;
   }else{
-    area.innerHTML=`<button type="button" class="btn btn-ghost" onclick="document.getElementById('recPhotoInput').click()">📷 上傳 / 拍照</button>`;
+    area.innerHTML = `<button type="button" class="btn btn-ghost" onclick="document.getElementById('recPhotoInput').click()">📷 上傳 / 拍照</button>`;
   }
 }
-
-function openRecordModal(){
-  renderCatChips();
-  currentPhoto=null; renderPhotoArea();
-  // prefill from converter
-  document.getElementById('recAmount').value=document.getElementById('amount').value||'';
-  document.getElementById('recCurrency').value=document.getElementById('fromCurrency').value;
-  document.getElementById('recQty').value=1;
-  document.getElementById('recName').value='';
-  document.getElementById('recLocation').value='';
-  document.getElementById('recNote').value='';
-  document.getElementById('recordModalBg').classList.add('show');
+async function viewPhoto(id){
+  const p = await photoStore.get(id);
+  if(!p){ toast('找不到這張照片'); return; }
+  $('photoViewImg').src = p; openModal('photoViewBg');
 }
-function closeRecordModal(){ document.getElementById('recordModalBg').classList.remove('show'); }
-function viewPhoto(id){
-  const r=state.records.find(x=>x.id===id); if(!r||!r.photo) return;
-  document.getElementById('photoViewImg').src=r.photo;
-  document.getElementById('photoViewBg').classList.add('show');
-}
-function closePhotoView(){ document.getElementById('photoViewBg').classList.remove('show'); }
 
 async function saveRecord(){
-  const amount=parseFloat(document.getElementById('recAmount').value);
-  if(!amount||amount<=0){ toast('請輸入金額'); return; }
-  const qty=parseInt(document.getElementById('recQty').value)||1;
-  const currency=document.getElementById('recCurrency').value;
-  const total=amount*qty;
-  const home=state.settings.homeCurrency;
-  const r=await getRate(currency,home);
-  const rate = r?r.rate:1;
-  const rec={
-    id:uid(), ledgerId:state.activeLedgerId, catId:selectedCat,
-    name:document.getElementById('recName').value.trim()||catById(selectedCat).name,
-    location:document.getElementById('recLocation').value.trim(),
-    amount:amount, currency:currency, qty:qty,
-    note:document.getElementById('recNote').value.trim(),
-    photo: currentPhoto || null,
-    homeAmount: total*rate, rate:rate, ts:Date.now()
-  };
-  state.records.push(rec);
-  save();
-  if(!storageOK){
-    // 多半是照片過多導致空間不足：移除這筆的照片再存一次
-    rec.photo=null;
+  if(saving) return;
+  const amount = parseFloat($('recAmount').value);
+  if(!(amount>0)){ toast('請輸入金額'); $('recAmount').focus(); return; }
+  saving = true; $('recSaveBtn').disabled = true;
+  try{
+    const qty = Math.max(1, parseInt($('recQty').value) || 1);
+    const currency = $('recCurrency').value;
+    const tv = $('recTime').value; let ts = tv ? new Date(tv).getTime() : Date.now(); if(!Number.isFinite(ts)) ts = Date.now();
+    const old = editingId ? state.records.find(r=>r.id===editingId) : null;
+    const L = old ? ledgerById(old.ledgerId) : activeLedger();
+    let rate;
+    if(old && old.currency===currency && !old.pending && old.rate!=null) rate = old.rate;   // 同幣別沿用記帳時匯率
+    else rate = await getRate(currency, L.homeCurrency);
+    const pending = rate==null;
+    const fields = {
+      catId:selectedCat,
+      name:$('recName').value.trim().slice(0,80) || catById(selectedCat).name,
+      location:$('recLocation').value.trim().slice(0,80),
+      amount, currency, qty, note:$('recNote').value.trim().slice(0,300),
+      rate: pending ? null : rate, homeAmount: pending ? null : amount*qty*rate, pending, ts, updatedAt:Date.now()
+    };
+    let rec;
+    if(old){ rec = Object.assign(old, fields); }
+    else{ rec = Object.assign({ id:uid(), ledgerId:L.id, hasPhoto:false }, fields); state.records.push(rec); }
+    let photoMsg = '';
+    if(photoChanged || (!old && currentPhoto)){
+      if(currentPhoto){
+        const ok = await photoStore.put(rec.id, currentPhoto);
+        rec.hasPhoto = ok; if(!ok) photoMsg = '（照片空間不足，未存照片）';
+      }else{ await photoStore.del(rec.id); rec.hasPhoto = false; }
+    }
     save();
-    if(storageOK) toast('⚠️ 儲存空間不足，已存紀錄但未含照片');
-  }else{
-    toast(r? '已記帳 ✓' : '已記帳（離線匯率）');
+    toast((old ? '已更新' : '已記帳 ✓') + (pending ? '，⏳ 待換算' : '') + photoMsg);
+    closeRecordModal();
+    if(old) renderCurrent(); else switchTab('records');
+  }finally{
+    saving = false; $('recSaveBtn').disabled = false;
   }
-  closeRecordModal();
-  switchTab('records');
 }
 
 function deleteRecord(id){
-  if(!confirm('刪除這筆紀錄？')) return;
-  state.records=state.records.filter(r=>r.id!==id); save(); renderRecords();
+  const i = state.records.findIndex(r=>r.id===id); if(i<0) return;
+  const [rec] = state.records.splice(i,1);
+  save(); renderCurrent();
+  showToast(`已刪除「${rec.name}」`, {
+    label:'復原',
+    fn:()=>{ state.records.splice(Math.min(i,state.records.length),0,rec); save(); renderCurrent(); toast('已復原'); },
+    onExpire:()=>{ if(rec.hasPhoto) photoStore.del(rec.id); }
+  });
 }
+function deleteFromModal(){ const id = editingId; closeRecordModal(); if(id) deleteRecord(id); }
 
 /* ---------- records page ---------- */
-function dayKey(ts){ const d=new Date(ts); return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate(); }
-function renderFilterChips(){
-  const wrap=document.getElementById('filterChips'); wrap.innerHTML='';
-  const all=document.createElement('span');
-  all.className='chip'+(activeFilter==='all'?' active':''); all.textContent='全部';
-  all.onclick=()=>{activeFilter='all';renderRecords();}; wrap.appendChild(all);
-  state.categories.forEach(c=>{
-    const el=document.createElement('span');
-    el.className='chip'+(activeFilter===c.id?' active':'');
-    el.innerHTML=`${c.icon} ${c.name}`;
-    el.onclick=()=>{activeFilter=c.id;renderRecords();}; wrap.appendChild(el);
-  });
+const WD = '日一二三四五六';
+function dayKey(ts){ const d = new Date(ts); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function dayLabel(key){
+  const [y,m,d] = key.split('-').map(Number);
+  const dt = new Date(y,m-1,d), now = new Date();
+  const yest = new Date(now.getFullYear(), now.getMonth(), now.getDate()-1);
+  const base = `${y!==now.getFullYear() ? y+'/' : ''}${m}/${d}（${WD[dt.getDay()]}）`;
+  if(key===dayKey(now)) return '今天 · '+base;
+  if(key===dayKey(yest)) return '昨天 · '+base;
+  return base;
+}
+function sumHome(recs){ return recs.reduce((s,r)=>s+(r.pending ? 0 : r.homeAmount),0); }
+function renderFilterChips(recs){
+  const used = new Set(recs.map(r=>r.catId));
+  if(activeFilter!=='all' && !used.has(activeFilter)) activeFilter = 'all';
+  const wrap = $('filterChips');
+  const cats = state.categories.filter(c=>used.has(c.id));
+  wrap.style.display = cats.length>1 ? '' : 'none';
+  wrap.innerHTML = `<button type="button" class="chip${activeFilter==='all'?' active':''}" data-filter="all">全部</button>` +
+    cats.map(c=>`<button type="button" class="chip${activeFilter===c.id?' active':''}" data-filter="${esc(c.id)}">${esc(c.icon)} ${esc(c.name)}</button>`).join('');
 }
 function renderRecords(){
-  const L=activeLedger();
-  document.getElementById('activeLedgerName').textContent=L.name;
-  renderFilterChips();
-  const home=state.settings.homeCurrency;
-  let recs=ledgerRecords().slice().sort((a,b)=>b.ts-a.ts);
-  if(activeFilter!=='all') recs=recs.filter(r=>r.catId===activeFilter);
+  const L = activeLedger(), home = L.homeCurrency;
+  const all = ledgerRecords();
+  renderFilterChips(all);
+  let recs = all.slice().sort((a,b)=>b.ts-a.ts);
+  if(activeFilter!=='all') recs = recs.filter(r=>r.catId===activeFilter);
+  $('recCount').textContent = recs.length + ' 筆';
 
-  document.getElementById('recCount').textContent=recs.length+' 筆';
-  // budget
-  const spent=ledgerRecords().reduce((s,r)=>s+r.homeAmount,0);
-  document.getElementById('spentNum').textContent=fmt(spent)+' '+home;
+  const spent = sumHome(all); const pend = all.filter(r=>r.pending).length;
+  $('spentNum').textContent = fmt(spent)+' '+home;
+  const fill = $('budgetFill');
   if(L.budget>0){
-    const pct=Math.min(100,spent/L.budget*100);
-    const fill=document.getElementById('budgetFill');
-    fill.style.width=pct+'%'; fill.classList.toggle('over',spent>L.budget);
-    document.getElementById('remainNum').textContent=fmt(L.budget-spent)+' '+home;
-    document.getElementById('budgetSub').textContent='預算 '+fmt(L.budget)+' '+home;
+    fill.style.width = Math.min(100, spent/L.budget*100)+'%'; fill.classList.toggle('over', spent>L.budget);
+    $('remainNum').textContent = fmt(L.budget-spent)+' '+home;
+    $('budgetSub').textContent = '預算 '+fmt(L.budget)+' '+home+' · 點此修改';
   }else{
-    document.getElementById('budgetFill').style.width='0%';
-    document.getElementById('remainNum').textContent='未設預算';
-    document.getElementById('budgetSub').textContent='點設定可設預算';
+    fill.style.width = '0%'; fill.classList.remove('over');
+    $('remainNum').textContent = '未設預算';
+    $('budgetSub').textContent = '點此設定預算';
   }
+  $('pendingNote').textContent = pend ? `⏳ 另有 ${pend} 筆待換算，連上網路後會自動補算（未計入上方金額）` : '';
 
-  const list=document.getElementById('recordList');
-  if(!recs.length){ list.innerHTML='<div class="empty"><span class="big">🧳</span>還沒有紀錄，到「換算」分頁按「記下這筆」開始吧！</div>'; return; }
-  // group by day
-  const groups={};
-  recs.forEach(r=>{ const k=dayKey(r.ts); (groups[k]=groups[k]||[]).push(r); });
-  let html='';
-  Object.keys(groups).forEach(day=>{
-    const dayTotal=groups[day].reduce((s,r)=>s+r.homeAmount,0);
-    html+=`<div class="day-group"><div class="day-head"><span>${day}</span><span class="day-total">${fmt(dayTotal)} ${home}</span></div>`;
-    groups[day].forEach(r=>{
-      const c=catById(r.catId);
-      const sub=[r.location, r.qty>1?('×'+r.qty):'', r.note].filter(Boolean).join(' · ');
-      const thumb = r.photo ? `<img class="rec-thumb" src="${r.photo}" onclick="viewPhoto('${r.id}')" alt="照片">` : '';
-      html+=`<div class="rec">
-        <div class="ic" style="background:${c.color}33">${c.icon}</div>
-        <div class="info"><div class="name">${esc(r.name)} ${r.photo?'📷':''}</div><div class="sub">${esc(sub)||c.name}</div></div>
-        ${thumb}
-        <div class="amt"><div class="home">${fmt(r.homeAmount)} ${home}</div>
-          <div class="orig">${fmt(r.amount*r.qty)} ${r.currency}</div></div>
-        <button class="del" onclick="deleteRecord('${r.id}')">🗑</button>
+  const list = $('recordList');
+  if(!recs.length){
+    list.innerHTML = all.length ? '<div class="empty">這個分類沒有紀錄</div>'
+      : '<div class="empty"><span class="big">🧳</span>還沒有紀錄。<br>按上方「＋ 新增一筆」，或到「換算」分頁按「記下這筆」。</div>';
+    return;
+  }
+  const groups = {};
+  recs.forEach(r=>{ const k = dayKey(r.ts); (groups[k] = groups[k] || []).push(r); });
+  let html = '';
+  Object.keys(groups).sort().reverse().forEach(day=>{
+    const g = groups[day];
+    html += `<div class="day-group"><div class="day-head"><span>${dayLabel(day)}</span><span class="day-total">${fmt(sumHome(g))} ${esc(home)}</span></div>`;
+    g.forEach(r=>{
+      const c = catById(r.catId); const d = new Date(r.ts);
+      const sub = [`${pad(d.getHours())}:${pad(d.getMinutes())}`, r.location, r.qty>1 ? ('×'+r.qty) : '', r.note].filter(Boolean).join(' · ');
+      html += `<div class="rec" role="button" tabindex="0" data-act="edit" data-id="${esc(r.id)}" aria-label="編輯 ${esc(r.name)}">
+        <div class="ic" style="background:${c.color}33">${esc(c.icon)}</div>
+        <div class="info"><div class="name">${esc(r.name)}</div><div class="sub">${esc(sub)}</div></div>
+        ${r.hasPhoto ? `<img class="rec-thumb" data-act="photo" data-id="${esc(r.id)}" alt="查看照片">` : ''}
+        <div class="amt"><div class="home">${r.pending ? '<span class="pend">⏳ 待換算</span>' : fmt(r.homeAmount)+' '+esc(home)}</div>
+          <div class="orig">${fmt(r.amount*r.qty)} ${esc(r.currency)}</div></div>
+        <button type="button" class="del" data-act="del" data-id="${esc(r.id)}" aria-label="刪除 ${esc(r.name)}">🗑</button>
       </div>`;
     });
-    html+='</div>';
+    html += '</div>';
   });
-  list.innerHTML=html;
+  list.innerHTML = html;
+  list.querySelectorAll('img.rec-thumb').forEach(async img=>{
+    const p = await photoStore.get(img.dataset.id);
+    if(p) img.src = p; else img.remove();
+  });
 }
-function esc(s){ return (s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
 
 /* ---------- stats ---------- */
 function renderStats(){
-  const home=state.settings.homeCurrency;
-  const recs=ledgerRecords();
-  const total=recs.reduce((s,r)=>s+r.homeAmount,0);
-  const days=new Set(recs.map(r=>dayKey(r.ts)));
-  document.getElementById('stTotal').textContent=fmt(total)+' '+home;
-  document.getElementById('stDays').textContent=days.size||'—';
-  document.getElementById('stAvg').textContent=days.size?fmt(total/days.size)+' '+home:'—';
-  document.getElementById('stCount').textContent=recs.length;
+  const L = activeLedger(), home = L.homeCurrency;
+  const all = ledgerRecords(); const recs = all.filter(r=>!r.pending);
+  const total = sumHome(recs);
+  const days = new Set(recs.map(r=>dayKey(r.ts)));
+  $('statsSub').textContent = L.name + ' · ' + home;
+  $('stTotal').textContent = fmt(total)+' '+home;
+  $('stDays').textContent = days.size || '—';
+  $('stAvg').textContent = days.size ? fmt(total/days.size)+' '+home : '—';
+  $('stCount').textContent = all.length;
+  const pend = all.length - recs.length;
+  $('statsPending').textContent = pend ? `⏳ ${pend} 筆待換算，未列入統計` : '';
 
-  // donut by category
-  const byCat={};
-  recs.forEach(r=> byCat[r.catId]=(byCat[r.catId]||0)+r.homeAmount);
-  const donut=document.getElementById('donut'), legend=document.getElementById('donutLegend');
-  donut.innerHTML=''; legend.innerHTML='';
-  if(total<=0){ legend.innerHTML='<div class="empty" style="padding:10px">尚無資料</div>';
-    donut.innerHTML='<circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="6"/>'; return; }
-  let offset=25; // start at top
-  const entries=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
-  entries.forEach(([cid,val])=>{
-    const c=catById(cid); const pct=val/total*100; const color=c.color;
-    const circ=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    circ.setAttribute('cx','21');circ.setAttribute('cy','21');circ.setAttribute('r','15.9');
-    circ.setAttribute('fill','none');circ.setAttribute('stroke',color);circ.setAttribute('stroke-width','6');
-    circ.setAttribute('stroke-dasharray',`${pct.toFixed(2)} ${(100-pct).toFixed(2)}`);
+  const byCat = {};
+  recs.forEach(r=> byCat[r.catId] = (byCat[r.catId]||0) + r.homeAmount);
+  const donut = $('donut'), legend = $('donutLegend');
+  donut.innerHTML = ''; legend.innerHTML = '';
+  const bars = $('dailyBars');
+  if(total<=0){
+    legend.innerHTML = '<div class="empty" style="padding:10px">尚無資料</div>';
+    donut.innerHTML = '<circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="6"/>';
+    bars.innerHTML = '<div class="empty" style="width:100%">尚無資料</div>';
+    return;
+  }
+  let offset = 25;
+  Object.entries(byCat).sort((a,b)=>b[1]-a[1]).forEach(([cid,val])=>{
+    const c = catById(cid); const pct = val/total*100;
+    const circ = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circ.setAttribute('cx','21'); circ.setAttribute('cy','21'); circ.setAttribute('r','15.9');
+    circ.setAttribute('fill','none'); circ.setAttribute('stroke',c.color); circ.setAttribute('stroke-width','6');
+    circ.setAttribute('stroke-dasharray', `${pct.toFixed(2)} ${(100-pct).toFixed(2)}`);
     circ.setAttribute('stroke-dashoffset', offset.toFixed(2));
-    donut.appendChild(circ); offset = (offset - pct + 100)%100;
-    legend.innerHTML+=`<div class="li"><span class="sw" style="background:${color}"></span>${c.icon} ${c.name}<span class="pct">${pct.toFixed(0)}%</span></div>`;
+    donut.appendChild(circ); offset = (offset - pct + 100) % 100;
+    legend.insertAdjacentHTML('beforeend', `<div class="li"><span class="sw" style="background:${c.color}"></span>${esc(c.icon)} ${esc(c.name)}<span class="pct">${pct.toFixed(0)}%</span></div>`);
   });
 
-  // daily bars (last up to 10 days)
-  const byDay={};
-  recs.forEach(r=>{ const k=dayKey(r.ts); byDay[k]=(byDay[k]||0)+r.homeAmount; });
-  const dayKeys=Object.keys(byDay).sort((a,b)=>new Date(a)-new Date(b)).slice(-10);
-  const max=Math.max(...dayKeys.map(k=>byDay[k]),1);
-  const bars=document.getElementById('dailyBars');
-  bars.innerHTML = dayKeys.length? dayKeys.map(k=>{
-    const h=byDay[k]/max*100; const md=k.split('/').slice(1).join('/');
-    return `<div class="b" title="${k}: ${fmt(byDay[k])}"><div class="col" style="height:${h}%"></div><div class="lab">${md}</div></div>`;
-  }).join('') : '<div class="empty" style="width:100%">尚無資料</div>';
+  const byDay = {};
+  recs.forEach(r=>{ const k = dayKey(r.ts); byDay[k] = (byDay[k]||0) + r.homeAmount; });
+  const keys = Object.keys(byDay).sort().slice(-10);
+  const max = Math.max(...keys.map(k=>byDay[k]), 1);
+  bars.innerHTML = keys.map(k=>{
+    const h = byDay[k]/max*100; const [,m,d] = k.split('-').map(Number);
+    return `<div class="b" title="${k}：${fmt(byDay[k])} ${esc(home)}"><div class="val">${shortNum(byDay[k])}</div><div class="col" style="height:${h*0.78}%"></div><div class="lab">${m}/${d}</div></div>`;
+  }).join('');
+}
+function shortNum(n){
+  if(n>=1e6) return (n/1e6).toFixed(n>=1e7?0:1)+'M';
+  if(n>=1e4) return (n/1e3).toFixed(0)+'k';
+  if(n>=1e3) return (n/1e3).toFixed(1)+'k';
+  return fmt(n);
 }
 
 /* ---------- settings ---------- */
-function setHomeCurrency(){
-  state.settings.homeCurrency=document.getElementById('homeCurrency').value;
-  save(); populateAllSelects();
-  toast('本國貨幣已設為 '+state.settings.homeCurrency);
+async function changeHomeCurrency(){
+  const L = activeLedger(); const sel = $('homeCurrency');
+  const nw = sel.value, old = L.homeCurrency;
+  if(nw===old) return;
+  if(!rateCache){ await refreshRates(true); }
+  if(!rateCache){ sel.value = old; toast('需要匯率才能重新換算，請連上網路後再改'); return; }
+  const recs = ledgerRecords(L.id);
+  if(!confirm(`把「${L.name}」的換算幣別從 ${old} 改成 ${nw}？\n\n此帳本 ${recs.length} 筆紀錄${L.budget>0?'與預算':''}會依「目前參考匯率」重新換算。`)){ sel.value = old; return; }
+  let pend = 0;
+  recs.forEach(r=>{
+    const rate = rateOf(r.currency, nw);
+    if(rate==null){ r.rate = null; r.homeAmount = null; r.pending = true; pend++; }
+    else { r.rate = rate; r.homeAmount = r.amount*r.qty*rate; r.pending = false; }
+  });
+  let budgetNote = '';
+  if(L.budget>0){
+    const b = rateOf(old, nw);
+    if(b!=null) L.budget = Math.round(L.budget*b*100)/100;
+    else budgetNote = '；預算數字未換算，請確認';
+  }
+  L.homeCurrency = nw; state.settings.homeCurrency = nw;
+  if(L.convTo===old) L.convTo = nw;
+  if(L.travelCurrency===nw) L.travelCurrency = pickTravel(state, L);
+  if(L.convFrom===L.convTo) L.convFrom = L.travelCurrency;
+  save(); populateAllSelects(); renderSettings();
+  toast(`已改為 ${nw}` + (pend ? `，${pend} 筆待換算` : '') + budgetNote);
 }
 function renderSettings(){
   populateAllSelects();
   renderStorageStatus();
-  // ledgers
-  const ll=document.getElementById('ledgerList'); ll.innerHTML='';
+  const A = activeLedger();
+  $('homeLedgerName').textContent = A.name;
+  const ll = $('ledgerList'); ll.innerHTML = '';
   state.ledgers.forEach(l=>{
-    const isActive=l.id===state.activeLedgerId;
-    const cnt=state.records.filter(r=>r.ledgerId===l.id).length;
-    const div=document.createElement('div'); div.className='list-item';
-    div.innerHTML=`<div class="t"><div class="n">${esc(l.name)} ${isActive?'<span class="tag">使用中</span>':''}</div>
-      <div class="d">${cnt} 筆 · 預算 ${l.budget>0?fmt(l.budget)+' '+state.settings.homeCurrency:'未設'}</div></div>`;
-    const b1=mkBtn('預算',()=>setBudget(l.id));
-    const b2=mkBtn('改名',()=>renameLedger(l.id));
-    const b3=mkBtn(isActive?'✓':'切換',()=>{state.activeLedgerId=l.id;save();renderSettings();renderRecords();});
-    [b1,b2,b3].forEach(b=>div.appendChild(b));
-    if(state.ledgers.length>1){ const b4=mkBtn('🗑',()=>delLedger(l.id),'danger'); div.appendChild(b4); }
+    const isActive = l.id===state.activeLedgerId;
+    const cnt = state.records.filter(r=>r.ledgerId===l.id).length;
+    const div = document.createElement('div'); div.className = 'list-item';
+    div.innerHTML = `<div class="t"><div class="n">${esc(l.name)} ${isActive?'<span class="tag">使用中</span>':''}</div>
+      <div class="d">${cnt} 筆 · 換算 ${esc(l.homeCurrency)} · 預算 ${l.budget>0 ? fmt(l.budget)+' '+esc(l.homeCurrency) : '未設'}</div></div>`;
+    div.appendChild(mkBtn('預算', ()=>setBudget(l.id)));
+    div.appendChild(mkBtn('改名', ()=>renameLedger(l.id)));
+    if(!isActive) div.appendChild(mkBtn('切換', ()=>switchLedger(l.id)));
+    if(state.ledgers.length>1) div.appendChild(mkBtn('🗑', ()=>delLedger(l.id), 'danger', '刪除帳本 '+l.name));
     ll.appendChild(div);
   });
-  // categories
-  const catList=document.getElementById('categoryMgmtList'); catList.innerHTML='';
+  const catList = $('categoryMgmtList'); catList.innerHTML = '';
   state.categories.forEach(c=>{
-    const used=state.records.filter(r=>r.catId===c.id).length;
-    const div=document.createElement('div'); div.className='list-item';
-    div.innerHTML=`<div class="ic" style="width:34px;height:34px;flex:0 0 34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:${c.color}33">${c.icon}</div>
+    const used = state.records.filter(r=>r.catId===c.id).length;
+    const div = document.createElement('div'); div.className = 'list-item';
+    div.innerHTML = `<div style="width:34px;height:34px;flex:0 0 34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;background:${c.color}33">${esc(c.icon)}</div>
       <div class="t"><div class="n">${esc(c.name)} ${c.custom?'<span class="tag" style="background:#7a6bff">自訂</span>':''}</div><div class="d">${used} 筆</div></div>`;
-    div.appendChild(mkBtn('🗑',()=>removeCategory(c.id),'danger'));
+    div.appendChild(mkBtn('🗑', ()=>removeCategory(c.id), 'danger', '刪除類別 '+c.name));
     catList.appendChild(div);
   });
-  // currencies
-  const cl=document.getElementById('currencyMgmtList'); cl.innerHTML='';
+  const cl = $('currencyMgmtList'); cl.innerHTML = '';
   state.currencies.forEach(c=>{
-    const div=document.createElement('div'); div.className='list-item';
-    div.innerHTML=`<div class="t"><div class="n">${c.flag} ${c.code}</div><div class="d">${esc(c.name)}</div></div>`;
-    if(state.currencies.length>2){ div.appendChild(mkBtn('移除',()=>removeCurrency(c.code),'danger')); }
+    const div = document.createElement('div'); div.className = 'list-item';
+    const noRate = rateCache && !rateCache.rates[c.code];
+    div.innerHTML = `<div class="t"><div class="n">${esc(c.flag)} ${esc(c.code)}</div><div class="d">${esc(c.name)}${noRate ? ' · ⚠️ 匯率來源查無此幣' : ''}</div></div>`;
+    if(state.currencies.length>2) div.appendChild(mkBtn('移除', ()=>removeCurrency(c.code), 'danger'));
     cl.appendChild(div);
   });
 }
-function mkBtn(label,fn,kind){
-  const b=document.createElement('button');
-  b.className='btn btn-sm '+(kind==='danger'?'btn-danger':'btn-ghost');
-  b.style.marginLeft='6px'; b.textContent=label; b.onclick=fn; return b;
+function mkBtn(label, fn, kind, aria){
+  const b = document.createElement('button'); b.type = 'button';
+  b.className = 'btn btn-sm ' + (kind==='danger' ? 'btn-danger' : 'btn-ghost');
+  b.textContent = label; b.onclick = fn; if(aria) b.setAttribute('aria-label', aria);
+  return b;
 }
 function setBudget(id){
-  const l=state.ledgers.find(x=>x.id===id);
-  const v=prompt(`設定「${l.name}」總預算（${state.settings.homeCurrency}），輸入 0 取消：`, l.budget||'');
-  if(v===null) return; l.budget=Math.max(0,parseFloat(v)||0); save(); renderSettings(); toast('預算已更新');
+  const l = id ? state.ledgers.find(x=>x.id===id) : activeLedger(); if(!l) return;
+  const v = prompt(`設定「${l.name}」總預算（${l.homeCurrency}），輸入 0 表示不設：`, l.budget || '');
+  if(v===null) return;
+  l.budget = Math.max(0, parseFloat(String(v).replace(/,/g,'')) || 0);
+  save(); renderCurrent(); toast('預算已更新');
 }
 function renameLedger(id){
-  const l=state.ledgers.find(x=>x.id===id);
-  const v=prompt('帳本名稱：', l.name); if(v&&v.trim()){ l.name=v.trim(); save(); renderSettings(); renderRecords(); }
+  const l = state.ledgers.find(x=>x.id===id);
+  const v = prompt('帳本名稱：', l.name);
+  if(v && v.trim()){ l.name = v.trim().slice(0,60); save(); renderCurrent(); }
+}
+function switchLedger(id){
+  state.activeLedgerId = id; activeFilter = 'all';
+  save(); populateAllSelects(); closeModal('ledgerModalBg'); renderCurrent();
+  toast('已切換到 '+activeLedger().name);
 }
 function addLedger(){
-  const v=prompt('新旅程帳本名稱（例如：2026 東京）：');
-  if(v&&v.trim()){
-    const id=uid(); state.ledgers.push({id,name:v.trim(),budget:0,homeCurrency:state.settings.homeCurrency});
-    state.activeLedgerId=id; save(); closeLedgerModal(); renderSettings(); renderRecords(); toast('已建立帳本');
-  }
+  const v = prompt('新旅程帳本名稱（例如：2026 東京）：');
+  if(!v || !v.trim()) return;
+  const A = activeLedger();
+  const l = makeLedger(state, v.trim().slice(0,60), A.homeCurrency, A.travelCurrency);
+  state.ledgers.push(l);
+  closeModal('ledgerModalBg');
+  switchLedger(l.id);
+  toast('已建立帳本「'+l.name+'」');
 }
 function delLedger(id){
-  if(!confirm('刪除此帳本與其所有紀錄？')) return;
-  state.records=state.records.filter(r=>r.ledgerId!==id);
-  state.ledgers=state.ledgers.filter(l=>l.id!==id);
-  if(state.activeLedgerId===id) state.activeLedgerId=state.ledgers[0].id;
-  save(); renderSettings(); renderRecords();
+  const l = state.ledgers.find(x=>x.id===id);
+  const recs = state.records.filter(r=>r.ledgerId===id);
+  if(!confirm(`刪除帳本「${l.name}」與其中 ${recs.length} 筆紀錄？此動作無法復原。`)) return;
+  recs.forEach(r=>{ if(r.hasPhoto) photoStore.del(r.id); });
+  state.records = state.records.filter(r=>r.ledgerId!==id);
+  state.ledgers = state.ledgers.filter(x=>x.id!==id);
+  if(state.activeLedgerId===id){ state.activeLedgerId = state.ledgers[0].id; activeFilter = 'all'; populateAllSelects(); }
+  save(); renderCurrent();
 }
 function addCurrency(){
-  const code=prompt('貨幣代碼（例如 KRW）：'); if(!code) return;
-  const cc=code.toUpperCase().trim();
+  const code = prompt('貨幣代碼（三個英文字母，例如 KRW）：'); if(!code) return;
+  const cc = code.toUpperCase().trim();
+  if(!isCode(cc)){ toast('代碼要是三個英文字母'); return; }
   if(state.currencies.some(c=>c.code===cc)){ toast('已存在'); return; }
-  const name=prompt('中文名稱：')||cc;
-  const flag=prompt('國旗 emoji（可留空）：')||'🏳️';
-  state.currencies.push({code:cc,name:name.trim(),flag:flag.trim()});
+  if(rateCache && !rateCache.rates[cc] && !confirm(`匯率來源查無 ${cc}，新增後將無法自動換算。仍要新增？`)) return;
+  const name = (prompt('中文名稱：') || cc).trim().slice(0,30) || cc;
+  const flag = (prompt('國旗 emoji（可留空）：') || '🏳️').trim().slice(0,8) || '🏳️';
+  state.currencies.push({code:cc, name, flag});
   save(); populateAllSelects(); renderSettings(); toast('已新增 '+cc);
 }
 function removeCurrency(code){
-  state.currencies=state.currencies.filter(c=>c.code!==code);
-  if(state.settings.homeCurrency===code) state.settings.homeCurrency=state.currencies[0].code;
+  const used = state.records.filter(r=>r.currency===code).length;
+  if(used){ toast(`${code} 有 ${used} 筆紀錄使用中，無法移除`); return; }
+  const homeOf = state.ledgers.find(l=>l.homeCurrency===code);
+  if(homeOf){ toast(`${code} 是「${homeOf.name}」的換算幣別，無法移除`); return; }
+  if(!confirm(`從清單移除 ${code}？`)) return;
+  state.currencies = state.currencies.filter(c=>c.code!==code);
+  state.ledgers.forEach(l=>{
+    if(l.travelCurrency===code) l.travelCurrency = pickTravel(state, l);
+    if(l.convFrom===code) l.convFrom = l.travelCurrency;
+    if(l.convTo===code) l.convTo = l.homeCurrency;
+  });
   save(); populateAllSelects(); renderSettings();
 }
 
 /* ---------- ledger modal ---------- */
 function openLedgerModal(){
-  const wrap=document.getElementById('ledgerSwitchList'); wrap.innerHTML='';
+  const wrap = $('ledgerSwitchList'); wrap.innerHTML = '';
   state.ledgers.forEach(l=>{
-    const active=l.id===state.activeLedgerId;
-    const cnt=state.records.filter(r=>r.ledgerId===l.id).length;
-    const div=document.createElement('div'); div.className='list-item';
-    div.style.cursor='pointer';
-    div.innerHTML=`<div class="t"><div class="n">${esc(l.name)} ${active?'<span class="tag">使用中</span>':''}</div><div class="d">${cnt} 筆</div></div><div style="font-size:1.3rem">${active?'✓':'›'}</div>`;
-    div.onclick=()=>{ state.activeLedgerId=l.id; save(); closeLedgerModal(); renderRecords(); toast('已切換到 '+l.name); };
-    wrap.appendChild(div);
+    const active = l.id===state.activeLedgerId;
+    const cnt = state.records.filter(r=>r.ledgerId===l.id).length;
+    const b = document.createElement('button'); b.type = 'button';
+    b.className = 'list-item'; b.style.cssText = 'cursor:pointer;width:100%;background:none;border:none;border-bottom:1px solid var(--stroke);color:inherit;font:inherit;text-align:left;flex-wrap:nowrap;';
+    b.innerHTML = `<div class="t"><div class="n">${esc(l.name)} ${active?'<span class="tag">使用中</span>':''}</div><div class="d">${cnt} 筆 · 換算 ${esc(l.homeCurrency)}</div></div><div style="font-size:1.3rem">${active?'✓':'›'}</div>`;
+    b.onclick = () => { if(active) closeModal('ledgerModalBg'); else switchLedger(l.id); };
+    wrap.appendChild(b);
   });
-  document.getElementById('ledgerModalBg').classList.add('show');
+  openModal('ledgerModalBg');
 }
-function closeLedgerModal(){ document.getElementById('ledgerModalBg').classList.remove('show'); }
 
 /* ---------- split bill ---------- */
 function calcSplit(){
-  const total=parseFloat(document.getElementById('splitTotal').value)||0;
-  const ppl=parseInt(document.getElementById('splitPeople').value)||1;
-  if(total<=0||ppl<1){ toast('請輸入金額與人數'); return; }
-  document.getElementById('splitOut').style.display='block';
-  document.getElementById('splitPer').textContent=fmt(total/ppl);
+  const total = parseFloat($('splitTotal').value) || 0;
+  const ppl = parseInt($('splitPeople').value) || 1;
+  if(total<=0 || ppl<1){ toast('請輸入金額與人數'); return; }
+  $('splitOut').style.display = 'block';
+  $('splitPer').textContent = fmt(total/ppl);
 }
 
-/* ---------- export ---------- */
-function download(filename, content, type){
-  const blob=new Blob(["﻿"+content],{type});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+/* ---------- export / import ---------- */
+function ymd(){ const d = new Date(); return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`; }
+function download(filename, content, type, bom){
+  const blob = new Blob([bom ? '﻿'+content : content], {type});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1500);
+}
+function csvCell(v, text){
+  let s = String(v ?? '');
+  if(text && /^[=+\-@]/.test(s)) s = "'" + s;   // 避免被試算表當成公式
+  return `"${s.replace(/"/g,'""')}"`;
 }
 function exportCSV(){
-  const recs=ledgerRecords().slice().sort((a,b)=>a.ts-b.ts);
+  const L = activeLedger();
+  const recs = ledgerRecords().slice().sort((a,b)=>a.ts-b.ts);
   if(!recs.length){ toast('此帳本沒有紀錄'); return; }
-  const home=state.settings.homeCurrency;
-  const head=['日期','分類','名稱','地點','數量','金額','幣別','換算('+home+')','備註'];
-  const rows=recs.map(r=>[
-    new Date(r.ts).toLocaleString(), catById(r.catId).name, r.name, r.location,
-    r.qty, r.amount, r.currency, r.homeAmount.toFixed(2), r.note
-  ].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','));
-  download(`${activeLedger().name}_記帳.csv`, [head.join(','),...rows].join('\n'), 'text/csv;charset=utf-8;');
+  const home = L.homeCurrency;
+  const head = ['日期','時間','分類','名稱','地點','數量','單價','小計','幣別','匯率','換算('+home+')','備註'];
+  const rows = recs.map(r=>{
+    const d = new Date(r.ts);
+    return [
+      csvCell(`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`), csvCell(`${pad(d.getHours())}:${pad(d.getMinutes())}`),
+      csvCell(catById(r.catId).name,true), csvCell(r.name,true), csvCell(r.location,true),
+      csvCell(r.qty), csvCell(r.amount), csvCell(r.amount*r.qty), csvCell(r.currency),
+      csvCell(r.pending ? '' : +Number(r.rate).toPrecision(6)), csvCell(r.pending ? '待換算' : r.homeAmount.toFixed(2)), csvCell(r.note,true)
+    ].join(',');
+  });
+  download(`${L.name}_記帳_${ymd()}.csv`, [head.join(','), ...rows].join('\r\n'), 'text/csv;charset=utf-8;', true);
   toast('已匯出 CSV');
 }
-function exportJSON(){
-  download('travel_expense_backup.json', JSON.stringify(state,null,2), 'application/json');
-  toast('已匯出備份');
+async function exportJSON(){
+  toast('準備備份檔…');
+  const photos = {};
+  for(const r of state.records){ if(r.hasPhoto){ const p = await photoStore.get(r.id); if(p) photos[r.id] = p; } }
+  const out = { app:APP_ID, version:3, exportedAt:new Date().toISOString(), data:state, photos };
+  download(`旅遊記帳備份_${ymd()}.json`, JSON.stringify(out), 'application/json');
+  toast(`已匯出備份（${state.records.length} 筆、${Object.keys(photos).length} 張照片）`);
 }
 function importJSON(ev){
-  const file=ev.target.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=()=>{
+  const file = ev.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    ev.target.value = '';
     try{
-      const data=JSON.parse(reader.result);
+      const raw = JSON.parse(String(reader.result).replace(/^﻿/,''));
+      let data = raw, photos = {};
+      if(raw && raw.app===APP_ID && raw.data){ data = raw.data; photos = raw.photos && typeof raw.photos==='object' ? raw.photos : {}; }
       if(!data || !Array.isArray(data.records) || !Array.isArray(data.ledgers)) throw new Error('格式不符');
-      if(!confirm('還原備份將覆蓋目前所有資料，確定？')){ ev.target.value=''; return; }
-      state=Object.assign({},state,data);
-      if(!state.categories||!state.categories.length) state.categories=JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-      if(!state.currencies||!state.currencies.length) state.currencies=JSON.parse(JSON.stringify(DEFAULT_CURRENCIES));
-      if(!state.activeLedgerId) state.activeLedgerId=state.ledgers[0].id;
-      save(); populateAllSelects(); renderSettings(); renderRecords();
-      document.getElementById('activeLedgerName').textContent=activeLedger().name;
-      toast('✅ 已還原備份');
-    }catch(e){ toast('還原失敗：檔案格式不正確'); }
-    ev.target.value='';
+      if(!confirm(`還原備份將覆蓋目前所有資料（備份內有 ${data.records.length} 筆紀錄），確定？`)) return;
+      const {state:s, photos:inline} = normalize(data);
+      Object.assign(photos, inline);
+      s.records.forEach(r=>{ if(r.hasPhoto && !(typeof photos[r.id]==='string' && photos[r.id].startsWith('data:image/'))) r.hasPhoto = false; });
+      state = s; activeFilter = 'all';
+      await photoStore.clear();
+      const info = await storePhotos(photos);
+      await flush();
+      await refreshRates(); resolvePending();
+      populateAllSelects(); renderCurrent();
+      toast(`✅ 已還原備份（${state.records.length} 筆${info.ok ? '、'+info.ok+' 張照片' : ''}）` + (info.fail ? `，${info.fail} 張照片未能存入` : ''));
+    }catch(e){ console.error(e); toast('還原失敗：檔案格式不正確'); }
   };
   reader.readAsText(file);
 }
 function clearAllData(){
-  if(!confirm('清除「'+activeLedger().name+'」的所有紀錄？此動作無法復原。')) return;
-  state.records=state.records.filter(r=>r.ledgerId!==state.activeLedgerId);
-  save(); renderRecords(); toast('已清除此帳本紀錄');
+  const L = activeLedger(); const recs = ledgerRecords();
+  if(!recs.length){ toast('此帳本沒有紀錄'); return; }
+  if(!confirm(`清除「${L.name}」的 ${recs.length} 筆紀錄？此動作無法復原（建議先備份）。`)) return;
+  recs.forEach(r=>{ if(r.hasPhoto) photoStore.del(r.id); });
+  state.records = state.records.filter(r=>r.ledgerId!==L.id);
+  activeFilter = 'all';
+  save(); renderCurrent(); toast('已清除此帳本紀錄');
 }
 
 /* ---------- external tools ---------- */
 function searchRate(){
-  const f=document.getElementById('fromCurrency').value, t=document.getElementById('toCurrency').value;
-  window.open(`https://www.google.com/search?q=${encodeURIComponent(f+' to '+t+' exchange rate')}`,'_blank');
+  const {from,to} = convValues();
+  window.open(`https://www.google.com/search?q=${encodeURIComponent(from+' to '+to+' exchange rate')}`, '_blank', 'noopener');
 }
-function openTranslate(){ window.open('https://translate.google.com/','_blank'); }
+function openTranslate(){ window.open('https://translate.google.com/', '_blank', 'noopener'); }
 
 /* ---------- voice ---------- */
 function voice(inputId, btn){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){ toast('此瀏覽器不支援語音輸入'); return; }
-  const rec=new SR(); rec.lang='zh-TW'; rec.interimResults=false; rec.continuous=false;
-  rec.onstart=()=>btn.classList.add('rec');
-  rec.onresult=e=>{ document.getElementById(inputId).value=e.results[0][0].transcript; };
-  rec.onerror=()=>btn.classList.remove('rec');
-  rec.onend=()=>btn.classList.remove('rec');
-  rec.start();
+  const rec = new SR(); rec.lang = 'zh-TW'; rec.interimResults = false; rec.continuous = false;
+  rec.onstart = () => btn.classList.add('rec');
+  rec.onresult = e => { $(inputId).value = e.results[0][0].transcript; };
+  rec.onerror = () => btn.classList.remove('rec');
+  rec.onend = () => btn.classList.remove('rec');
+  try{ rec.start(); }catch(e){ btn.classList.remove('rec'); }
 }
 
-/* close modals on backdrop tap */
-document.querySelectorAll('.modal-bg').forEach(bg=>{
-  bg.addEventListener('click',e=>{ if(e.target===bg) bg.classList.remove('show'); });
-});
-
 /* ---------- persistent storage request + status ---------- */
-// 向瀏覽器申請「持久化儲存」，可降低 iOS/Safari 長時間未開啟而清除資料的機率
 async function requestPersistence(){
   try{
     if(navigator.storage && navigator.storage.persisted){
       persistGranted = await navigator.storage.persisted();
-      if(!persistGranted && navigator.storage.persist){
-        persistGranted = await navigator.storage.persist();
-      }
+      if(!persistGranted && navigator.storage.persist) persistGranted = await navigator.storage.persist();
     }
-  }catch(e){ /* 不支援則略過 */ }
-  if(document.getElementById('page-settings').classList.contains('active')) renderStorageStatus();
+  }catch(e){}
+  if(currentTab()==='settings') renderStorageStatus();
 }
-
 function timeAgo(ts){
   if(!ts) return '尚未儲存';
-  const d=new Date(ts), diff=(Date.now()-ts)/1000;
+  const diff = (Date.now()-ts)/1000;
   if(diff<60) return '剛剛';
   if(diff<3600) return Math.floor(diff/60)+' 分鐘前';
-  return d.toLocaleString();
+  return new Date(ts).toLocaleString();
 }
-function renderStorageStatus(){
-  const el=document.getElementById('storageStatus'); if(!el) return;
-  const total=state.records.length;
-  const rows=[
-    ['儲存位置', '此瀏覽器本機 (localStorage)'],
-    ['總紀錄筆數', total+' 筆 · '+state.ledgers.length+' 個帳本'],
+async function renderStorageStatus(){
+  const el = $('storageStatus'); if(!el) return;
+  const photos = state.records.filter(r=>r.hasPhoto).length;
+  const rows = [
+    ['儲存位置', idbOK ? 'IndexedDB（資料＋照片）＋ localStorage 備援' : 'localStorage（此瀏覽器無法使用 IndexedDB，照片空間有限）'],
+    ['總紀錄筆數', `${state.records.length} 筆 · ${state.ledgers.length} 個帳本 · ${photos} 張照片`],
     ['上次自動儲存', timeAgo(state.settings.lastSaved)],
     ['寫入狀態', storageOK ? '✅ 正常' : '⚠️ 失敗（請檢查瀏覽器設定）'],
-    ['持久化保護', persistGranted===true ? '✅ 已啟用（不易被自動清除）'
-                  : persistGranted===false ? '⚠️ 未啟用（建議定期備份）'
-                  : '— 此瀏覽器不支援']
+    ['持久化保護', persistGranted===true ? '✅ 已啟用（不易被自動清除）' : persistGranted===false ? '⚠️ 未啟用（建議定期備份）' : '— 此瀏覽器不支援'],
+    ['已用空間', '計算中…']
   ];
-  el.innerHTML = rows.map(([k,v])=>
-    `<div class="list-item"><div class="t"><div class="d">${k}</div><div class="n">${v}</div></div></div>`
-  ).join('');
+  const draw = () => { el.innerHTML = rows.map(([k,v])=>`<div class="list-item"><div class="t"><div class="d">${k}</div><div class="n">${v}</div></div></div>`).join(''); };
+  draw();
+  try{
+    if(navigator.storage && navigator.storage.estimate){
+      const e = await navigator.storage.estimate();
+      rows[5][1] = `約 ${(e.usage/1048576).toFixed(1)} MB` + (e.quota ? `（上限約 ${Math.round(e.quota/1048576).toLocaleString()} MB）` : '');
+    }else rows[5][1] = '此瀏覽器不提供';
+  }catch(e){ rows[5][1] = '此瀏覽器不提供'; }
+  draw();
+}
+
+/* ---------- events ---------- */
+function bindEvents(){
+  $('amount').addEventListener('input', renderConverter);
+  $('fromCurrency').addEventListener('change', onConvCurrencyChange);
+  $('toCurrency').addEventListener('change', onConvCurrencyChange);
+  $('quickChips').addEventListener('click', e=>{ const b = e.target.closest('[data-amt]'); if(b) setAmount(Number(b.dataset.amt)); });
+  $('refTable').addEventListener('click', e=>{
+    const b = e.target.closest('[data-amt]'); if(!b) return;
+    setAmount(Number(b.dataset.amt)); window.scrollTo({top:0, behavior:'smooth'});
+  });
+  ['recAmount','recQty'].forEach(id=>$(id).addEventListener('input', updateRecPreview));
+  $('recCurrency').addEventListener('change', updateRecPreview);
+  $('recAmount').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('recName').focus(); } });
+  $('filterChips').addEventListener('click', e=>{ const b = e.target.closest('[data-filter]'); if(b){ activeFilter = b.dataset.filter; renderRecords(); } });
+  const list = $('recordList');
+  list.addEventListener('click', e=>{
+    const el = e.target.closest('[data-act]'); if(!el) return;
+    const id = el.dataset.id;
+    if(el.dataset.act==='del') deleteRecord(id);
+    else if(el.dataset.act==='photo') viewPhoto(id);
+    else if(el.dataset.act==='edit') openRecordModal({id});
+  });
+  list.addEventListener('keydown', e=>{
+    if((e.key==='Enter' || e.key===' ') && e.target.classList.contains('rec')){ e.preventDefault(); openRecordModal({id:e.target.dataset.id}); }
+  });
+  window.addEventListener('online', ()=>refreshAndApply(true));
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') refreshAndApply(false); });
 }
 
 /* ---------- init ---------- */
-function init(){
-  load();
+async function init(){
+  try{ await idb(); }catch(e){ idbOK = false; console.warn('IndexedDB 無法使用，改用 localStorage', e); }
+  const info = await load();
+  bindEvents();
   populateAllSelects();
-  document.getElementById('activeLedgerName').textContent=activeLedger().name;
-  save(); // 寫回一次，建立備份鍵並記錄時間
+  renderCurrent();
+  if(info.src==='v2'){
+    await flush();
+    toast(`已從舊版轉入 ${state.records.length} 筆紀錄` + (info.photoInfo.ok ? `、${info.photoInfo.ok} 張照片` : '') + (info.photoInfo.fail ? `（${info.photoInfo.fail} 張照片未能轉入）` : ''));
+  }else save();
+  sweepOrphanPhotos();
   requestPersistence();
-  updateLiveRate();
-  // refresh live rate periodically
-  setInterval(()=>{ if(document.getElementById('page-convert').classList.contains('active')) updateLiveRate(); }, 90000);
+  await refreshAndApply(false);
+  // 每 10 分鐘檢查一次；匯率未滿 6 小時不會重抓
+  setInterval(()=>{ if(document.visibilityState==='visible') refreshAndApply(false); }, 10*60*1000);
 }
 init();
 </script>

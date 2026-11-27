@@ -1,8 +1,13 @@
-(()=>{const W=Workspace;let labels=new Map(W.scope.roster.map(s=>[s.studentId,W.label(s)]));
- const raw=workspaceStorage.getItem('workspace-live');if(raw){const saved=JSON.parse(raw);state.tasks=saved.tasks||state.tasks;if(saved.shifts?.length)state.shifts=saved.shifts;labels=new Map(saved.labels||labels)}
- function relabel(value){if(typeof value==='string'){for(const [id,label]of labels)if(value===label){const s=W.scope.roster.find(r=>r.studentId===id);return s?W.label(s):value}return value}if(Array.isArray(value))return value.map(relabel);if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,relabel(v)]));return value}
- // The common roster owns names; this page only reads them and stores its own plan.
- $('#save-status').hidden=true;$('#rotation-toggle').hidden=true;$('[data-action="pick-excel"]').hidden=true;$('#roster-card').open=false;
- const tip=$('#roster-card .tip');tip.textContent='名單由共用名冊管理，請至 ';const link=document.createElement('a');link.href=W.link('資料中心.html');link.target='_blank';link.rel='noopener';link.textContent='資料中心';tip.append(link,' 編輯。');
- W.adapter={apply(){state.tasks=relabel(state.tasks);state.shifts=relabel(state.shifts);state.repeatable=relabel(state.repeatable);labels=new Map(W.scope.roster.map(s=>[s.studentId,W.label(s)]));state.roster=W.activeRoster().map(W.label).join('\n');state.rotation=state.roster;state.rotationLinked=true;$('#student-names').value=state.roster;W.disable(['student-names']);renderBoards();renderSteps()},capture(){workspaceStorage.setItem('workspace-live',JSON.stringify({tasks:state.tasks,shifts:state.shifts,labels:[...labels]}))}};
+/* 園遊會攤位規劃 v3.0 與共用名冊的轉接：
+ * - 主程式內建 WS（共享整合版）模式：名單由共用名冊在籍學生帶入，以共用學生 ID 記錄分組與輪班，
+ *   改名、換座號時安排會跟著學生；轉出學生會標示「已不在名單」並不再計入名額。
+ * - 工具資料存在工作站共用資料庫（鍵名 fair-v3）；第一次開啟時會自動轉入舊版整合資料（lssh.stall.v1.*）。
+ * - 這裡只負責把共用名冊更新與儲存事件轉給主程式（window.FairApp）。 */
+(() => {
+  'use strict';
+  const W = Workspace;
+  W.adapter = {
+    apply() { window.FairApp?.applyRoster(); },
+    capture() { window.FairApp?.capture(); }
+  };
 })();

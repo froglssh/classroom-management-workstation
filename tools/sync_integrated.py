@@ -26,17 +26,18 @@ DEMO = HERE.parent                                               # 示範檔案/
 OUT = HERE / '共享整合版'
 
 SOURCES = {
+    'students': '00學生資料/班級學生資料管理系統.html',
     'roles': '01幹部設定/班級幹部小老師選取獎勵程式(codex優化版).html',
     'seats': '02座位安排/座位選取抽籤程式(codex優化版).html',
     'cleaning': '03打掃工作/學生打掃抽籤系統（codex優化版）.html',
+    'account': '05班費收支/班費收支記帳程式(codex優化版).html',
+    'fair': '06校慶攤位/校慶園遊會攤位規劃程式（codex優化版).html',
     'comments': '09德行評語/導師評語生成系統（codex優化版）.html',
 }
 
 BUNDLE = HERE / '獨立程式'
 # 首頁目錄以外、程式或說明頁會連到的檔案（只放可公開的空白範本與教學資料）
 BUNDLE_EXTRAS = [
-    '11特選個申/app.js',
-    '11特選個申/styles.css',
     '09德行評語/整批匯入/學生德性自評匯入範例表.xlsx',
     '09德行評語/整批匯入/學生德行自評表(空白)高一.docx',
     '09德行評語/整批匯入/學生德行自評表(空白)高二高三.docx',
@@ -44,11 +45,15 @@ BUNDLE_EXTRAS = [
 ]
 
 VENDOR = [
-    (r'https://cdn\.jsdelivr\.net/npm/xlsx@[^"]+', 'vendor/xlsx.full.min.js'),
-    (r'https://cdn\.jsdelivr\.net/npm/html2canvas@[^"]+', 'vendor/html2canvas.min.js'),
-    (r'https://cdn\.jsdelivr\.net/npm/jspdf@[^"]+', 'vendor/jspdf.umd.min.js'),
-    (r'https://cdn\.jsdelivr\.net/npm/jszip@[^"]+', 'vendor/jszip.min.js'),
+    (r"https://cdn\.jsdelivr\.net/npm/xlsx@[^\"'\s]+", 'vendor/xlsx.full.min.js'),
+    (r"https://cdn\.jsdelivr\.net/npm/html2canvas@[^\"'\s]+", 'vendor/html2canvas.min.js'),
+    (r"https://cdn\.jsdelivr\.net/npm/jspdf@[^\"'\s]+", 'vendor/jspdf.umd.min.js'),
+    (r"https://cdn\.jsdelivr\.net/npm/jszip@[^\"'\s]+", 'vendor/jszip.min.js'),
     (r'https://cdn\.tailwindcss\.com[^"]*', 'vendor/tailwindcss.browser.js'),
+    (r"https://cdn\.jsdelivr\.net/npm/mammoth@[^\"'\s]+", 'vendor/mammoth.browser.min.js'),
+    (r"https://cdnjs\.cloudflare\.com/ajax/libs/xlsx/[^\"'\s]+", 'vendor/xlsx.full.min.js'),
+    (r"https://cdnjs\.cloudflare\.com/ajax/libs/html2canvas/[^\"'\s]+", 'vendor/html2canvas.min.js'),
+    (r"https://cdnjs\.cloudflare\.com/ajax/libs/jspdf/[^\"'\s]+", 'vendor/jspdf.umd.min.js'),
 ]
 
 

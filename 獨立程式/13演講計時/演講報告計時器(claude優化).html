@@ -181,6 +181,14 @@
     background:var(--card);color:var(--txt);padding:13px 20px;border-radius:14px;box-shadow:var(--shadow);
     font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:200;max-width:88vw;border:1.5px solid var(--line);}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  #toast{display:flex;align-items:center;gap:14px;}
+  #toast.show.has-act{pointer-events:auto;}
+  #toast-act{border:none;background:var(--accent);color:#fff;font-weight:800;font-size:14px;
+    padding:8px 14px;border-radius:10px;cursor:pointer;white-space:nowrap;}
+  #toast-act[hidden]{display:none;}
+  .kbd-hint{display:none;text-align:center;color:var(--muted);font-size:11px;margin-top:10px;}
+  .kbd-hint kbd{font-family:inherit;background:var(--card2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin:0 2px;}
+  @media (hover:hover) and (pointer:fine){.kbd-hint{display:block;}}
 
   /* Sheet (data manager) */
   #sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;display:none;}
@@ -230,6 +238,7 @@
         <button class="btn blue" onclick="lapStopwatch()"><span class="ic">⚑</span>分段</button>
         <button class="btn red" onclick="resetStopwatch()"><span class="ic">↺</span>重設</button>
       </div>
+      <div class="kbd-hint">鍵盤：<kbd>空白鍵</kbd>開始／暫停 <kbd>L</kbd>分段 <kbd>R</kbd>重設 <kbd>F</kbd>全螢幕</div>
     </div>
 
     <div class="card">
@@ -280,6 +289,7 @@
       </div>
     </div>
 
+    <div class="kbd-hint" style="margin:-4px 0 12px;">鍵盤：<kbd>空白鍵</kbd>開始／暫停目前段落 <kbd>R</kbd>重設 <kbd>F</kbd>全螢幕</div>
     <div id="cd-segments"></div>
     <div class="card" id="cd-empty"><div class="empty">尚未加入倒數段落，可用上方快速按鈕加入</div></div>
 
@@ -294,7 +304,7 @@
 
   <div class="footer">
     製作者：臺北市立麗山高中 林獻升老師　|　<a href="mailto:frog@lssh.tp.edu.tw">frog@lssh.tp.edu.tw</a><br>
-    資料儲存於本機瀏覽器，不會上傳
+    資料儲存於本機瀏覽器，不會上傳　|　v2.1
   </div>
 </div>
 
@@ -309,7 +319,7 @@
 </div>
 
 <!-- Toast -->
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"><span id="toast-msg"></span><button id="toast-act" hidden></button></div>
 
 <!-- Data sheet -->
 <div id="sheet-bg" onclick="closeSheet()"></div>
@@ -332,31 +342,115 @@ function fmt(ms,withMs=false){
   const base=h>0?`${pad(h)}:${pad(m)}:${pad(s)}`:`${pad(m)}:${pad(s)}`;
   return withMs?{base,cs:pad(cs)}:base;
 }
-let toastTimer;
-function toast(msg){
-  const t=$('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+/* 倒數顯示：剩餘時間無條件進位（5:00 開始時仍顯示 05:00）；超時無條件捨去，滿 1 秒才加負號 */
+function fmtCd(ms){
+  if(ms>0)return fmt(Math.ceil(ms/1000)*1000);
+  const over=Math.floor(-ms/1000)*1000;
+  return (over>=1000?'-':'')+fmt(over);
 }
-function beep(duration=0.25,freq=880){
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function lsGet(key,fallback){try{const v=localStorage.getItem(key);return v==null?fallback:JSON.parse(v);}catch(e){return fallback;}}
+function lsSet(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}}
+
+/* Toast：可附「復原」按鈕 */
+let toastTimer;
+function toast(msg,opt={}){
+  const t=$('toast'),b=$('toast-act');
+  $('toast-msg').textContent=msg;
+  if(opt.action){
+    b.textContent=opt.label||'復原';b.hidden=false;
+    b.onclick=()=>{opt.action();t.classList.remove('show','has-act');};
+    t.classList.add('has-act');
+  }else{
+    b.hidden=true;b.onclick=null;t.classList.remove('has-act');
+  }
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show','has-act'),opt.action?6000:2200);
+}
+
+/* ============ Sound ============
+   全程只用一個 AudioContext。提醒鈴與時間到的鈴在「開始」時就預先排進音訊時間軸，
+   所以切到別的分頁、視窗被遮住時，鈴聲仍會準時響。 */
+const snd={ctx:null,nodes:[],scheduled:new Set()};
+function audioCtx(){
+  if(!snd.ctx){try{snd.ctx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
+  if(snd.ctx.state==='suspended'){snd.ctx.resume().catch(()=>{});}
+  return snd.ctx;
+}
+function tone(freq,dur,delay=0,track=false){
+  const ctx=audioCtx();if(!ctx)return;
   try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const t=ctx.currentTime+Math.max(0,delay);
     const o=ctx.createOscillator(),g=ctx.createGain();
     o.type='sine';o.frequency.value=freq;
     o.connect(g);g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.001,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.4,ctx.currentTime+0.02);
-    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);
-    o.start();o.stop(ctx.currentTime+duration);
+    g.gain.setValueAtTime(0.001,t);
+    g.gain.exponentialRampToValueAtTime(0.4,t+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur);
+    if(track)snd.nodes.push(o);
   }catch(e){}
 }
-function vibrate(p){if(navigator.vibrate)navigator.vibrate(p);}
-function alertSignal(){beep(0.18,988);setTimeout(()=>beep(0.18,988),220);vibrate([200,100,200]);}
-function finishSignal(){beep(0.6,660);setTimeout(()=>beep(0.6,520),650);vibrate([400,150,400,150,400]);}
+const PATTERNS={
+  alert:[[988,.18,0],[988,.18,.22]],
+  finish:[[660,.6,0],[520,.6,.65]]
+};
+function playPattern(name,delay=0,track=false){PATTERNS[name].forEach(([f,d,o])=>tone(f,d,delay+o,track));}
+function beep(duration=0.25,freq=880){tone(freq,duration);}
+function vibrate(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+/* key：已預先排程的事件就不再重複發聲，只做震動與畫面提示 */
+function signal(name,key){
+  if(!snd.scheduled.has(key))playPattern(name);
+  snd.scheduled.delete(key);
+  vibrate(name==='alert'?[200,100,200]:[400,150,400,150,400]);
+}
+function rescheduleSignals(){
+  snd.nodes.forEach(o=>{try{o.stop(0);}catch(e){}});
+  snd.nodes=[];snd.scheduled.clear();
+  if(!snd.ctx||snd.ctx.state!=='running')return;
+  const now=Date.now();
+  const plan=(name,key,ms)=>{const d=ms/1000;if(d>0.05){playPattern(name,d,true);snd.scheduled.add(key);}};
+  if(swRunning){
+    reminders.forEach(r=>{if(!firedReminders.has(r))plan('alert','sw-'+r,swStart+r-now);});
+  }
+  segments.forEach(sg=>{
+    if(!sg.running)return;
+    if(!sg.remindFired&&sg.remind>0&&sg.remind<sg.total)plan('alert','seg-'+sg.id+'-remind',sg.endAt-sg.remind-now);
+    if(!sg.overFired)plan('finish','seg-'+sg.id+'-finish',sg.endAt-now);
+  });
+}
+/* 手機瀏覽器要在使用者第一次點擊時才允許出聲 */
+function unlockAudio(){
+  const ctx=audioCtx();if(!ctx)return;
+  if(ctx.state==='running'){rescheduleSignals();return;}
+  ctx.resume().then(rescheduleSignals).catch(()=>{});
+}
+
+/* ============ Screen wake lock（計時中螢幕不休眠）============ */
+let wakeLock=null,wakeBusy=false,wakeAgain=false;
+async function syncWakeLock(){
+  if(!('wakeLock' in navigator))return;
+  if(wakeBusy){wakeAgain=true;return;}
+  wakeBusy=true;
+  try{
+    const need=anyRunning()&&document.visibilityState==='visible';
+    if(need&&!wakeLock){
+      const w=await navigator.wakeLock.request('screen');
+      wakeLock=w;
+      w.addEventListener('release',()=>{if(wakeLock===w)wakeLock=null;});
+    }else if(!need&&wakeLock){
+      const w=wakeLock;wakeLock=null;await w.release();
+    }
+  }catch(e){}
+  wakeBusy=false;
+  if(wakeAgain){wakeAgain=false;syncWakeLock();}
+}
 
 /* ============ Theme ============ */
 function toggleTheme(){
   const cur=document.documentElement.getAttribute('data-theme')==='light'?'':'light';
-  applyTheme(cur);localStorage.setItem('timerTheme',cur);
+  applyTheme(cur);try{localStorage.setItem('timerTheme',cur);}catch(e){}
 }
 function applyTheme(t){
   if(t==='light'){document.documentElement.setAttribute('data-theme','light');$('theme-toggle').textContent='☀️';}
@@ -364,11 +458,14 @@ function applyTheme(t){
 }
 
 /* ============ Tabs ============ */
+let currentPage='stopwatch';
 function showPage(id){
+  currentPage=id;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   $(id).classList.add('active');
   $('tab-'+id).classList.add('active');
+  persistState();
 }
 
 /* ============ Clock ============ */
@@ -379,8 +476,29 @@ function updateNow(){
   $('now-cd').textContent=`🕐 ${d} ${s}`;
 }
 
+/* ============ 共用計時迴圈 ============
+   畫面用 requestAnimationFrame 更新；另有每 250ms 的檢查，分頁在背景時仍會判斷提醒。 */
+let loopRAF=null;
+function anyRunning(){return swRunning||segments.some(s=>s.running);}
+function tickAll(){
+  if(swRunning){swElapsed=Date.now()-swStart;renderSwDisplay();checkReminders();}
+  segments.forEach(sg=>{if(sg.running)segTick(sg);});
+}
+function loop(){
+  tickAll();
+  loopRAF=anyRunning()?requestAnimationFrame(loop):null;
+}
+function ensureLoop(){if(!loopRAF&&anyRunning())loopRAF=requestAnimationFrame(loop);}
+setInterval(()=>{if(anyRunning())tickAll();},250);
+setInterval(()=>{if(anyRunning())persistState();},2000);
+
+/* 任何會改變計時狀態的操作之後都呼叫這裡 */
+function stateChanged(){
+  rescheduleSignals();ensureLoop();syncWakeLock();persistState();updateBigControls();
+}
+
 /* ============ Stopwatch ============ */
-let swElapsed=0, swStart=0, swRunning=false, swRAF=null;
+let swElapsed=0, swStart=0, swRunning=false;
 let laps=[], reminders=[], firedReminders=new Set();
 
 function renderSwDisplay(){
@@ -390,24 +508,18 @@ function renderSwDisplay(){
     $('bv-time').innerHTML=`${f.base}<span class="ms">.${f.cs}</span>`;
   }
 }
-function swTick(){
-  if(swRunning){
-    swElapsed=Date.now()-swStart;
-    renderSwDisplay();
-    checkReminders();
-    swRAF=requestAnimationFrame(swTick);
-  }
-}
 function toggleStopwatch(){
   if(swRunning){
-    swRunning=false;cancelAnimationFrame(swRAF);
-    setSwBtn(false);toast('已暫停');
+    swElapsed=Date.now()-swStart;
+    swRunning=false;
+    setSwBtn(false);renderSwDisplay();toast('已暫停');
   }else{
+    unlockAudio();
     swStart=Date.now()-swElapsed;swRunning=true;
-    setSwBtn(true);swTick();
+    setSwBtn(true);
     if(swElapsed===0)beep(0.12,1046);
   }
-  updateBigControls();
+  stateChanged();
 }
 function setSwBtn(running){
   const b=$('sw-startbtn');
@@ -415,10 +527,10 @@ function setSwBtn(running){
   else{b.innerHTML='<span class="ic">▶</span>'+(swElapsed>0?'繼續':'開始');b.className='btn green';}
 }
 function lapStopwatch(){
+  if(swRunning)swElapsed=Date.now()-swStart;
   if(swElapsed===0){toast('尚未開始計時');return;}
-  const prev=laps.length?laps[laps.length-1]:0;
   laps.push(swElapsed);
-  renderLaps();
+  renderLaps();persistState();
   toast(`已記錄第 ${laps.length} 段`);
   beep(0.1,1318);
 }
@@ -433,11 +545,28 @@ function renderLaps(){
   $('laps').innerHTML=lapsHTML();
   if(bigMode==='stopwatch')$('bv-laps').innerHTML=lapsHTML();
 }
+function snapSW(){
+  return {running:swRunning,start:swStart,elapsed:swRunning?Date.now()-swStart:swElapsed,
+    laps:[...laps],reminders:[...reminders],fired:[...firedReminders],name:$('sw-name').value};
+}
+function restoreSW(s){
+  swRunning=!!s.running;swStart=s.start||0;
+  swElapsed=swRunning?Date.now()-swStart:(s.elapsed||0);
+  laps=[...(s.laps||[])];reminders=[...(s.reminders||[])];firedReminders=new Set(s.fired||[]);
+  $('sw-name').value=s.name||'';
+  renderSwDisplay();renderLaps();renderReminders();setSwBtn(swRunning);
+  stateChanged();
+}
+function clearSW(){
+  swRunning=false;swElapsed=0;laps=[];firedReminders.clear();
+  renderSwDisplay();renderLaps();setSwBtn(false);
+}
 function resetStopwatch(){
-  swRunning=false;cancelAnimationFrame(swRAF);
-  swElapsed=0;laps=[];firedReminders.clear();
-  renderSwDisplay();renderLaps();setSwBtn(false);updateBigControls();
-  toast('已重設');
+  const snap=snapSW();
+  const hadData=snap.elapsed>0||snap.laps.length;
+  clearSW();stateChanged();
+  if(hadData)toast('已重設',{action:()=>{restoreSW(snap);toast('已復原');}});
+  else toast('已重設');
 }
 function addReminder(){
   const m=parseInt($('sw-remind-min').value)||0;
@@ -446,31 +575,35 @@ function addReminder(){
   if(ms<=0){toast('請輸入提醒時間');return;}
   if(reminders.includes(ms)){toast('已有相同提醒');return;}
   reminders.push(ms);reminders.sort((a,b)=>a-b);
+  if(swElapsed>=ms)firedReminders.add(ms);
   $('sw-remind-min').value='';$('sw-remind-sec').value='';
-  renderReminders();toast('提醒已加入');
+  renderReminders();stateChanged();toast('提醒已加入');
 }
 function renderReminders(){
   const c=$('sw-reminders');
-  c.innerHTML=reminders.map(r=>`<div class="chip">🔔 ${fmt(r)} <span class="x" onclick="removeReminder(${r})">✕</span></div>`).join('');
+  c.innerHTML=reminders.map(r=>`<div class="chip">🔔 ${fmt(r)} <span class="x" onclick="removeReminder(${r})" title="刪除此提醒">✕</span></div>`).join('');
 }
-function removeReminder(ms){reminders=reminders.filter(r=>r!==ms);firedReminders.delete(ms);renderReminders();}
+function removeReminder(ms){
+  reminders=reminders.filter(r=>r!==ms);firedReminders.delete(ms);
+  renderReminders();stateChanged();
+}
 function checkReminders(){
   reminders.forEach(r=>{
     if(!firedReminders.has(r) && swElapsed>=r){
-      firedReminders.add(r);alertSignal();
+      firedReminders.add(r);signal('alert','sw-'+r);
       toast(`⏰ 提醒：已達 ${fmt(r)}`);
-      flashBig();
+      flashBig();persistState();
     }
   });
 }
 
 /* ============ Countdown ============ */
-let segments=[]; // {id,name,total,remind,remaining,running,raf,overFired,remindFired}
+let segments=[]; // {id,name,total,remind,remaining,running,endAt,overFired,remindFired}
 let segId=0;
 
 function quickAdd(min){
   segments.push(newSeg(`第 ${segments.length+1} 段`, min*60, Math.min(30,min*60)));
-  renderSegments();toast(`已加入 ${min} 分鐘段落`);
+  renderSegments();persistState();toast(`已加入 ${min} 分鐘段落`);
 }
 function addSegment(){
   const name=$('cd-seg-name').value.trim()||`第 ${segments.length+1} 段`;
@@ -481,22 +614,22 @@ function addSegment(){
   if(total<=0){toast('請輸入倒數時間');return;}
   segments.push(newSeg(name,total,remind));
   $('cd-seg-name').value='';$('cd-seg-min').value='';$('cd-seg-sec').value='';$('cd-seg-remind').value='';
-  renderSegments();toast('段落已加入');
+  renderSegments();persistState();toast('段落已加入');
 }
 function newSeg(name,totalSec,remindSec){
-  return {id:++segId,name,total:totalSec*1000,remind:remindSec*1000,remaining:totalSec*1000,running:false,raf:null,overFired:false,remindFired:false};
+  return {id:++segId,name,total:totalSec*1000,remind:remindSec*1000,remaining:totalSec*1000,running:false,endAt:0,overFired:false,remindFired:false};
 }
 function renderSegments(){
   const c=$('cd-segments');
   $('cd-empty').style.display=segments.length?'none':'block';
   c.innerHTML=segments.map(sg=>segHTML(sg)).join('');
-  segments.forEach(updateSegView);
+  segments.forEach(sg=>{setSegBtn(sg,sg.running);updateSegView(sg);});
 }
 function segHTML(sg){
   return `<div class="seg" id="seg-${sg.id}">
     <div class="seg-head">
       <div class="seg-name">${escapeHtml(sg.name)}</div>
-      <button class="seg-del" onclick="delSegment(${sg.id})">🗑</button>
+      <button class="seg-del" onclick="delSegment(${sg.id})" title="刪除此段落">🗑</button>
     </div>
     <div class="seg-time" id="segtime-${sg.id}" onclick="openBig('seg',${sg.id})">00:00</div>
     <div class="seg-bar"><i id="segbar-${sg.id}"></i></div>
@@ -507,91 +640,120 @@ function segHTML(sg){
     </div>
   </div>`;
 }
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function findSeg(id){return segments.find(s=>s.id===id);}
 
 function updateSegView(sg){
+  if(!sg)return;
   const el=$('segtime-'+sg.id);if(!el)return;
-  const over=sg.remaining<0;
-  el.textContent=(over?'-':'')+fmt(Math.abs(sg.remaining));
+  const over=sg.remaining<=0;
+  el.textContent=fmtCd(sg.remaining);
   const pct=Math.max(0,Math.min(100,(sg.remaining/sg.total)*100));
   const bar=$('segbar-'+sg.id);
   if(bar){bar.style.width=pct+'%';}
   const seg=$('seg-'+sg.id);
-  seg.classList.remove('warn','danger','over');
-  let color='var(--green)';
-  if(over){seg.classList.add('over');color='var(--red)';}
-  else if(pct<=15){seg.classList.add('danger');color='var(--red)';}
-  else if(pct<=40){seg.classList.add('warn');color='var(--orange)';}
-  if(bar)bar.style.background=color;
+  if(seg){
+    seg.classList.remove('warn','danger','over');
+    let color='var(--green)';
+    if(over){seg.classList.add('over');color='var(--red)';}
+    else if(pct<=15){seg.classList.add('danger');color='var(--red)';}
+    else if(pct<=40){seg.classList.add('warn');color='var(--orange)';}
+    if(bar)bar.style.background=color;
+  }
   if(bigMode==='seg' && bigId===sg.id){
-    $('bv-time').textContent=(over?'-':'')+fmt(Math.abs(sg.remaining));
+    $('bv-time').textContent=fmtCd(sg.remaining);
     $('bigview').classList.toggle('over',over);
   }
 }
 function segTick(sg){
   if(!sg.running)return;
-  const now=Date.now();
-  sg.remaining=sg.endAt-now;
-  // remind
+  sg.remaining=sg.endAt-Date.now();
   if(!sg.remindFired && sg.remind>0 && sg.remaining<=sg.remind && sg.remaining>0){
-    sg.remindFired=true;alertSignal();toast(`⏰ ${sg.name}：剩 ${fmt(sg.remind)}`);
+    sg.remindFired=true;signal('alert','seg-'+sg.id+'-remind');
+    toast(`⏰ ${sg.name}：剩 ${fmt(sg.remind)}`);persistState();
   }
-  // finish
   if(sg.remaining<=0 && !sg.overFired){
-    sg.overFired=true;finishSignal();toast(`⏱ ${sg.name} 時間到！`);
+    sg.overFired=true;signal('finish','seg-'+sg.id+'-finish');
+    toast(`⏱ ${sg.name} 時間到！`);persistState();
   }
   updateSegView(sg);
-  sg.raf=requestAnimationFrame(()=>segTick(sg));
 }
 function toggleSeg(id){
   const sg=findSeg(id);if(!sg)return;
   if(sg.running){
-    sg.running=false;cancelAnimationFrame(sg.raf);
-    setSegBtn(sg,false);
+    sg.remaining=sg.endAt-Date.now();
+    sg.running=false;
+    setSegBtn(sg,false);updateSegView(sg);
   }else{
+    unlockAudio();
     sg.endAt=Date.now()+sg.remaining;sg.running=true;
-    setSegBtn(sg,true);segTick(sg);beep(0.12,1046);
+    setSegBtn(sg,true);beep(0.12,1046);
   }
-  updateBigControls();
+  stateChanged();
 }
 function setSegBtn(sg,running){
   const b=$('segbtn-'+sg.id);if(!b)return;
   if(running){b.innerHTML='⏸ 暫停';b.className='btn orange sm';}
   else{b.innerHTML='▶ '+(sg.remaining<sg.total?'繼續':'開始');b.className='btn green sm';}
 }
+function snapCD(){return {name:$('cd-name').value,segs:segments.map(s=>({...s}))};}
+function restoreCD(s){
+  segments=s.segs.map(x=>({...x}));
+  segId=Math.max(segId,...segments.map(x=>x.id),0);
+  $('cd-name').value=s.name||'';
+  renderSegments();stateChanged();
+}
 function resetSeg(id){
   const sg=findSeg(id);if(!sg)return;
-  sg.running=false;cancelAnimationFrame(sg.raf);
+  const snap=snapCD();
+  const changed=sg.running||sg.remaining!==sg.total;
+  sg.running=false;
   sg.remaining=sg.total;sg.overFired=false;sg.remindFired=false;
-  setSegBtn(sg,false);updateSegView(sg);updateBigControls();
+  setSegBtn(sg,false);updateSegView(sg);stateChanged();
+  if(changed)toast(`已重設「${sg.name}」`,{action:()=>{restoreCD(snap);toast('已復原');}});
 }
 function delSegment(id){
-  const sg=findSeg(id);if(sg){sg.running=false;cancelAnimationFrame(sg.raf);}
+  const sg=findSeg(id);if(!sg)return;
+  const snap=snapCD();
   segments=segments.filter(s=>s.id!==id);
   if(bigMode==='seg'&&bigId===id)closeBig();
-  renderSegments();
+  renderSegments();stateChanged();
+  toast(`已刪除「${sg.name}」`,{action:()=>{restoreCD(snap);toast('已復原');}});
 }
 function clearSegments(){
-  segments.forEach(s=>{s.running=false;cancelAnimationFrame(s.raf);});
-  segments=[];renderSegments();toast('已清除全部段落');
+  if(!segments.length){toast('目前沒有段落');return;}
+  const snap=snapCD();
+  segments=[];
+  if(bigMode==='seg')closeBig();
+  renderSegments();stateChanged();
+  toast('已清除全部段落',{action:()=>{restoreCD(snap);toast('已復原');}});
+}
+/* 鍵盤操作的「目前段落」：大字模式中的段落 → 正在跑的段落 → 第一個還沒結束的段落 */
+function currentSeg(){
+  if(bigMode==='seg')return findSeg(bigId);
+  return segments.find(s=>s.running)||segments.find(s=>!s.overFired)||segments[0];
 }
 
 /* ============ Big fullscreen view ============ */
-let bigMode=null, bigId=null;
+let bigMode=null, bigId=null, bigFs=false;
 function openBig(mode,id){
   bigMode=mode;bigId=id||null;
   const bv=$('bigview');bv.classList.add('show');bv.classList.remove('over');
   if(mode==='stopwatch'){$('bv-name').textContent=$('sw-name').value||'碼錶計時';renderSwDisplay();$('bv-laps').innerHTML=lapsHTML();}
   else if(mode==='seg'){const sg=findSeg(id);$('bv-name').textContent=sg?sg.name:'倒數計時';$('bv-laps').innerHTML='';updateSegView(sg);}
   updateBigControls();
-  if(bv.requestFullscreen){bv.requestFullscreen().catch(()=>{});}
-  try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('any').catch(()=>{});}catch(e){}
+  if(bv.requestFullscreen&&!document.fullscreenElement){
+    bv.requestFullscreen().then(()=>{bigFs=true;}).catch(()=>{});
+  }
 }
 function closeBig(){
   $('bigview').classList.remove('show','over');bigMode=null;bigId=null;
-  if(document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
+  const wasFs=bigFs;bigFs=false;
+  if(wasFs&&document.fullscreenElement){document.exitFullscreen().catch(()=>{});}
 }
+/* 使用者用 Esc 或瀏覽器手勢離開全螢幕時，大字模式也一起關閉 */
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement&&bigFs){bigFs=false;closeBig();}
+});
 function updateBigControls(){
   if(!bigMode)return;
   const c=$('bv-controls');
@@ -612,21 +774,60 @@ function flashBig(){
   const bv=$('bigview');bv.classList.add('over');setTimeout(()=>bv.classList.remove('over'),900);
 }
 
+/* ============ 執行狀態保存（重新整理後自動接續）============ */
+const LIVE_KEY='timerLiveV21';
+function persistState(){
+  lsSet(LIVE_KEY,{
+    page:currentPage,segId,
+    sw:snapSW(),
+    cd:snapCD()
+  });
+}
+function restoreLive(){
+  const st=lsGet(LIVE_KEY,null);if(!st)return false;
+  const now=Date.now();
+  if(st.sw){
+    const s=st.sw;
+    swRunning=!!s.running;swStart=s.start||0;
+    swElapsed=swRunning?now-swStart:(s.elapsed||0);
+    laps=s.laps||[];reminders=s.reminders||[];
+    // 頁面關閉期間已經過的提醒不再補響
+    firedReminders=new Set((s.fired||[]).concat(reminders.filter(r=>r<=swElapsed)));
+    $('sw-name').value=s.name||'';
+  }
+  if(st.cd){
+    $('cd-name').value=st.cd.name||'';
+    segments=(st.cd.segs||[]).map(x=>{
+      const sg={...x};delete sg.raf;
+      if(sg.running){
+        sg.remaining=sg.endAt-now;
+        if(sg.remaining<=0)sg.overFired=true;
+        if(sg.remind>0&&sg.remaining<=sg.remind)sg.remindFired=true;
+      }
+      return sg;
+    });
+  }
+  segId=Math.max(st.segId||0,...segments.map(x=>x.id),0);
+  if(st.page==='countdown')showPage('countdown');
+  return anyRunning();
+}
+
 /* ============ Save / Load (localStorage) ============ */
 function storeKey(type){return type==='stopwatch'?'swSavesV2':'cdSavesV2';}
 function saveData(type){
   const name=type==='stopwatch'?($('sw-name').value.trim()||'碼錶紀錄'):($('cd-name').value.trim()||'倒數設定');
   const key=storeKey(type);
-  const all=JSON.parse(localStorage.getItem(key)||'{}');
+  const all=lsGet(key,{});
   const stamp=new Date().toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
   let data;
   if(type==='stopwatch'){
-    data={name:$('sw-name').value,elapsed:swElapsed,laps:[...laps],reminders:[...reminders],savedAt:stamp};
+    const elapsed=swRunning?Date.now()-swStart:swElapsed;
+    data={name:$('sw-name').value,elapsed,laps:[...laps],reminders:[...reminders],savedAt:stamp};
   }else{
     data={name:$('cd-name').value,segments:segments.map(s=>({name:s.name,total:s.total/1000,remind:s.remind/1000})),savedAt:stamp};
   }
   all[name+'｜'+stamp]=data;
-  localStorage.setItem(key,JSON.stringify(all));
+  lsSet(key,all);
   toast(`已儲存「${name}」`);
 }
 function openSheet(type){
@@ -636,17 +837,18 @@ function openSheet(type){
   $('sheet-bg').classList.add('show');$('sheet').classList.add('show');
 }
 function closeSheet(){$('sheet-bg').classList.remove('show');$('sheet').classList.remove('show');}
+function sheetOpen(){return $('sheet').classList.contains('show');}
 function renderSheet(type){
-  const all=JSON.parse(localStorage.getItem(storeKey(type))||'{}');
+  const all=lsGet(storeKey(type),{});
   const keys=Object.keys(all);
   const list=$('sheet-list');
   if(!keys.length){list.innerHTML='<div class="empty">尚無儲存的資料</div>';return;}
   list.innerHTML=keys.map(k=>{
     const d=all[k];
-    const sub=type==='stopwatch'?`${d.laps.length} 段紀錄 · ${d.savedAt}`:`${d.segments.length} 個段落 · ${d.savedAt}`;
+    const sub=type==='stopwatch'?`${(d.laps||[]).length} 段紀錄 · ${d.savedAt}`:`${(d.segments||[]).length} 個段落 · ${d.savedAt}`;
     const nm=d.name||k.split('｜')[0];
     return `<div class="save-item">
-      <div class="info"><b>${escapeHtml(nm)}</b><span>${sub}</span></div>
+      <div class="info"><b>${escapeHtml(nm)}</b><span>${escapeHtml(sub)}</span></div>
       <button class="btn blue sm" style="flex:0 0 64px;" onclick="loadData('${type}','${encodeURIComponent(k)}')">讀取</button>
       <button class="btn red sm" style="flex:0 0 56px;" onclick="delData('${type}','${encodeURIComponent(k)}')">刪除</button>
     </div>`;
@@ -654,34 +856,95 @@ function renderSheet(type){
 }
 function loadData(type,encKey){
   const k=decodeURIComponent(encKey);
-  const all=JSON.parse(localStorage.getItem(storeKey(type))||'{}');
+  const all=lsGet(storeKey(type),{});
   const d=all[k];if(!d)return;
+  let undo;
   if(type==='stopwatch'){
-    resetStopwatch();
+    const snap=snapSW();undo=()=>restoreSW(snap);
+    clearSW();
     $('sw-name').value=d.name||'';
     swElapsed=d.elapsed||0;laps=d.laps||[];reminders=d.reminders||[];
+    firedReminders=new Set(reminders.filter(r=>r<=swElapsed));
     renderSwDisplay();renderLaps();renderReminders();setSwBtn(false);
   }else{
-    clearSegments();
+    const snap=snapCD();undo=()=>restoreCD(snap);
+    segments=[];
     $('cd-name').value=d.name||'';
     (d.segments||[]).forEach(s=>segments.push(newSeg(s.name,s.total,s.remind)));
+    if(bigMode==='seg')closeBig();
     renderSegments();
   }
-  closeSheet();toast('已讀取');
+  stateChanged();
+  closeSheet();toast('已讀取',{action:()=>{undo();toast('已還原為讀取前的內容');}});
 }
 function delData(type,encKey){
   const k=decodeURIComponent(encKey);
-  const all=JSON.parse(localStorage.getItem(storeKey(type))||'{}');
-  delete all[k];localStorage.setItem(storeKey(type),JSON.stringify(all));
-  renderSheet(type);toast('已刪除');
+  const all=lsGet(storeKey(type),{});
+  const removed=all[k];if(!removed)return;
+  delete all[k];lsSet(storeKey(type),all);
+  renderSheet(type);
+  toast('已刪除',{action:()=>{
+    const cur=lsGet(storeKey(type),{});cur[k]=removed;lsSet(storeKey(type),cur);
+    if(sheetOpen())renderSheet(type);toast('已復原');
+  }});
+}
+
+/* ============ Keyboard shortcuts ============ */
+function onKey(e){
+  if(e.metaKey||e.ctrlKey||e.altKey)return;
+  const tag=(e.target&&e.target.tagName)||'';
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(tag)||(e.target&&e.target.isContentEditable);
+  if(e.key==='Escape'){
+    if(sheetOpen()){closeSheet();e.preventDefault();return;}
+    if(bigMode){closeBig();e.preventDefault();return;}
+    if(typing)e.target.blur();
+    return;
+  }
+  if(typing||sheetOpen())return;
+  const onSW=bigMode?bigMode==='stopwatch':currentPage==='stopwatch';
+  const k=e.key;
+  // 空白鍵、Enter 與簡報筆翻頁鍵：開始／暫停
+  if(k===' '||k==='Enter'||k==='PageDown'||k==='PageUp'){
+    if(e.target&&e.target.tagName==='BUTTON'&&(k===' '||k==='Enter'))return; // 讓按鈕本身的鍵盤操作照常
+    e.preventDefault();
+    if(onSW)toggleStopwatch();
+    else{const sg=currentSeg();if(sg)toggleSeg(sg.id);else toast('請先加入倒數段落');}
+    return;
+  }
+  const lk=k.toLowerCase();
+  if(lk==='l'&&onSW){e.preventDefault();lapStopwatch();return;}
+  if(lk==='r'){
+    e.preventDefault();
+    if(onSW)resetStopwatch();
+    else{const sg=currentSeg();if(sg)resetSeg(sg.id);}
+    return;
+  }
+  if(lk==='f'){
+    e.preventDefault();
+    if(bigMode){closeBig();return;}
+    if(onSW)openBig('stopwatch');
+    else{const sg=currentSeg();if(sg)openBig('seg',sg.id);else toast('請先加入倒數段落');}
+  }
 }
 
 /* ============ Init ============ */
 document.addEventListener('DOMContentLoaded',()=>{
-  applyTheme(localStorage.getItem('timerTheme')||'');
+  try{applyTheme(localStorage.getItem('timerTheme')||'');}catch(e){applyTheme('');}
   updateNow();setInterval(updateNow,1000);
-  renderSwDisplay();renderLaps();renderReminders();renderSegments();
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeBig();});
+  const resumed=restoreLive();
+  renderSwDisplay();renderLaps();renderReminders();renderSegments();setSwBtn(swRunning);
+  ensureLoop();syncWakeLock();
+  if(resumed)toast('已接續上次的計時（點一下畫面即可恢復提醒音效）');
+  document.addEventListener('keydown',onKey);
+  // 滑鼠點過的按鈕不要留著焦點，否則之後按空白鍵會重複觸發那顆按鈕（鍵盤 Tab 操作不受影響）
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button');if(b&&e.detail>0)b.blur();});
+  ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{once:true,capture:true}));
+  ['sw-name','cd-name'].forEach(id=>$(id).addEventListener('input',persistState));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){tickAll();ensureLoop();rescheduleSignals();}
+    syncWakeLock();
+  });
+  window.addEventListener('pagehide',persistState);
 });
 </script>
 </body>

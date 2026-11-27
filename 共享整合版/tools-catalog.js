@@ -14,8 +14,8 @@ window.WORKSTATION_CATEGORIES = [
 
 window.WORKSTATION_TOOLS = [
   // ── 學生資料 ──
-  { id: 'students', no: '00', cat: 'comment', icon: 'users', title: '班級學生資料管理',
-    desc: '整理學生基本資料、自評與特殊表現，提供評語撰寫參考。',
+  { id: 'students', no: '00', cat: 'comment', icon: 'users', title: '班級學生資料管理', integrated: 'students',
+    desc: '整理學生基本資料、自評、成績與特殊表現；全班總覽一次填寫，帶入工作站職務。',
     path: '../00學生資料/班級學生資料管理系統.html', guide: '../00學生資料/班級學生資料管理系統使用說明.html',
     online: 'https://froglssh.github.io/class-student-data-management-online/',
     keywords: '學生資料 名冊 基本資料 自評 特殊表現 匯入' },
@@ -46,10 +46,10 @@ window.WORKSTATION_TOOLS = [
 
   // ── 班務與活動 ──
   { id: 'account', no: '05', cat: 'affairs', icon: 'money', title: '班費收支', integrated: 'account',
-    desc: '登記繳費、收入與支出，保存收據影像，查看結餘與繳費狀態。',
+    desc: '記錄班費收入與支出，保存單據相片，查看結餘並匯出收支報告。',
     path: '../05班費收支/班費收支記帳程式(codex優化版).html',
     guide: '../05班費收支/班費收支記帳程式_教師使用說明.html',
-    keywords: '班費 收支 記帳 繳費 收據 結餘' },
+    keywords: '班費 收支 記帳 收據 單據 結餘 報表' },
   { id: 'fair', no: '06', cat: 'affairs', icon: 'stall', title: '校慶與園遊會', integrated: 'fair',
     desc: '規劃攤位主題、工作人力與輪班時段，列印或匯出任務表。',
     path: '../06校慶攤位/校慶園遊會攤位規劃程式（codex優化版).html',
@@ -124,6 +124,7 @@ window.WORKSTATION_TOOLS = [
   { id: 'special', no: '11', cat: 'future', icon: 'route', title: '升學路徑工作室',
     desc: '高三特殊選才與個人申請的人機協作規劃。',
     path: '../11特選個申/index.html',
+    guide: '../11特選個申/升學路徑工作室使用說明.html',
     keywords: '特殊選才 個人申請 高三 升學路徑' },
 
   // ── 生活小工具 ──

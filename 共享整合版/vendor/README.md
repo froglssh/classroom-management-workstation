@@ -17,3 +17,10 @@
 ## 雲端包附加套件
 
 html2canvas 1.4.1、jsPDF 2.5.1、JSZip 3.10.1、normalize.css 8.0.1、Font Awesome Free 6.0.0（含所需字型）已附在本包。各自的 LICENSE 檔與 third-party-sources.json 保留授權、來源與雜湊。網頁使用系統中文字型，不必下載 Google Fonts。
+
+## 學生資料（Word 自評表讀取）
+
+- `mammoth.browser.min.js`：mammoth.js 1.6.0，供「班級學生資料管理」讀取學生自評 .docx。
+- 原始下載網址：https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js
+- 授權檔：`LICENSE.mammoth.txt`（BSD 2-Clause），來源 https://cdn.jsdelivr.net/npm/mammoth@1.6.0/LICENSE
+- 取得日期：2026-11-21。只在本機解析使用者選取的 .docx，不會上傳檔案。

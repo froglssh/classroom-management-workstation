@@ -2,312 +2,272 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AI 輔助自主學習計畫</title>
 <style>
   :root{
-    --ink:#1f2733;          /* 深色標題 */
-    --ink-soft:#4a5568;
-    --muted:#7a8699;
-    --line:#e3e8ef;
-    --line-strong:#cfd6e1;
-    --bg:#f4f6f9;
-    --card:#ffffff;
-    --accent:#2f5fe0;       /* 主色：沉穩藍 */
-    --accent-dark:#1f3f9e;
-    --accent-soft:#eaf0ff;
-    --ok:#1f9d6b;
-    --ok-soft:#e7f6ef;
-    --warn:#c2410c;
-    --danger:#c33;
-    --ai:#6b46c1;
-    --ai-soft:#f1ecfb;
-    --radius:10px;
-    --shadow:0 1px 2px rgba(20,30,50,.05), 0 2px 10px rgba(20,30,50,.04);
+    --ink:#1f2733; --ink-soft:#4a5568; --muted:#6b778a;
+    --line:#e3e8ef; --line-strong:#cfd6e1;
+    --bg:#f4f6f9; --card:#ffffff; --field:#ffffff; --soft:#f8fafc; --head:#1f2733; --head-ink:#ffffff; --head-sub:#c4ccda;
+    --accent:#2f5fe0; --accent-dark:#1f3f9e; --accent-soft:#eaf0ff;
+    --ok:#1f9d6b; --ok-soft:#e7f6ef; --warn:#b45309; --warn-soft:#fff4e0;
+    --danger:#c33; --danger-soft:#fff0f0;
+    --ai:#6b46c1; --ai-soft:#f1ecfb;
+    --radius:10px; --shadow:0 1px 2px rgba(20,30,50,.05),0 2px 10px rgba(20,30,50,.04);
+    --fs:16px;
+    color-scheme:light;
   }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ink:#e6eaf1; --ink-soft:#c3cad6; --muted:#9aa5b6; --line:#2c3442; --line-strong:#3b4556;
+      --bg:#131820; --card:#1b212c; --field:#151a23; --soft:#1f2632; --head:#0d1117; --head-sub:#9aa5b6;
+      --accent:#6d8ff5; --accent-dark:#a9bcff; --accent-soft:#22305a;
+      --ok:#3fbf8a; --ok-soft:#183829; --warn:#f0a24a; --warn-soft:#3a2a12; --danger:#ff7b7b; --danger-soft:#3a1e1e;
+      --ai:#a78bfa; --ai-soft:#2a2342; color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#e6eaf1; --ink-soft:#c3cad6; --muted:#9aa5b6; --line:#2c3442; --line-strong:#3b4556;
+    --bg:#131820; --card:#1b212c; --field:#151a23; --soft:#1f2632; --head:#0d1117; --head-sub:#9aa5b6;
+    --accent:#6d8ff5; --accent-dark:#a9bcff; --accent-soft:#22305a;
+    --ok:#3fbf8a; --ok-soft:#183829; --warn:#f0a24a; --warn-soft:#3a2a12; --danger:#ff7b7b; --danger-soft:#3a1e1e;
+    --ai:#a78bfa; --ai-soft:#2a2342; color-scheme:dark;
+  }
+  :root.big{--fs:18.5px;}
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{
-    font-family:-apple-system,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-    color:var(--ink);
-    background:var(--bg);
-    line-height:1.6;
-    font-size:16px;
-  }
-  .wrap{max-width:880px;margin:0 auto;padding:0 16px 80px;}
+  body{font-family:-apple-system,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;font-size:var(--fs);}
+  a{color:var(--accent);}
+  .wrap{max-width:900px;margin:0 auto;padding:0 16px 90px;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
 
-  /* Header */
-  header.site{
-    background:var(--ink);
-    color:#fff;
-    padding:22px 16px;
-  }
-  header.site .inner{max-width:880px;margin:0 auto;}
-  header.site h1{margin:0;font-size:1.45rem;font-weight:700;letter-spacing:.5px;}
-  header.site p{margin:6px 0 0;color:#c4ccda;font-size:.9rem;}
+  /* ---------- 頂列 ---------- */
+  header.top{position:sticky;top:0;z-index:50;background:var(--head);color:var(--head-ink);box-shadow:0 2px 10px rgba(0,0,0,.15);}
+  header.top .inner{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px;}
+  header.top .title{flex:1;min-width:0;}
+  header.top h1{margin:0;font-size:1.12rem;font-weight:700;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  header.top .cur{font-size:.8rem;color:var(--head-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hbtn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);padding:7px 11px;border-radius:8px;font-size:.84rem;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .hbtn:hover{background:rgba(255,255,255,.22);}
+  .savetag{font-size:.78rem;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.12);color:#d8f5e8;border:none;cursor:pointer;white-space:nowrap;}
+  .savetag.warn{color:#ffd79a;} .savetag.err{color:#ffb3b3;background:rgba(255,80,80,.18);}
 
-  /* Student bar */
-  .studentbar{
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:14px;margin:18px 0;
-    display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-  }
-  .studentbar select,.studentbar input{flex:1;min-width:140px;}
-  .studentbar .btns{display:flex;gap:6px;flex-wrap:wrap;}
-
-  /* Stepper nav */
-  nav.steps{
-    display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;
-  }
-  nav.steps button{
-    flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);
-    color:var(--ink-soft);padding:10px 6px;border-radius:var(--radius);cursor:pointer;
-    font-size:.92rem;font-weight:600;transition:.15s;display:flex;flex-direction:column;gap:2px;align-items:center;
-  }
-  nav.steps button .num{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:22px;height:22px;border-radius:50%;background:var(--bg);color:var(--muted);font-size:.8rem;
-  }
+  /* ---------- 步驟列 ---------- */
+  nav.steps{position:sticky;top:58px;z-index:40;background:var(--bg);padding:10px 0 8px;display:flex;gap:6px;}
+  nav.steps button{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);color:var(--ink-soft);padding:8px 4px;border-radius:var(--radius);cursor:pointer;font-size:.88rem;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:1px;}
+  nav.steps .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--bg);color:var(--muted);font-size:.78rem;}
+  nav.steps .sub{font-size:.7rem;color:var(--muted);font-weight:500;}
   nav.steps button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
   nav.steps button.active .num{background:rgba(255,255,255,.25);color:#fff;}
+  nav.steps button.active .sub{color:#dfe7ff;}
   nav.steps button.done .num{background:var(--ok);color:#fff;}
+  nav.steps button.part .num{background:var(--warn);color:#fff;}
+  .progress-wrap{margin:2px 0 14px;}
+  .progress-wrap .bar{height:7px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .progress-wrap .bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s ease;}
+  .progress-wrap .lbl{font-size:.8rem;color:var(--muted);margin-top:4px;}
 
-  /* Progress bar */
-  .progress-wrap{margin:0 0 18px;}
-  .progress-wrap .bar{height:7px;background:#e7ebf2;border-radius:99px;overflow:hidden;}
-  .progress-wrap .bar > i{display:block;height:100%;width:0;background:var(--accent);transition:width .4s ease;}
-  .progress-wrap .lbl{font-size:.8rem;color:var(--muted);margin-top:5px;}
+  /* ---------- 提示列 ---------- */
+  #banner{display:none;margin:12px 0 0;padding:10px 12px;border-radius:var(--radius);background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);font-size:.9rem;align-items:center;gap:8px;flex-wrap:wrap;}
+  #banner.show{display:flex;} #banner .msg{flex:1;min-width:200px;}
 
-  /* Panels */
-  .panel{display:none;}
-  .panel.active{display:block;animation:fade .25s ease;}
+  /* ---------- 面板與卡片 ---------- */
+  .panel{display:none;} .panel.active{display:block;animation:fade .25s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;}
+  .card>h2{margin:0 0 4px;font-size:1.15rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .card>h2 .tag{font-size:.72rem;font-weight:600;background:var(--accent-soft);color:var(--accent-dark);padding:2px 8px;border-radius:99px;}
+  .card h3{font-size:1rem;margin:18px 0 6px;}
+  .card .lead{color:var(--muted);font-size:.9rem;margin:0 0 12px;}
+  .welcome{border:1px solid var(--accent);background:var(--accent-soft);}
+  .welcome p{margin:4px 0 10px;font-size:.92rem;}
 
-  .card{
-    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:20px;margin-bottom:16px;
-  }
-  .card > h2{
-    margin:0 0 4px;font-size:1.15rem;color:var(--ink);
-    display:flex;align-items:center;gap:8px;
-  }
-  .card > h2 .tag{font-size:.72rem;font-weight:600;background:var(--accent-soft);color:var(--accent-dark);padding:2px 8px;border-radius:99px;}
-  .card .lead{color:var(--muted);font-size:.9rem;margin:0 0 16px;}
-
-  label.field{display:block;font-weight:600;font-size:.92rem;margin:14px 0 5px;color:var(--ink);}
+  label.field{display:block;font-weight:600;font-size:.92rem;margin:16px 0 5px;}
   label.field .req{color:var(--danger);font-weight:700;}
-  .hint{font-size:.82rem;color:var(--muted);background:#f8fafc;border-left:3px solid var(--line-strong);
-        padding:8px 11px;border-radius:0 6px 6px 0;margin:0 0 8px;}
+  .hint{font-size:.82rem;color:var(--muted);background:var(--soft);border-left:3px solid var(--line-strong);padding:8px 11px;border-radius:0 6px 6px 0;margin:0 0 8px;}
   .hint b{color:var(--ink-soft);}
+  p.hint{border:none;background:none;padding:0;}
+  input[type=text],input[type=date],input[type=password],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:8px;font-size:1rem;font-family:inherit;background:var(--field);color:var(--ink);}
+  input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,.choices label:focus-within{outline:3px solid var(--accent);outline-offset:1px;}
+  textarea{resize:vertical;min-height:96px;}
+  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%237a8699' stroke-width='1.6' fill='none'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;} .row>*{flex:1;min-width:140px;}
+  .count{font-size:.76rem;color:var(--muted);text-align:right;margin-top:2px;}
+  .count.low{color:var(--warn);} .count.ok{color:var(--ok);}
 
-  input[type=text],input[type=date],select,textarea{
-    width:100%;padding:11px 12px;border:1px solid var(--line-strong);border-radius:8px;
-    font-size:1rem;font-family:inherit;background:#fff;color:var(--ink);
-  }
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-  textarea{resize:vertical;min-height:90px;}
-  select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%237a8699' stroke-width='1.6' fill='none'/></svg>");
-    background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
-
-  .row{display:flex;gap:12px;flex-wrap:wrap;}
-  .row > *{flex:1;min-width:140px;}
-
-  /* Choice chips (radio / checkbox) */
-  .choices{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 4px;}
-  .choices label{
-    display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-strong);
-    border-radius:99px;padding:8px 14px;cursor:pointer;font-size:.9rem;background:#fff;transition:.15s;user-select:none;
-  }
+  .choices{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0;}
+  .choices label{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-strong);border-radius:99px;padding:8px 14px;cursor:pointer;font-size:.9rem;background:var(--field);user-select:none;}
   .choices label:hover{border-color:var(--accent);}
   .choices input{accent-color:var(--accent);margin:0;}
-  .choices input:checked + span{color:var(--accent-dark);font-weight:600;}
-  .choices label:has(input:checked){background:var(--accent-soft);border-color:var(--accent);}
+  .choices label:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent-dark);font-weight:600;}
 
-  /* Buttons */
-  button{font-family:inherit;font-size:.92rem;font-weight:600;border:none;border-radius:8px;
-    padding:10px 16px;cursor:pointer;transition:.15s;}
+  button{font-family:inherit;font-size:.92rem;font-weight:600;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;color:inherit;}
   .btn{background:var(--accent);color:#fff;}
-  .btn:hover{background:var(--accent-dark);}
-  .btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent);}
-  .btn.ghost:hover{background:var(--accent-soft);}
+  .btn:hover{filter:brightness(.93);}
+  .btn.ghost{background:var(--card);color:var(--accent);border:1px solid var(--accent);}
   .btn.ai{background:var(--ai);color:#fff;}
-  .btn.ai:hover{filter:brightness(.92);}
-  .btn.sub{background:#eef1f6;color:var(--ink-soft);}
-  .btn.sub:hover{background:#e2e7ef;}
+  .btn.sub{background:var(--soft);color:var(--ink-soft);border:1px solid var(--line);}
   .btn.ok{background:var(--ok);color:#fff;}
-  .btn.danger{background:#fff;color:var(--danger);border:1px solid var(--danger);}
-  .btn.danger:hover{background:#fff0f0;}
-  .btn.sm{padding:7px 12px;font-size:.84rem;}
-  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .btn.danger{background:var(--card);color:var(--danger);border:1px solid var(--danger);}
+  .btn.sm{padding:6px 11px;font-size:.84rem;}
+  .btn.icon{padding:5px 8px;font-size:.84rem;background:var(--soft);border:1px solid var(--line);color:var(--ink-soft);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;}
   .spacer{flex:1;}
+  .navbtns{display:flex;justify-content:space-between;margin-top:18px;gap:8px;}
 
-  /* AI assist block */
+  /* ---------- AI ---------- */
   .ai-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
   .ai-result{display:none;margin-top:8px;border:1px dashed var(--ai);background:var(--ai-soft);border-radius:8px;padding:12px;}
   .ai-result.show{display:block;}
-  .ai-result .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-  .ai-result .head b{color:var(--ai);font-size:.85rem;}
-  .ai-result pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.9rem;margin:0 0 8px;color:var(--ink);max-height:320px;overflow:auto;}
-  .ai-busy{font-size:.85rem;color:var(--ai);}
+  .ai-result .head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;}
+  .ai-result .head b{color:var(--ai);font-size:.88rem;}
+  .ai-result pre{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.9rem;margin:0 0 8px;max-height:340px;overflow:auto;}
+  .ai-result details{font-size:.85rem;margin:6px 0;} .ai-result details pre{max-height:200px;background:var(--card);padding:8px;border-radius:6px;margin-top:6px;}
+  .ai-result textarea{min-height:120px;font-size:.9rem;}
+  .ai-busy{font-size:.88rem;color:var(--ai);}
 
-  /* AI settings */
-  .ai-settings{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
-  .ai-settings > summary{cursor:pointer;list-style:none;padding:13px 16px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;}
-  .ai-settings > summary::-webkit-details-marker{display:none;}
-  .ai-settings > summary .pill{font-size:.72rem;font-weight:600;padding:2px 9px;border-radius:99px;background:#eef1f6;color:var(--muted);}
-  .ai-settings > summary .pill.on{background:var(--ok-soft);color:var(--ok);}
-  .ai-settings .body{padding:0 16px 16px;border-top:1px solid var(--line);}
-  .ai-settings .body p.note{font-size:.82rem;color:var(--muted);margin:12px 0;}
+  /* ---------- 週進度 ---------- */
+  .weeks{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+  .wrow{display:grid;grid-template-columns:72px 1fr 150px;gap:8px;align-items:start;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card);}
+  .wrow.milestone{background:var(--accent-soft);border-color:var(--accent);}
+  .wrow .wk{font-weight:700;font-size:.92rem;} .wrow .dt{font-size:.76rem;color:var(--muted);}
+  .wrow textarea{min-height:58px;font-size:.92rem;}
+  .wrow .side{display:flex;flex-direction:column;gap:6px;}
+  .wrow .side select,.wrow .side input{padding:6px 8px;font-size:.86rem;}
+  .wrow .ops{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+  .abc{display:inline-block;font-size:.74rem;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--soft);color:var(--muted);border:1px solid var(--line);}
+  .abc.A{background:var(--ok-soft);color:var(--ok);border-color:var(--ok);} .abc.B{background:var(--accent-soft);color:var(--accent-dark);border-color:var(--accent);} .abc.C{background:var(--warn-soft);color:var(--warn);border-color:var(--warn);}
 
-  /* Tables */
-  .tablewrap{overflow-x:auto;margin-top:10px;}
-  table{width:100%;border-collapse:collapse;font-size:.9rem;}
-  th,td{border:1px solid var(--line-strong);padding:8px;text-align:left;vertical-align:top;}
-  th{background:#f1f4f9;color:var(--ink);font-weight:600;}
-  td textarea{min-height:60px;border:1px solid var(--line);}
-  td .wk{font-weight:700;color:var(--ink);white-space:nowrap;}
-  td .dt{font-size:.78rem;color:var(--muted);}
-  td select,td input[type=text]{padding:7px 8px;}
-  td.center{text-align:center;}
-  .milestone{background:var(--accent-soft) !important;}
+  .ecard{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--card);}
+  .ecard .eh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+  .ecard .plan{font-size:.84rem;color:var(--muted);background:var(--soft);border-radius:6px;padding:6px 9px;margin-bottom:6px;white-space:pre-wrap;}
+  .ecard textarea{min-height:70px;font-size:.92rem;}
+  .photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;align-items:center;}
+  .ph{position:relative;width:86px;height:86px;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:var(--soft);}
+  .ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block;}
+  .ph button{position:absolute;top:2px;right:2px;padding:1px 6px;font-size:.75rem;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;}
 
   .stat{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;}
-  .stat .box{flex:1;min-width:90px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;}
+  .stat .box{flex:1;min-width:90px;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;}
   .stat .box .n{font-size:1.5rem;font-weight:700;color:var(--accent-dark);}
   .stat .box .t{font-size:.78rem;color:var(--muted);}
 
-  .effect-img{margin-top:6px;}
-  .effect-img img{max-width:120px;max-height:120px;border-radius:6px;border:1px solid var(--line);display:none;margin-top:6px;}
+  .checklist{list-style:none;padding:0;margin:8px 0;}
+  .checklist li{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);font-size:.92rem;}
+  .checklist li .st{width:22px;text-align:center;}
 
-  .navbtns{display:flex;justify-content:space-between;margin-top:8px;gap:8px;}
+  /* ---------- 設定 ---------- */
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.9rem;margin:8px 0;}
+  .kv dt{color:var(--muted);} .kv dd{margin:0;}
+  .pill{font-size:.74rem;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--soft);color:var(--muted);border:1px solid var(--line);}
+  .pill.on{background:var(--ok-soft);color:var(--ok);border-color:var(--ok);}
+  .pill.warn{background:var(--warn-soft);color:var(--warn);border-color:var(--warn);}
+  .pill.err{background:var(--danger-soft);color:var(--danger);border-color:var(--danger);}
+  table.snap{width:100%;border-collapse:collapse;font-size:.85rem;}
+  table.snap td,table.snap th{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top;}
+  .snap-wrap{overflow-x:auto;max-height:300px;overflow-y:auto;}
 
-  footer.site{text-align:center;color:var(--muted);font-size:.82rem;padding:24px 0 0;border-top:1px solid var(--line);margin-top:8px;}
-  footer.site a{color:var(--accent);text-decoration:none;}
+  /* ---------- 對話框 ---------- */
+  dialog{border:none;border-radius:12px;padding:0;max-width:min(640px,calc(100vw - 24px));width:100%;background:var(--card);color:var(--ink);box-shadow:0 10px 40px rgba(0,0,0,.35);}
+  dialog::backdrop{background:rgba(10,15,25,.5);}
+  dialog .dh{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:700;display:flex;align-items:center;gap:8px;}
+  dialog .db{padding:14px 18px;max-height:65vh;overflow:auto;font-size:.93rem;}
+  dialog .df{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+  dialog table{width:100%;border-collapse:collapse;font-size:.88rem;} dialog table td{border-bottom:1px solid var(--line);padding:6px;}
+  .plan-item{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;}
+  .plan-item.cur{border-color:var(--accent);background:var(--accent-soft);}
+  .plan-item .pi{flex:1;min-width:0;}
+  .plan-item .pn{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .plan-item .ps{font-size:.78rem;color:var(--muted);}
+  #lightbox{max-width:min(1000px,96vw);background:#000;}
+  #lightbox img{display:block;max-width:100%;max-height:85vh;margin:auto;}
 
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
-    background:var(--ink);color:#fff;padding:11px 18px;border-radius:99px;font-size:.9rem;
-    opacity:0;pointer-events:none;transition:.25s;z-index:9999;box-shadow:0 6px 24px rgba(0,0,0,.25);}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#1f2733;color:#fff;padding:10px 16px;border-radius:99px;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:9999;box-shadow:0 6px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;max-width:calc(100vw - 24px);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .toast.error{background:#a02727;}
+  .toast button{background:rgba(255,255,255,.18);color:#fff;padding:4px 10px;font-size:.84rem;border-radius:99px;}
 
-  @media (max-width:600px){
-    body{font-size:15px;}
-    nav.steps button{min-width:0;flex-basis:30%;font-size:.78rem;}
-    .card{padding:16px;}
+  footer.site{text-align:center;color:var(--muted);font-size:.8rem;padding:20px 0 0;border-top:1px solid var(--line);margin-top:8px;}
+  #boot{padding:40px;text-align:center;color:var(--muted);}
+
+  @media (max-width:700px){
+    header.top .inner{padding:8px 12px;gap:6px;}
+    header.top h1{font-size:1rem;}
+    .hbtn .lbl{display:none;}
+    .savetag{font-size:.7rem;padding:4px 8px;max-width:38vw;overflow:hidden;text-overflow:ellipsis;}
+    nav.steps{position:fixed;top:auto;bottom:0;left:0;right:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -2px 10px rgba(0,0,0,.08);gap:4px;}
+    nav.steps button{font-size:.72rem;padding:5px 2px;border:none;}
+    nav.steps .sub{display:none;}
+    .toast{bottom:calc(76px + env(safe-area-inset-bottom));}
+    .card{padding:15px;}
+    .wrow{grid-template-columns:1fr;}
+    .wrow .head{display:flex;gap:8px;align-items:baseline;}
+    .wrow .side{flex-direction:row;flex-wrap:wrap;}
+    .wrow .side>*{flex:1;min-width:120px;}
   }
-  /* print handled in JS popup */
 </style>
 </head>
 <body>
 
-<header class="site">
+<header class="top">
   <div class="inner">
-    <h1>AI 輔助自主學習計畫</h1>
-    <p>臺北市立麗山高中　林獻升老師　｜　聯絡信箱：<a href="mailto:frog@lssh.tp.edu.tw" style="color:#9fc0ff;text-decoration:none;">frog@lssh.tp.edu.tw</a></p>
+    <div class="title">
+      <h1>AI 輔助自主學習計畫</h1>
+      <div class="cur" id="curName">—</div>
+    </div>
+    <button type="button" class="savetag" id="saveTag" data-action="go" data-step="settings" title="儲存狀態（點此查看資料與儲存設定）">💾 讀取中…</button>
+    <button type="button" class="hbtn" data-action="plans" title="我的計畫（切換、新增、範例）">📂<span class="lbl"> 我的計畫</span></button>
+    <button type="button" class="hbtn" data-action="go" data-step="settings" title="資料儲存、AI 與外觀設定">⚙️<span class="lbl"> 設定</span></button>
   </div>
 </header>
 
 <div class="wrap">
+  <div id="banner" role="status"><span class="msg" id="bannerMsg"></span><span id="bannerBtns" class="actions" style="margin:0"></span></div>
 
-  <!-- 學生資料列 -->
-  <div class="studentbar">
-    <select id="savedStudents"><option value="">— 選擇已儲存的學生 —</option></select>
-    <div class="btns">
-      <button class="btn sub sm" onclick="loadData()">讀取</button>
-      <button class="btn sm" onclick="saveData()">儲存</button>
-      <button class="btn danger sm" onclick="deleteData()">刪除</button>
-      <button class="btn sub sm" onclick="clearForm()">清空表單</button>
-    </div>
-  </div>
-
-  <!-- 範例體驗區 -->
-  <div class="studentbar" style="margin-top: 10px; background: var(--bg-soft, #f4f6f9); border: 1px dashed var(--line-strong, #c8d0dd); padding: 8px 12px; border-radius: 8px; display: flex; gap: 10px; align-items: center; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-    <span style="font-size: 0.85rem; color: var(--ink, #1f2733); font-weight: bold; white-space: nowrap;">快速示範：</span>
-    <select id="sampleSelect" style="flex: 1; min-width: 200px; padding: 5px 8px; font-size: 0.85rem; border-radius: 4px; border: 1px solid var(--line-strong, #c8d0dd); background: #ffffff;">
-      <option value="">-- 選擇自主學習計畫類型範例 --</option>
-      <option value="1">1. 延伸與預修課程 (有機化學預修)</option>
-      <option value="2">2. 課外閱讀 (自私的基因讀書計畫)</option>
-      <option value="3">3. 線上學習課程 (機器學習 Python 自學)</option>
-      <option value="4">4. 能力檢定 (APX 高中物理檢定培訓)</option>
-      <option value="5">5. 服務學習課程 (偏鄉科普營隊實踐)</option>
-      <option value="6">6. 培訓課程 (Arduino 物聯網創客培訓)</option>
-      <option value="7">7. 專題研討 (生物資訊序列比對分析)</option>
-    </select>
-    <div class="btns" style="display: flex; gap: 5px;">
-      <button type="button" class="btn sm" onclick="loadBuiltinSample()">一鍵填寫</button>
-      <button type="button" class="btn sub sm" onclick="downloadSampleWord()">下載 Word 檔</button>
-    </div>
-  </div>
-
-  <!-- AI 設定 -->
-  <details class="ai-settings" id="aiSettings">
-    <summary>
-      ⚙️ AI 輔助設定
-      <span class="pill" id="aiModePill">外部模式</span>
-      <span class="spacer"></span>
-      <span style="font-size:.8rem;color:var(--muted);font-weight:400;">點此展開</span>
-    </summary>
-    <div class="body">
-      <p class="note">本工具的每個欄位旁都有「AI 協助」。預設為<b>外部模式</b>：自動複製為你量身打造的指令，並開啟你選的 AI 網站，貼上即可。若你有 API 金鑰，可切換為<b>即時模式</b>，直接在頁面內生成建議。</p>
-      <label class="field">使用的 AI 服務</label>
-      <div class="choices" id="aiProvider">
-        <label><input type="radio" name="aiprov" value="chatgpt" checked><span>ChatGPT</span></label>
-        <label><input type="radio" name="aiprov" value="claude"><span>Claude</span></label>
-        <label><input type="radio" name="aiprov" value="gemini"><span>Gemini</span></label>
-      </div>
-      <label class="field">即時模式 API 金鑰（選填，留空＝外部模式）</label>
-      <div class="hint">金鑰只儲存在你這台電腦的瀏覽器（localStorage），不會上傳到任何伺服器。學生使用建議留空、走外部模式即可。</div>
-      <input type="text" id="aiApiKey" placeholder="貼上 API Key（sk-... / Gemini key 等）" autocomplete="off">
-      <p class="note" style="margin:8px 0 0;">沒有金鑰？<a id="aiKeyLink" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">前往 OpenAI 申請 API 金鑰 →</a></p>
-      <label class="field">模型名稱（選填，可改）</label>
-      <input type="text" id="aiModel" placeholder="留空使用預設">
-      <div class="actions">
-        <button class="btn sm" onclick="saveAiConfig()">儲存設定</button>
-        <button class="btn sub sm" onclick="clearAiKey()">清除金鑰</button>
-      </div>
-    </div>
-  </details>
-
-  <!-- 進度條 -->
-  <div class="progress-wrap">
-    <div class="bar"><i id="progFill"></i></div>
-    <div class="lbl"><span id="progPct">0%</span> 完成 ｜ 隨時可按右下角〈儲存〉保存進度</div>
-  </div>
-
-  <!-- 步驟導覽 -->
-  <nav class="steps" id="stepNav">
-    <button data-step="basic" class="active" onclick="goStep('basic')"><span class="num">1</span>基本資料</button>
-    <button data-step="plan" onclick="goStep('plan')"><span class="num">2</span>學習計畫</button>
-    <button data-step="schedule" onclick="goStep('schedule')"><span class="num">3</span>預計進度</button>
-    <button data-step="effect" onclick="goStep('effect')"><span class="num">4</span>學習成效</button>
-    <button data-step="export" onclick="goStep('export')"><span class="num">5</span>匯出列印</button>
+  <nav class="steps" id="stepNav" aria-label="步驟">
+    <button type="button" data-action="go" data-step="basic"><span class="num">1</span>基本資料<span class="sub" id="sub-basic"></span></button>
+    <button type="button" data-action="go" data-step="plan"><span class="num">2</span>學習計畫<span class="sub" id="sub-plan"></span></button>
+    <button type="button" data-action="go" data-step="schedule"><span class="num">3</span>預計進度<span class="sub" id="sub-schedule"></span></button>
+    <button type="button" data-action="go" data-step="effect"><span class="num">4</span>學習成效<span class="sub" id="sub-effect"></span></button>
+    <button type="button" data-action="go" data-step="export"><span class="num">5</span>匯出列印<span class="sub" id="sub-export"></span></button>
   </nav>
 
+  <div class="progress-wrap">
+    <div class="bar"><i id="progFill"></i></div>
+    <div class="lbl" id="progLbl">計畫書完成 0%</div>
+  </div>
+
+  <div id="boot">讀取資料中…</div>
+
   <!-- ========== 1 基本資料 ========== -->
-  <section class="panel active" id="step-basic">
+  <section class="panel" id="step-basic">
+    <div class="card welcome" id="welcome" hidden>
+      <h2>👋 第一次使用？</h2>
+      <p>內容會<b>自動儲存</b>在這台電腦的瀏覽器裡。建議到「⚙️ 設定」選一個雲端硬碟資料夾，資料就會長期保存，換電腦也找得回來。</p>
+      <div class="actions">
+        <button type="button" class="btn sm" data-action="welcome-close">直接開始填寫</button>
+        <button type="button" class="btn ghost sm" data-action="plans">看範例計畫</button>
+        <button type="button" class="btn sub sm" data-action="go" data-step="settings">設定儲存資料夾</button>
+      </div>
+    </div>
     <div class="card">
       <h2>基本資料 <span class="tag">計畫書封面欄位</span></h2>
       <p class="lead">這些欄位會直接對應到學校的計畫書封面，先把身分與計畫定位填好。</p>
 
-      <label class="field">申請人姓名 <span class="req">*</span></label>
-      <input type="text" id="studentName" data-field placeholder="你的姓名（也是儲存資料的名稱）">
-
+      <label class="field" for="studentName">申請人姓名 <span class="req">*</span></label>
+      <input type="text" id="studentName" data-field placeholder="你的姓名">
       <div class="row">
-        <div>
-          <label class="field">班級</label>
-          <input type="text" id="className" data-field placeholder="例：高二3班 / 203">
-        </div>
-        <div>
-          <label class="field">座號</label>
-          <input type="text" id="seatNo" data-field placeholder="例：15">
-        </div>
+        <div><label class="field" for="className">班級</label><input type="text" id="className" data-field placeholder="例：高二3班 / 203"></div>
+        <div><label class="field" for="seatNo">座號</label><input type="text" id="seatNo" data-field placeholder="例：15"></div>
       </div>
 
-      <label class="field">計畫主題 <span class="req">*</span></label>
+      <label class="field" for="projectTopic">計畫主題 <span class="req">*</span></label>
       <div class="hint">用一句話講清楚你想探究／學習的大方向。<b>範例：</b>「探討校園常見植物的固碳能力」。</div>
       <input type="text" id="projectTopic" data-field placeholder="一句話描述你的主題">
 
       <label class="field">計畫類型 <span class="req">*</span></label>
-      <div class="choices" id="planType">
+      <div class="choices" id="planType" role="radiogroup">
         <label><input type="radio" name="ptype" value="1"><span>1 延伸與預修課程</span></label>
         <label><input type="radio" name="ptype" value="2"><span>2 課外閱讀</span></label>
         <label><input type="radio" name="ptype" value="3"><span>3 線上學習課程</span></label>
@@ -316,52 +276,31 @@
         <label><input type="radio" name="ptype" value="6"><span>6 培訓課程</span></label>
         <label><input type="radio" name="ptype" value="7"><span>7 專題研討</span></label>
       </div>
-
-      <div id="subjectWrap" style="display:none;">
+      <div id="subjectWrap" hidden>
         <label class="field">專題研討領域（可複選）</label>
-        <div class="choices" id="subjects">
-          <label><input type="checkbox" value="國文"><span>國文</span></label>
-          <label><input type="checkbox" value="英文"><span>英文</span></label>
-          <label><input type="checkbox" value="數學"><span>數學</span></label>
-          <label><input type="checkbox" value="物理"><span>物理</span></label>
-          <label><input type="checkbox" value="化學"><span>化學</span></label>
-          <label><input type="checkbox" value="生物"><span>生物</span></label>
-          <label><input type="checkbox" value="地科"><span>地科</span></label>
-          <label><input type="checkbox" value="資訊"><span>資訊</span></label>
-          <label><input type="checkbox" value="生科"><span>生科</span></label>
-          <label><input type="checkbox" value="歷史"><span>歷史</span></label>
-          <label><input type="checkbox" value="地理"><span>地理</span></label>
-          <label><input type="checkbox" value="公民"><span>公民</span></label>
-          <label><input type="checkbox" value="其他"><span>其他</span></label>
-        </div>
+        <div class="choices" id="subjects"></div>
       </div>
 
       <label class="field">實施方式 <span class="req">*</span></label>
-      <div class="choices" id="implMethod">
+      <div class="choices" id="implMethod" role="radiogroup">
         <label><input type="radio" name="impl" value="個人學習"><span>個人學習</span></label>
         <label><input type="radio" name="impl" value="小組學習"><span>小組學習（上限 3 人）</span></label>
       </div>
-      <div id="membersWrap" style="display:none;">
-        <label class="field">小組成員（含你自己，最多 3 人）</label>
+      <div id="membersWrap" hidden>
+        <label class="field" for="members">小組成員（含你自己，最多 3 人） <span class="req">*</span></label>
         <input type="text" id="members" data-field placeholder="例：王小明、陳大華">
       </div>
 
-      <label class="field">計畫名稱 <span class="req">*</span></label>
+      <label class="field" for="planName">計畫名稱 <span class="req">*</span></label>
       <div class="hint">比主題更具體、像一個正式標題。<b>範例：</b>「校園喬木與灌木固碳量之比較與綠化建議」。</div>
       <input type="text" id="planName" data-field placeholder="你的計畫正式名稱">
 
-      <label class="field">詳細主題 / 簡短說明</label>
-      <textarea id="detailTopic" data-field placeholder="補充說明你的計畫範圍、想解決的問題或好奇之處。"></textarea>
-
-      <div class="ai-tools">
-        <button class="btn ai sm" onclick="aiAssist('topic')">🤖 AI 協助：把主題想得更清楚</button>
-      </div>
+      <label class="field" for="detailTopic">詳細主題 / 簡短說明</label>
+      <textarea id="detailTopic" data-field data-count="80-250" placeholder="補充說明你的計畫範圍、想解決的問題或好奇之處。"></textarea>
+      <div class="ai-tools"><button type="button" class="btn ai sm" data-action="ai" data-kind="topic">🤖 AI 協助：把主題想得更清楚</button></div>
       <div class="ai-result" id="ai-topic"></div>
 
-      <div class="navbtns">
-        <span></span>
-        <button class="btn" onclick="goStep('plan')">下一步：學習計畫 →</button>
-      </div>
+      <div class="navbtns"><span></span><button type="button" class="btn" data-action="go" data-step="plan">下一步：學習計畫 →</button></div>
     </div>
   </section>
 
@@ -369,54 +308,42 @@
   <section class="panel" id="step-plan">
     <div class="card">
       <h2>學習計畫（內容概述）<span class="tag">計畫書核心</span></h2>
-      <p class="lead">這是計畫書的靈魂。先自己寫下想法，再用 AI 幫你補強、深化。四個問題都有引導與範例。</p>
+      <p class="lead">先自己寫下想法，再用 AI 補強、深化。每欄下方的字數只是建議，不是規定。</p>
 
-      <!-- 動機 -->
-      <label class="field">1. 為什麼想做這個主題？（學習動機）</label>
+      <label class="field" for="motivation">1. 為什麼想做這個主題？（學習動機） <span class="req">*</span></label>
       <div class="hint"><b>可從這些角度想：</b>什麼經驗或好奇引發興趣？它跟你的生活／升學／未來有什麼關係？為什麼值得花一學期？</div>
-      <textarea id="motivation" data-field placeholder="寫下你選這個主題的理由與好奇心…"></textarea>
-      <div class="ai-tools">
-        <button class="btn ai sm" onclick="aiAssist('motivation')">🤖 AI 協助這欄</button>
-      </div>
+      <textarea id="motivation" data-field data-count="150-400" placeholder="寫下你選這個主題的理由與好奇心…"></textarea>
+      <div class="ai-tools"><button type="button" class="btn ai sm" data-action="ai" data-kind="motivation">🤖 AI 協助這欄</button></div>
       <div class="ai-result" id="ai-motivation"></div>
 
-      <!-- 資源 -->
-      <label class="field">2. 我需要什麼資源或工具？</label>
+      <label class="field" for="resources">2. 我需要什麼資源或工具？ <span class="req">*</span></label>
       <div class="hint"><b>可從這些角度想：</b>書籍／論文／網站／影片；軟體或設備；場地或人（老師、專家）；可能的花費與取得方式。</div>
-      <textarea id="resources" data-field placeholder="列出你需要的資料、工具、設備、人力…"></textarea>
-      <div class="ai-tools">
-        <button class="btn ai sm" onclick="aiAssist('resources')">🤖 AI 協助這欄</button>
-      </div>
+      <textarea id="resources" data-field data-count="80-400" placeholder="列出你需要的資料、工具、設備、人力…"></textarea>
+      <div class="ai-tools"><button type="button" class="btn ai sm" data-action="ai" data-kind="resources">🤖 AI 協助這欄</button></div>
       <div class="ai-result" id="ai-resources"></div>
 
-      <!-- 方法 -->
-      <label class="field">3. 我如何有效學習？哪些方法或技巧適合我？</label>
+      <label class="field" for="methods">3. 我如何有效學習？哪些方法或技巧適合我？ <span class="req">*</span></label>
       <div class="hint"><b>可從這些角度想：</b>具體步驟（先做什麼、再做什麼）；學習策略（筆記、實作、訪談、實驗）；如何檢查自己學會了。</div>
-      <textarea id="methods" data-field placeholder="描述你打算用的學習方法與流程…"></textarea>
-      <div class="ai-tools">
-        <button class="btn ai sm" onclick="aiAssist('methods')">🤖 AI 協助這欄</button>
-      </div>
+      <textarea id="methods" data-field data-count="150-500" placeholder="描述你打算用的學習方法與流程…"></textarea>
+      <div class="ai-tools"><button type="button" class="btn ai sm" data-action="ai" data-kind="methods">🤖 AI 協助這欄</button></div>
       <div class="ai-result" id="ai-methods"></div>
 
-      <!-- 目標 -->
-      <label class="field">4. 預期目標</label>
+      <label class="field" for="goals">4. 預期目標 <span class="req">*</span></label>
       <div class="hint"><b>讓目標可被檢核：</b>學期結束你會「產出什麼」「會做什麼」？盡量具體、可衡量。<b>範例：</b>「完成一份 1500 字探究報告與一張比較圖表」。</div>
-      <textarea id="goals" data-field placeholder="寫下具體、看得到成果的預期目標…"></textarea>
-      <div class="ai-tools">
-        <button class="btn ai sm" onclick="aiAssist('goals')">🤖 AI 協助這欄</button>
-      </div>
+      <textarea id="goals" data-field data-count="80-300" placeholder="寫下具體、看得到成果的預期目標…"></textarea>
+      <div class="ai-tools"><button type="button" class="btn ai sm" data-action="ai" data-kind="goals">🤖 AI 協助這欄</button></div>
       <div class="ai-result" id="ai-goals"></div>
 
       <hr style="border:none;border-top:1px solid var(--line);margin:20px 0;">
       <div class="actions">
-        <button class="btn ai" onclick="aiAssist('wholeplan')">✨ AI 統整全計畫：檢視四欄、給整體建議與潤稿</button>
-        <button class="btn ghost sm" onclick="webSearch()">🔎 上網查資料</button>
+        <button type="button" class="btn ai" data-action="ai" data-kind="wholeplan">✨ AI 統整全計畫：檢視四欄、給整體建議與潤稿</button>
+        <button type="button" class="btn ghost sm" data-action="websearch">🔎 上網查資料</button>
       </div>
       <div class="ai-result" id="ai-wholeplan"></div>
 
       <div class="navbtns">
-        <button class="btn sub" onclick="goStep('basic')">← 上一步</button>
-        <button class="btn" onclick="goStep('schedule')">下一步：預計進度 →</button>
+        <button type="button" class="btn sub" data-action="go" data-step="basic">← 上一步</button>
+        <button type="button" class="btn" data-action="go" data-step="schedule">下一步：預計進度 →</button>
       </div>
     </div>
   </section>
@@ -425,32 +352,20 @@
   <section class="panel" id="step-schedule">
     <div class="card">
       <h2>預計進度（週計畫）<span class="tag">對齊週次／反思檢核</span></h2>
-      <p class="lead">設定週數與起始日，產生週進度表。每週填「進度安排」與「自我反思檢核（A/B/C）」，最後兩週通常安排成果分享與反思。</p>
-
+      <p class="lead">選好週數就會自動產生週進度表；最後兩週通常安排成果分享與反思。每一週可以上移、下移、插入或刪除。</p>
       <div class="row">
-        <div>
-          <label class="field">總週數</label>
-          <select id="weeks" data-field>
-            <option value="">選擇週數</option>
-          </select>
-        </div>
-        <div>
-          <label class="field">起始日期（選填，自動帶入每週日期）</label>
-          <input type="date" id="startDate" data-field>
-        </div>
+        <div><label class="field" for="weeks">總週數 <span class="req">*</span></label><select id="weeks"><option value="">選擇週數</option></select></div>
+        <div><label class="field" for="startDate">起始日期（選填，自動帶入每週日期）</label><input type="date" id="startDate" data-field></div>
       </div>
       <div class="actions">
-        <button class="btn" onclick="buildScheduleTable()">產生 / 更新進度表</button>
-        <button class="btn ai sm" onclick="aiAssist('schedule')">🤖 AI 設計每週進度與檢核</button>
+        <button type="button" class="btn ai sm" data-action="ai" data-kind="schedule">🤖 AI 設計每週進度（可一鍵填入下表）</button>
       </div>
       <div class="ai-result" id="ai-schedule"></div>
-
-      <div class="hint" style="margin-top:12px;">檢核代碼：<b>A</b> 依計畫完成　<b>B</b> 修正後完成　<b>C</b> 部分完成。執行階段再回來逐週勾選即可。</div>
-      <div class="tablewrap" id="scheduleTableWrap"></div>
-
+      <div class="hint" style="margin-top:12px;">檢核代碼：<b>A</b> 依計畫完成　<b>B</b> 修正後完成　<b>C</b> 部分完成。執行階段再回來逐週選擇即可。</div>
+      <div class="weeks" id="scheduleList"></div>
       <div class="navbtns">
-        <button class="btn sub" onclick="goStep('plan')">← 上一步</button>
-        <button class="btn" onclick="goStep('effect')">下一步：學習成效 →</button>
+        <button type="button" class="btn sub" data-action="go" data-step="plan">← 上一步</button>
+        <button type="button" class="btn" data-action="go" data-step="effect">下一步：學習成效 →</button>
       </div>
     </div>
   </section>
@@ -459,27 +374,22 @@
   <section class="panel" id="step-effect">
     <div class="card">
       <h2>學習成效與回饋 <span class="tag">執行後紀錄</span></h2>
-      <p class="lead">開始執行後再來填這一頁：逐週紀錄成效並可附上成果照片，最後填家長回饋、成果發表形式與檢核統計。</p>
-
-      <label class="field">逐週學習成效紀錄</label>
-      <div class="actions">
-        <button class="btn sub sm" onclick="buildEffectTable()">依進度週數產生成效表</button>
-        <button class="btn ai sm" onclick="aiAssist('effect')">🤖 AI 協助潤飾成效紀錄</button>
-      </div>
+      <p class="lead">開始執行後再來填這一頁：每週對照「預計進度」寫下實際成效，可以附多張成果照片（會自動壓縮）。</p>
+      <div class="actions"><button type="button" class="btn ai sm" data-action="ai" data-kind="effect">🤖 AI 協助潤飾成效紀錄（可一鍵填回）</button></div>
       <div class="ai-result" id="ai-effect"></div>
-      <div class="tablewrap" id="effectTableWrap"></div>
+      <div class="weeks" id="effectList"></div>
 
-      <label class="field">自我檢核次數統計（依進度表自動計算）</label>
-      <div class="stat" id="abcStat">
+      <h3>自我檢核次數統計（依週進度自動計算）</h3>
+      <div class="stat">
         <div class="box"><div class="n" id="cntA">0</div><div class="t">A 依計畫完成</div></div>
         <div class="box"><div class="n" id="cntB">0</div><div class="t">B 修正後完成</div></div>
         <div class="box"><div class="n" id="cntC">0</div><div class="t">C 部分完成</div></div>
+        <div class="box"><div class="n" id="cntN">0</div><div class="t">尚未檢核</div></div>
       </div>
-      <button class="btn sub sm" onclick="updateAbcStat()">重新計算統計</button>
 
-      <label class="field" style="margin-top:20px;">家長給學生自主學習的回饋</label>
+      <label class="field" for="parentFeedback">家長給學生自主學習的回饋</label>
       <textarea id="parentFeedback" data-field placeholder="請家長閱讀計畫與成果後，寫下鼓勵與建議。"></textarea>
-      <label class="field">家長簽名（可由家長親簽於紙本，此處留紀錄）</label>
+      <label class="field" for="parentSign">家長簽名（可由家長親簽於紙本，此處留紀錄）</label>
       <input type="text" id="parentSign" data-field placeholder="家長姓名">
 
       <label class="field">成果發表形式（可複選）</label>
@@ -490,11 +400,11 @@
         <label><input type="checkbox" value="配合研方專題課堂發表（提供照片讓老師檢核）"><span>研方專題課堂發表</span></label>
         <label><input type="checkbox" value="其他方式"><span>其他方式</span></label>
       </div>
-      <input type="text" id="presentOther" data-field placeholder="若選「其他方式」，請敘明">
+      <div id="presentOtherWrap" hidden><input type="text" id="presentOther" data-field placeholder="請敘明其他發表方式"></div>
 
       <div class="navbtns">
-        <button class="btn sub" onclick="goStep('schedule')">← 上一步</button>
-        <button class="btn" onclick="goStep('export')">下一步：匯出列印 →</button>
+        <button type="button" class="btn sub" data-action="go" data-step="schedule">← 上一步</button>
+        <button type="button" class="btn" data-action="go" data-step="export">下一步：匯出列印 →</button>
       </div>
     </div>
   </section>
@@ -503,35 +413,123 @@
   <section class="panel" id="step-export">
     <div class="card">
       <h2>匯出與列印 <span class="tag">產生計畫書草稿</span></h2>
-      <p class="lead">把整份計畫整理成對齊官方計畫書格式的版面，可列印、存成 Word 檔，或複製純文字貼進計畫書模版。</p>
+      <p class="lead">把整份計畫整理成對齊學校計畫書格式的版面，可列印（另存 PDF）、存成 Word 檔，或複製純文字。</p>
+      <h3>完成度檢查</h3>
+      <ul class="checklist" id="checklist"></ul>
       <div class="actions">
-        <button class="btn" onclick="printPlan()">🖨️ 預覽 / 列印</button>
-        <button class="btn ghost" onclick="exportWord()">⬇️ 下載 Word（.doc）</button>
-        <button class="btn sub" onclick="copyAllText()">📋 複製全文純文字</button>
+        <button type="button" class="btn" data-action="print">🖨️ 預覽 / 列印</button>
+        <button type="button" class="btn ghost" data-action="word">⬇️ 下載 Word（.doc）</button>
+        <button type="button" class="btn sub" data-action="copytext">📋 複製全文純文字</button>
+        <button type="button" class="btn sub" data-action="export-one">💾 下載這份計畫的備份檔</button>
       </div>
-      <div class="hint" style="margin-top:14px;">小提醒：列印視窗中可選「另存為 PDF」。Word 檔可直接開啟編修後貼進學校的 odt 計畫書。</div>
-
+      <div class="hint" style="margin-top:14px;">列印視窗中可選「另存為 PDF」。Word 檔可直接開啟編修後貼進學校的計畫書。備份檔（.json）可以在別台電腦的「⚙️ 設定 → 匯入備份」還原，包含照片。</div>
       <div class="navbtns">
-        <button class="btn sub" onclick="goStep('effect')">← 上一步</button>
-        <button class="btn ok" onclick="saveData()">完成並儲存</button>
+        <button type="button" class="btn sub" data-action="go" data-step="effect">← 上一步</button>
+        <button type="button" class="btn ok" data-action="savenow">✓ 立即儲存</button>
       </div>
     </div>
   </section>
 
+  <!-- ========== 設定 ========== -->
+  <section class="panel" id="step-settings">
+    <div class="card">
+      <h2>💾 資料儲存</h2>
+      <p class="lead">內容會自動存在這台電腦的瀏覽器（IndexedDB）。再連接一個資料夾（建議選雲端硬碟裡的資料夾），就會同時存一份正本在那裡，清除瀏覽器資料或換電腦也不會遺失。</p>
+      <dl class="kv" id="storeInfo"></dl>
+      <div id="folderCard"></div>
+      <h3>備份檔匯出／匯入</h3>
+      <div class="actions">
+        <button type="button" class="btn sub sm" data-action="export-all">⬇️ 下載完整備份（全部計畫＋照片）</button>
+        <button type="button" class="btn sub sm" data-action="import">⬆️ 匯入備份檔</button>
+        <input type="file" id="importInput" accept=".json,application/json" hidden>
+      </div>
+      <p class="hint">也接受舊版（v2）「儲存」產生的資料。匯入前會自動留一個還原點。</p>
+      <h3>自動還原點</h3>
+      <p class="hint">每天自動留 1 份（保留 7 天）；刪除計畫、匯入、還原、載入資料夾前也會各留 1 份（保留 10 份）。</p>
+      <div id="snapshotList"></div>
+    </div>
+
+    <div class="card">
+      <h2>🤖 AI 輔助設定 <span class="pill" id="aiModePill">外部模式</span></h2>
+      <p class="lead">預設為<b>外部模式</b>：按「AI 協助」會複製量身打造的指令並開啟你選的 AI 網站，貼上送出後，可以把 AI 的回覆貼回本頁一鍵套用。若有 API 金鑰，可改用<b>即時模式</b>直接在頁面內生成。</p>
+      <label class="field">使用的 AI 服務</label>
+      <div class="choices">
+        <label><input type="radio" name="aiprov" value="chatgpt" checked><span>ChatGPT</span></label>
+        <label><input type="radio" name="aiprov" value="claude"><span>Claude</span></label>
+        <label><input type="radio" name="aiprov" value="gemini"><span>Gemini</span></label>
+      </div>
+      <label class="field" for="aiApiKey">即時模式 API 金鑰（選填，留空＝外部模式）</label>
+      <div class="hint">金鑰只儲存在這台電腦的瀏覽器，不會寫進資料夾或備份檔。學生建議留空、用外部模式即可。</div>
+      <input type="password" id="aiApiKey" placeholder="貼上 API Key" autocomplete="off">
+      <p class="hint" style="margin:6px 0 0">沒有金鑰？<a id="aiKeyLink" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">前往申請 API 金鑰 →</a></p>
+      <label class="field" for="aiModel">模型名稱（選填）</label>
+      <input type="text" id="aiModel" placeholder="留空使用預設">
+      <div class="actions"><button type="button" class="btn sub sm" data-action="ai-clearkey">清除金鑰</button></div>
+    </div>
+
+    <div class="card">
+      <h2>🎨 外觀</h2>
+      <label class="field">主題</label>
+      <div class="choices">
+        <label><input type="radio" name="theme" value="auto"><span>跟隨系統</span></label>
+        <label><input type="radio" name="theme" value="light"><span>淺色</span></label>
+        <label><input type="radio" name="theme" value="dark"><span>深色</span></label>
+      </div>
+      <label class="field">字級</label>
+      <div class="choices"><label><input type="checkbox" id="bigText"><span>大字模式</span></label></div>
+    </div>
+
+    <div class="card">
+      <h2>⚠️ 清除資料</h2>
+      <p class="lead">清除這台電腦瀏覽器內的全部計畫與照片（資料夾內的檔案不會被刪除）。清除前會先留一個還原點。</p>
+      <button type="button" class="btn danger sm" data-action="clear-all">清除這台電腦的全部資料</button>
+    </div>
+    <div class="navbtns"><button type="button" class="btn sub" data-action="go-back">← 回到填寫</button></div>
+  </section>
+
   <footer class="site">
-    <p style="font-size:.78rem;">資料僅儲存在你的瀏覽器本機，換裝置或清除瀏覽器資料會消失，重要內容請記得匯出保存。</p>
+    臺北市立麗山高中　林獻升老師　｜　<a href="mailto:frog@lssh.tp.edu.tw">frog@lssh.tp.edu.tw</a>　｜　v3.0
   </footer>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- 我的計畫 -->
+<dialog id="plansDlg" aria-labelledby="plansTitle">
+  <div class="dh" id="plansTitle">📂 我的計畫<span class="spacer"></span><button type="button" class="btn icon" data-action="dlg-close" aria-label="關閉">✕</button></div>
+  <div class="db">
+    <div id="plansList"></div>
+    <div class="actions" style="margin-bottom:14px"><button type="button" class="btn sm" data-action="plan-new">＋ 新的空白計畫</button></div>
+    <h3 style="margin:8px 0 6px;font-size:1rem">📘 從範例開始</h3>
+    <p class="hint">選一個類型的完整範例，會<b>另外建立一份新計畫</b>，不會覆蓋你正在寫的內容。</p>
+    <select id="sampleSelect">
+      <option value="">— 選擇自主學習計畫類型範例 —</option>
+      <option value="1">1. 延伸與預修課程（有機化學預修）</option>
+      <option value="2">2. 課外閱讀（自私的基因讀書計畫）</option>
+      <option value="3">3. 線上學習課程（機器學習 Python 自學）</option>
+      <option value="4">4. 能力檢定（APX 高中物理檢定培訓）</option>
+      <option value="5">5. 服務學習課程（偏鄉科普營隊實踐）</option>
+      <option value="6">6. 培訓課程（Arduino 物聯網創客培訓）</option>
+      <option value="7">7. 專題研討（生物資訊序列比對分析）</option>
+    </select>
+    <div class="actions">
+      <button type="button" class="btn sm" data-action="sample-create">用範例建立新計畫</button>
+      <button type="button" class="btn sub sm" data-action="sample-file" data-ext="docx">下載 Word 範例</button>
+      <button type="button" class="btn sub sm" data-action="sample-file" data-ext="pdf">開啟 PDF 範例</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 通用對話框 -->
+<dialog id="askDlg" aria-labelledby="askTitle">
+  <div class="dh" id="askTitle"></div>
+  <div class="db" id="askBody"></div>
+  <div class="df" id="askBtns"></div>
+</dialog>
+
+<dialog id="lightbox" aria-label="照片放大"><img id="lightImg" alt="成果照片"></dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastBtn" hidden></button></div>
 
 <script>
-/* ============ 基本工具 ============ */
-function $(id){return document.getElementById(id);}
-function toast(msg){
-  const t=$('toast');t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);
-}
 const BUILTIN_SAMPLES = {
   "1": {
     filename: "01_延伸與預修課程_有機化學預修.docx",
@@ -556,7 +554,7 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: [],
-      presentForm: ["網頁/簡報/影片", "成果報告書", "實作作品/模型"]
+      presentForm: ["併入期末學習成果作業展（提供作業讓老師檢核）", "配合研方專題課堂發表（提供照片讓老師檢核）"]
     },
     schedule: [
       { content: "IUPAC 命名與烷烴結構：研讀 Zumdahl 第22章烷烴與環烷烴的命名法，練習結構式畫法", check: "A" },
@@ -608,7 +606,7 @@ const BUILTIN_SAMPLES = {
       projectTopic: "經典科普《自私的基因》深度閱讀與演化行為分析",
       planName: "經典科普閱讀——從《自私的基因》探討演化生物學與行為學",
       detailTopic: "本自主學習計畫專注於經典科普書《自私的基因》的深度閱讀。計畫在18週內閱讀全書13章，探究基因中心演化觀點、利他行為的演化機制、囚徒困境與演化穩定策略（ESS），並結合生物學案例撰寫讀書報告。",
-      motivation: "我對動物行為與生態演化一直抱持高度好奇。傳統上我們認為物種演化是為了群體利益，但本書卻提出「個體只是基因的生存機器」這一震撼觀點。我希望透過這本書，學習從微觀 of 基因視角來重新審視宏觀的動物行為與社會文化演變。",
+      motivation: "我對動物行為與生態演化一直抱持高度好奇。傳統上我們認為物種演化是為了群體利益，但本書卻提出「個體只是基因的生存機器」這一震撼觀點。我希望透過這本書，學習從微觀的基因視角來重新審視宏觀的動物行為與社會文化演變。",
       resources: "1. 《自私的基因》（理查·道金斯著，30週年中文版）\n2. 線上學術資料庫（Google Scholar）查詢相關演化生物學論文\n3. 麗山高中生物科蔡老師的指導與提問解答",
       methods: "1. **規律閱讀**：每週固定閱讀 1-2 章，並摘錄關鍵概念與專有名詞。\n2. **概念繪製**：針對「利他行為」、「ESS 策略」等核心概念繪製心智圖。\n3. **個案研究**：尋找自然界中的動物行為（如工蜂奉獻、鳥類警報聲），嘗試用基因自私理論解釋。\n4. **撰寫論文**：將閱讀心得整理成一份 3000 字的讀書報告（小論文）。",
       goals: "1. 完成 13 章的深度讀書筆記，每章包含至少 300 字摘要與反思。\n2. 繪製 4 張核心概念心智圖（複製者、ESS 策略、利他行為、文化迷因）。\n3. 撰寫一篇以「自私基因視角下的動物利他行為分析」為題的讀書報告。",
@@ -622,7 +620,7 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: [],
-      presentForm: ["成果報告書", "網頁/簡報/影片"]
+      presentForm: ["撰寫閱讀心得/小論文參加比賽（提供作品讓老師檢核）", "配合班會等活動做心得分享（提供照片讓老師檢核）"]
     },
     schedule: [
       { content: "導讀與閱讀計畫準備：閱讀譯者序言與導言，設定每週閱讀目標，準備記錄工具", check: "A" },
@@ -680,6 +678,7 @@ const BUILTIN_SAMPLES = {
       goals: "1. 獲得 Coursera《Supervised Machine Learning》線上課程修課證明。\n2. 完成 5 個 Google Colab 實作 Notebook（線性回歸、梯度下降、多變數回歸、邏輯回歸、正規化）。\n3. 使用 Kaggle 真實數據集，建立一個預測準確率達 85% 以上的監督式學習模型。",
       parentFeedback: "線上學習非常考驗孩子的自律與時間規劃。看著孩子每週堅持聽英文授課、推導複雜的數學公式並敲代碼，覺得孩子長大也更成熟了。期盼孩子未來能在資訊領域持續鑽研。",
       parentSign: "李明華",
+      presentOther: "Coursera 修課證明與 Kaggle 預測成果",
       startDate: "2026-09-07"
     },
     radios: {
@@ -688,7 +687,7 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: [],
-      presentForm: ["檢定證照", "實作作品/模型", "網頁/簡報/影片"]
+      presentForm: ["併入期末學習成果作業展（提供作業讓老師檢核）", "其他方式"]
     },
     schedule: [
       { content: "課程環境準備與基礎 Python 複習：註冊 Coursera 課程，設定 Google Colab 開發環境", check: "A" },
@@ -696,7 +695,7 @@ const BUILTIN_SAMPLES = {
       { content: "代價函數 (Cost Function) 原理：學習均方誤差（MSE）代價函數與 3D 能量圖", check: "A" },
       { content: "梯度下降 (Gradient Descent) 演算法：學習梯度下降更新公式與偏微分的作用", check: "A" },
       { content: "梯度下降代碼實作：在 Google Colab 上以純 Python 實作梯度下降，訓練單變數模型", check: "B" },
-      { content: "多變數線性回歸與向量化：將模型延伸 to 多個特徵，學習向量化運算提升執行效率", check: "B" },
+      { content: "多變數線性回歸與向量化：將模型延伸到多個特徵，學習向量化運算提升執行效率", check: "B" },
       { content: "特徵縮放 (Feature Scaling) 的必要性：學習特徵縮放的方法（標準化、正規化）", check: "A" },
       { content: "學習率探討與多變數回歸實作：測試不同的學習率（0.001, 0.01, 0.1）並分析收斂", check: "A" },
       { content: "多項式回歸與非線性擬合：學習如何透過特徵工程建立多項式特徵", check: "A" },
@@ -706,7 +705,7 @@ const BUILTIN_SAMPLES = {
       { content: "邏輯回歸代碼實作：使用 Scikit-learn 中的 LogisticRegression 類別進行二分類訓練", check: "A" },
       { content: "過擬合 (Overfitting) 與欠擬合 (Underfitting)：探討高變異或高偏差問題", check: "A" },
       { content: "正規化 (Regularization) 消除過擬合：學習 L2 正規化（Ridge）與 L1 正規化（Lasso）", check: "B" },
-      { content: "Kaggle 真實數據實戰：房價預測（一）：下載 Kaggle 數據集，進行決策值填補與特徵處理", check: "B" },
+      { content: "Kaggle 真實數據實戰：房價預測（一）：下載 Kaggle 數據集，進行缺失值填補與特徵處理", check: "B" },
       { content: "Kaggle 真實數據實戰：房價預測（二）：使用回歸模型進行訓練，調整超參數，評估預測", check: "A" },
       { content: "線上課程證書取得與成果報告彙整：完成所有作業，下載修課證明，彙整成果報告", check: "A" }
     ],
@@ -739,13 +738,14 @@ const BUILTIN_SAMPLES = {
       seatNo: "08",
       projectTopic: "APX 高中物理中高級能力檢定自學與考照培訓",
       planName: "APX 全國高中物理能力檢定中高級培訓與歷屆試題實作",
-      detailTopic: "本計畫針對 APX 全國高中數理能力檢定（物理科中高級）進行系統化複習與解題練習。內容涵載高中物理必修與選修物理（力學、熱學、波動與光學），並透過近五年歷屆試題進行模擬測試與錯題分析。",
+      detailTopic: "本計畫針對 APX 全國高中數理能力檢定（物理科中高級）進行系統化複習與解題練習。內容涵蓋高中物理必修與選修物理（力學、熱學、波動與光學），並透過近五年歷屆試題進行模擬測試與錯題分析。",
       motivation: "我對物理探究非常熱愛，希望在高中階段挑戰難度高於學測的檢定考試，證明自己的數理邏輯思維與學術能力。這項自主學習計畫能強迫我提早預習選修物理，並透過歷屆試題檢視自己的學習成效。",
       resources: "1. 《大學物理學精要》、選修物理課本\n2. APX 官方網站歷屆試題（108-112年）\n3. 物理科指導老師張老師的週五錯題諮詢",
       methods: "1. **單元複習**：前 10 週依力學、電磁學等單元系統化研讀公式與物理觀念。\n2. **試題模擬**：第 11-15 週進行歷屆試題計時測驗，分析時間分配。\n3. **錯題分析**：整理錯題本，推導正確物理機制。\n4. **考前衝刺**：加強弱點單元，進行最終模擬。",
       goals: "1. 彙整出一本包含 5 大物理單元核心公式與觀念的「APX 物理複習秘笈」。\n2. 完成 5 年份 APX 歷屆試題，平均模擬分數達到 75 分以上（中高級優良標準）。\n3. 建立一本「物理錯題本」，詳細推導並釐清至少 50 題經典錯題的物理意義。",
       parentFeedback: "設定明確的檢定目標能激發學習動力。看到孩子面對難題不放棄，主動尋求資源並整理錯題，這種面對挑戰的毅力值得讚賞。祝福他順利通過檢定！",
       parentSign: "陳國棟",
+      presentOther: "APX 檢定成績證明與物理錯題本",
       startDate: "2026-09-07"
     },
     radios: {
@@ -754,7 +754,7 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: [],
-      presentForm: ["檢定證照", "成果報告書"]
+      presentForm: ["併入期末學習成果作業展（提供作業讓老師檢核）", "其他方式"]
     }
   },
   "5": {
@@ -780,7 +780,7 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: [],
-      presentForm: ["實作作品/模型", "成果報告書", "網頁/簡報/影片"]
+      presentForm: ["配合班會等活動做心得分享（提供照片讓老師檢核）", "併入期末學習成果作業展（提供作業讓老師檢核）"]
     }
   },
   "6": {
@@ -806,7 +806,7 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: [],
-      presentForm: ["實作作品/模型", "成果報告書"]
+      presentForm: ["併入期末學習成果作業展（提供作業讓老師檢核）", "配合研方專題課堂發表（提供照片讓老師檢核）"]
     }
   },
   "7": {
@@ -832,649 +832,1429 @@ const BUILTIN_SAMPLES = {
     },
     checks: {
       subjects: ["生物", "資訊"],
-      presentForm: ["成果報告書", "實作作品/模型", "網頁/簡報/影片"]
+      presentForm: ["撰寫閱讀心得/小論文參加比賽（提供作品讓老師檢核）", "配合研方專題課堂發表（提供照片讓老師檢核）"]
     }
   }
 };
 
-function loadBuiltinSample() {
-  const val = $('sampleSelect').value;
-  if (!val) {
-    toast("請先選擇一個計畫範例");
-    return;
-  }
-  const rawSample = BUILTIN_SAMPLES[val];
-  if (!rawSample) return;
+/* 範例週進度主題（範例 4–7 沒有逐週資料時使用） */
+const SAMPLE_TOPICS = {
+  '4': ["APX複習計畫與環境建立", "運動學核心公式與拋體運動", "牛頓運動定律與系統受力", "功與能量守恆定律", "動量守恆與碰撞問題", "圓周運動與簡諧運動", "萬有引力與克卜勒行星定律", "靜電學與庫倫定律", "直流電路與電磁學", "電流磁效應與電磁感應", "108年歷屆試題模擬與錯題檢討", "109年歷屆試題計時測驗", "110年歷屆試題模擬", "111年歷屆試題與難題挑戰", "112年歷屆試題綜合衝刺", "考前公式本與重點整理", "參加APX物理科中高級檢定考試", "成果報告書撰寫與反思"],
+  '5': ["準備工作與團隊分工", "國小自然教材分析與難度定位", "教案一設計：空氣的威力(空氣砲)", "教案二設計：神奇的非牛頓流體", "教案三設計：聲音拉拉手(傳音電話)", "一日科普營隊活動流程規劃", "教具製作與材料準備(空氣砲)", "教具製作與材料準備(聲音電話)", "營隊名牌與科學學習單排版印製", "校內第一次模擬試教與組員互評", "校內第二次模擬試教與秩序控制", "校內第三次模擬試教與安全演練", "整體流程總預演與物資清點", "前往偏鄉小學進行場地佈置", "正式舉辦一日科普營隊教學服務", "營隊問卷滿意度與學習單分析", "小組檢討會與成果報告撰寫", "校內自主學習發表會與成果分享"],
+  '6': ["電子電路與 IDE 開發環境", "類比輸出與呼吸燈控制", "數位輸入與按鍵消抖電路", "類比輸入與光敏電阻分壓電路", "DHT11 溫濕度讀取實作", "伺服馬達精確角度控制", "超音波感測器距離量測", "I2C LCD 顯示器文字輸出", "繼電器控制 12V 排風扇", "蜂鳴器警報聲調頻設計", "智慧溫室電路佈線與架構設計", "主控制程式編寫與邏輯整合", "系統功能聯調與吹風機加熱測試", "溫室外殼 3D 模型建立與尺寸測量", "雷射切割木底座與3D列印配件", "實體裝配與電路板銲接", "24小時系統穩定度測試與故障排除", "創客成果報告書撰寫與發表"],
+  '7': ["生物資訊簡介與NCBI資料庫搜尋", "DNA 序列與分子演化分子鐘基礎", "序列比對概念與點矩陣法視覺化", "動態規劃演算法與LCS問題探究", "Needleman-Wunsch 演算法公式推導", "N-W 演算法手動 6x6 得分矩陣計算", "Python實作N-W演算法初始化", "Python實作N-W演算法填表與回溯", "演算法正確性測試與速度對照", "Smith-Waterman區域比對演算法探究", "NCBI細胞色素c基因序列下載", "BioPython 套件自學與FASTA讀取", "ClustalW 多序列比對(MSA)執行", "演化距離矩陣計算與分析", "UPGMA演算法與系統發生樹繪製", "專題小論文撰寫：原理與方法", "專題小論文撰寫：結果與討論", "專題展示發表與自主學習反思"]
+};
 
-  const sample = JSON.parse(JSON.stringify(rawSample));
-  const wCount = 18;
-  sample.meta.weeks = wCount;
+/* =========================================================
+   常數與小工具
+   ========================================================= */
+const APP_ID = 'lssh-sdl-plan', APP_VERSION = '3.0';
+const IDB_NAME = 'lssh-sdl-plan', IDB_VERSION = 1;
+const LS_KEY = 'lssh.sdl.v3', UI_KEY = 'lssh.sdl.ui', DEVICE_KEY = 'lssh.sdl.device', AI_KEY = 'slp_aicfg';
+const FOLDER_FILE = '自主學習計畫資料.json', FOLDER_HIST = '自主學習計畫資料_歷史', FOLDER_PHOTOS = '照片';
+const FOLDER_HIST_RE = /^自主學習計畫資料_\d{8}\.json$/;
+const HIST_KEEP = 14, DAILY_SNAP_KEEP = 7, EVENT_SNAP_KEEP = 10;
+const STEPS = ['basic', 'plan', 'schedule', 'effect', 'export'];
+const SUBJECTS = ['國文', '英文', '數學', '物理', '化學', '生物', '地科', '資訊', '生科', '歷史', '地理', '公民', '其他'];
+const TYPE_NAMES = { '1': '延伸與預修課程', '2': '課外閱讀', '3': '線上學習課程', '4': '能力檢定', '5': '服務學習課程', '6': '培訓課程', '7': '專題研討' };
+const META_FIELDS = ['studentName', 'className', 'seatNo', 'projectTopic', 'members', 'planName', 'detailTopic', 'motivation', 'resources', 'methods', 'goals', 'startDate', 'parentFeedback', 'parentSign', 'presentOther'];
+const PRESENT_VALUES = ["併入期末學習成果作業展（提供作業讓老師檢核）", "撰寫閱讀心得/小論文參加比賽（提供作品讓老師檢核）", "配合班會等活動做心得分享（提供照片讓老師檢核）", "配合研方專題課堂發表（提供照片讓老師檢核）", "其他方式"];
+const MAX_WEEKS = 20;
 
-  if (!sample.schedule || sample.schedule.length === 0) {
-    sample.schedule = [];
-    for (let i = 1; i <= wCount; i++) {
-      let content = `第 ${i} 週進度：研讀計畫對應章節與核心觀念`;
-      if (val === '4') {
-        const topics = ["APX複習計畫與環境建立", "運動學核心公式與拋體運動", "牛頓運動定律與系統受力", "功與能量守恆定律", "動量守恆與碰撞問題", "圓周運動與簡諧運動", "萬有引力與克卜勒行星定律", "靜電學與庫倫定律", "直流電路與電磁學", "電流磁效應與電磁感應", "108年歷屆試題模擬與錯題檢討", "109年歷屆試題計時測驗", "110年歷屆試題模擬", "111年歷屆試題與難題挑戰", "112年歷屆試題綜合衝刺", "考前公式本與重點整理", "參加APX物理科中高級檢定考試", "成果報告書撰寫與反思"];
-        content = topics[i-1] || content;
-      } else if (val === '5') {
-        const topics = ["準備工作與團隊分工", "國小自然教材分析與難度定位", "教案一設計：空氣的威力(空氣砲)", "教案二設計：神奇的非牛頓流體", "教案三設計：聲音拉拉手(傳音電話)", "一日科普營隊活動流程規劃", "教具製作與材料準備(空氣砲)", "教具製作與材料準備(聲音電話)", "營隊名牌與科學學習單排版印製", "校內第一次模擬試教與組員互評", "校內第二次模擬試教與秩序控制", "校內第三次模擬試教與安全演練", "整體流程總預演與物資清點", "前往偏鄉小學進行場地佈置", "正式舉辦一日科普營隊教學服務", "營隊問卷滿意度與學習單分析", "小組檢討會與成果報告撰寫", "校內自主學習發表會與成果分享"];
-        content = topics[i-1] || content;
-      } else if (val === '6') {
-        const topics = ["電子電路與 IDE 開發環境", "類比輸出與呼吸燈控制", "數位輸入與按鍵消抖電路", "類比輸入與光敏電阻分壓電路", "DHT11 溫濕度讀取實作", "伺服馬達精確角度控制", "超音波感測器距離量測", "I2C LCD 顯示器文字輸出", "繼電器控制 12V 排風扇", "蜂鳴器警報聲調頻設計", "智慧溫室電路佈線與架構設計", "主控制程式編寫與邏輯整合", "系統功能聯調與吹風機加熱測試", "溫室外殼 3D 模型建立與尺寸測量", "雷射切割木底座與3D列印配件", "實體裝配與電路板銲接", "24小時系統穩定度測試與故障排除", "創客成果報告書撰寫與發表"];
-        content = topics[i-1] || content;
-      } else if (val === '7') {
-        const topics = ["生物資訊簡介與NCBI資料庫搜尋", "DNA 序列與分子演化分子鐘基礎", "序列比對概念與點矩陣法視覺化", "動態規劃演算法與LCS問題探究", "Needleman-Wunsch 演算法公式推導", "N-W 演算法手動 6x6 得分矩陣計算", "Python實作N-W演算法初始化", "Python實作N-W演算法填表與回溯", "演算法正確性測試與速度對照", "Smith-Waterman區域比對演算法探究", "NCBI細胞色素c基因序列下載", "BioPython 套件自學與FASTA讀取", "ClustalW 多序列比對(MSA)執行", "演化距離矩陣計算與分析", "UPGMA演算法與系統發生樹繪製", "專題小論文撰寫：原理與方法", "專題小論文撰寫：結果與討論", "專題展示發表與自主學習反思"];
-        content = topics[i-1] || content;
-      }
-      sample.schedule.push({
-        content: content,
-        check: (i % 5 === 0) ? "B" : "A",
-        teacher: ""
-      });
-    }
-  }
+const $ = id => document.getElementById(id);
+const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nl2br = s => esc(s).replace(/\n/g, '<br>');
+const clone = o => JSON.parse(JSON.stringify(o));
+const uid = p => p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const pad = n => String(n).padStart(2, '0');
+const dayStamp = (d = new Date()) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+const minuteStamp = (d = new Date()) => `${dayStamp(d)}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+const fmtTime = t => { if (!t) return '—'; const d = new Date(t); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const safeName = s => String(s || '').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40) || '未命名';
+const str = v => typeof v === 'string' ? v : (v == null ? '' : String(v));
+const charLen = s => Array.from(str(s).replace(/\s/g, '')).length;
 
-  if (!sample.effect || sample.effect.length === 0) {
-    sample.effect = [];
-    for (let i = 1; i <= wCount; i++) {
-      let sched_txt = sample.schedule[i-1].content.split("：").pop();
-      sample.effect.push({
-        effect: `實際進度：本週已順利完成「${sched_txt}」的研讀或實作。整理了核心公式與程式碼，解決了碰到的問題，反思並記錄於自學成果中。`,
-        img: ""
-      });
-    }
-  }
-
-  applyData(sample);
-  toast(`已載入「${sample.meta.planName || ''}」完整範例資料！`);
-  goStep('basic');
+/* ---------- 提示訊息（可附「復原」） ---------- */
+function toast(msg, type = '', action = null) {
+  const t = $('toast'), b = $('toastBtn');
+  $('toastMsg').textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  if (action) { b.hidden = false; b.textContent = action.label; b.onclick = () => { t.classList.remove('show'); action.fn(); }; }
+  else { b.hidden = true; b.onclick = null; }
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), action ? 7000 : 2600);
 }
 
-function downloadSampleWord() {
-  const val = $('sampleSelect').value;
-  if (!val) {
-    toast("請先選擇一個計畫範例");
-    return;
-  }
-  const sample = BUILTIN_SAMPLES[val];
-  if (!sample) return;
-
-  const filename = sample.filename;
-  const path = `範例檔案/自主學習/${filename}`;
-  const link = document.createElement("a");
-  link.href = path;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-const STEPS=['basic','plan','schedule','effect','export'];
-function goStep(step){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  $('step-'+step).classList.add('active');
-  document.querySelectorAll('#stepNav button').forEach(b=>b.classList.toggle('active',b.dataset.step===step));
-  window.scrollTo({top:0,behavior:'smooth'});
-  updateProgress();
-}
-
-/* ============ 進度條 ============ */
-function updateProgress(){
-  const keyFields=['studentName','projectTopic','planName','motivation','resources','methods','goals'];
-  let filled=0;
-  keyFields.forEach(f=>{if(($(f).value||'').trim())filled++;});
-  if(getRadio('ptype'))filled++;
-  if(getRadio('impl'))filled++;
-  if($('weeks').value)filled++;
-  const total=keyFields.length+3;
-  const pct=Math.round(filled/total*100);
-  $('progFill').style.width=pct+'%';
-  $('progPct').textContent=pct+'%';
-  // step done marks
-  document.querySelectorAll('#stepNav button').forEach(b=>{
-    const s=b.dataset.step;let done=false;
-    if(s==='basic')done=($('studentName').value&&$('projectTopic').value&&getRadio('ptype')&&getRadio('impl'));
-    if(s==='plan')done=($('motivation').value&&$('resources').value&&$('methods').value&&$('goals').value);
-    if(s==='schedule')done=!!$('weeks').value;
-    if(s==='effect')done=!!($('parentFeedback').value||document.querySelector('#presentForm input:checked'));
-    b.classList.toggle('done',!!done && !b.classList.contains('active'));
-  });
-}
-
-/* ============ radio / checkbox helpers ============ */
-function getRadio(name){const el=document.querySelector(`input[name="${name}"]:checked`);return el?el.value:'';}
-function setRadio(name,val){document.querySelectorAll(`input[name="${name}"]`).forEach(r=>r.checked=(r.value===val));}
-function getChecks(containerId){return Array.from(document.querySelectorAll(`#${containerId} input:checked`)).map(c=>c.value);}
-function setChecks(containerId,arr){
-  arr=arr||[];
-  document.querySelectorAll(`#${containerId} input`).forEach(c=>c.checked=arr.includes(c.value));
-}
-
-/* ============ 初始化週數選項 ============ */
-(function initWeeks(){
-  const sel=$('weeks');
-  for(let i=1;i<=20;i++){const o=document.createElement('option');o.value=i;o.textContent=i+' 週';sel.appendChild(o);}
-})();
-
-/* ============ 類型 / 實施方式 連動 ============ */
-document.querySelectorAll('input[name="ptype"]').forEach(r=>{
-  r.addEventListener('change',()=>{$('subjectWrap').style.display=(getRadio('ptype')==='7')?'block':'none';});
-});
-document.querySelectorAll('input[name="impl"]').forEach(r=>{
-  r.addEventListener('change',()=>{$('membersWrap').style.display=(getRadio('impl')==='小組學習')?'block':'none';});
-});
-document.addEventListener('input',updateProgress);
-document.addEventListener('change',updateProgress);
-
-/* ============ 進度表 ============ */
-function weekDate(start,idx){
-  if(!start)return '';
-  const d=new Date(start);d.setDate(d.getDate()+idx*7);
-  return (d.getMonth()+1)+'/'+d.getDate();
-}
-function buildScheduleTable(preserve){
-  const weeks=parseInt($('weeks').value);
-  if(!weeks){toast('請先選擇週數');return;}
-  const start=$('startDate').value;
-  // preserve existing values
-  const old={};
-  if(preserve){document.querySelectorAll('#scheduleTableWrap [data-srow]').forEach(el=>{old[el.dataset.srow]=el.value;});}
-  let html='<table><thead><tr><th style="width:74px;">週次</th><th style="width:56px;">日期</th><th>進度內容（安排）</th><th style="width:120px;">自我反思檢核</th><th style="width:96px;">指導老師簽名</th></tr></thead><tbody>';
-  for(let i=1;i<=weeks;i++){
-    const milestone = (i===weeks-1)?' milestone':(i===weeks?' milestone':'');
-    let placeholder='';
-    if(i===weeks-1)placeholder='自主學習成果分享';
-    else if(i===weeks)placeholder='自主學習成果反思';
-    html+=`<tr class="${milestone.trim()}">
-      <td class="center"><span class="wk">第${i}週</span></td>
-      <td class="center dt">${weekDate(start,i-1)}</td>
-      <td><textarea data-srow="content${i}" placeholder="${placeholder||'本週要完成…'}"></textarea></td>
-      <td class="center"><select data-srow="check${i}" onchange="updateAbcStat()">
-        <option value="">—</option><option value="A">A 依計畫完成</option><option value="B">B 修正後完成</option><option value="C">C 部分完成</option>
-      </select></td>
-      <td><input type="text" data-srow="teacher${i}"></td>
-    </tr>`;
-  }
-  html+='</tbody></table>';
-  $('scheduleTableWrap').innerHTML=html;
-  if(preserve){document.querySelectorAll('#scheduleTableWrap [data-srow]').forEach(el=>{if(old[el.dataset.srow]!==undefined)el.value=old[el.dataset.srow];});}
-  updateAbcStat();
-}
-$('startDate').addEventListener('change',()=>{if($('scheduleTableWrap').innerHTML)buildScheduleTable(true);});
-
-function collectSchedule(){
-  const weeks=parseInt($('weeks').value)||0;const rows=[];
-  for(let i=1;i<=weeks;i++){
-    const g=k=>{const el=document.querySelector(`[data-srow="${k}${i}"]`);return el?el.value:'';};
-    rows.push({content:g('content'),check:g('check'),teacher:g('teacher')});
-  }
-  return rows;
-}
-function updateAbcStat(){
-  let a=0,b=0,c=0;
-  document.querySelectorAll('#scheduleTableWrap select[data-srow^="check"]').forEach(s=>{
-    if(s.value==='A')a++;else if(s.value==='B')b++;else if(s.value==='C')c++;
-  });
-  $('cntA').textContent=a;$('cntB').textContent=b;$('cntC').textContent=c;
-}
-
-/* ============ 成效表 ============ */
-function buildEffectTable(){
-  const weeks=parseInt($('weeks').value);
-  if(!weeks){toast('請先到「預計進度」選擇週數');return;}
-  const old={};
-  document.querySelectorAll('#effectTableWrap [data-erow]').forEach(el=>{old[el.dataset.erow]=el.value;});
-  const oldImg={};
-  document.querySelectorAll('#effectTableWrap img[data-eimg]').forEach(im=>{if(im.src&&im.style.display!=='none')oldImg[im.dataset.eimg]=im.src;});
-  let html='<table><thead><tr><th style="width:64px;">週次</th><th>學習成效</th><th style="width:150px;">成果影像</th></tr></thead><tbody>';
-  for(let i=1;i<=weeks;i++){
-    html+=`<tr>
-      <td class="center"><span class="wk">第${i}週</span></td>
-      <td><textarea data-erow="effect${i}" placeholder="這週實際學到、做到什麼？遇到什麼問題？"></textarea></td>
-      <td class="center effect-img">
-        <button class="btn sub sm" onclick="document.getElementById('upl${i}').click()">📷 上傳</button>
-        <button class="btn danger sm" onclick="delImg(${i})">🗑</button>
-        <input type="file" id="upl${i}" accept="image/*" style="display:none" onchange="onImg(${i})">
-        <img data-eimg="img${i}" id="img${i}">
-      </td>
-    </tr>`;
-  }
-  html+='</tbody></table>';
-  $('effectTableWrap').innerHTML=html;
-  document.querySelectorAll('#effectTableWrap [data-erow]').forEach(el=>{if(old[el.dataset.erow]!==undefined)el.value=old[el.dataset.erow];});
-  Object.keys(oldImg).forEach(k=>{const im=document.querySelector(`img[data-eimg="${k}"]`);if(im){im.src=oldImg[k];im.style.display='block';}});
-}
-function onImg(i){
-  const f=$('upl'+i).files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{const im=$('img'+i);im.src=e.target.result;im.style.display='block';};
-  r.readAsDataURL(f);
-}
-function delImg(i){const im=$('img'+i);im.src='';im.style.display='none';$('upl'+i).value='';}
-function collectEffect(){
-  const weeks=parseInt($('weeks').value)||0;const rows=[];
-  for(let i=1;i<=weeks;i++){
-    const t=document.querySelector(`[data-erow="effect${i}"]`);
-    const im=document.querySelector(`img[data-eimg="img${i}"]`);
-    rows.push({effect:t?t.value:'',img:(im&&im.style.display!=='none')?im.src:''});
-  }
-  return rows;
-}
-
-/* ============ 儲存 / 讀取 ============ */
-function gatherData(){
-  const d={meta:{},checks:{},radios:{}};
-  document.querySelectorAll('[data-field]').forEach(el=>{d.meta[el.id]=el.value;});
-  d.radios.ptype=getRadio('ptype');
-  d.radios.impl=getRadio('impl');
-  d.checks.subjects=getChecks('subjects');
-  d.checks.presentForm=getChecks('presentForm');
-  d.schedule=collectSchedule();
-  d.effect=collectEffect();
-  return d;
-}
-function applyData(d){
-  if(!d)return;
-  Object.keys(d.meta||{}).forEach(id=>{const el=$(id);if(el)el.value=d.meta[id];});
-  setRadio('ptype',(d.radios||{}).ptype||'');
-  setRadio('impl',(d.radios||{}).impl||'');
-  setChecks('subjects',(d.checks||{}).subjects);
-  setChecks('presentForm',(d.checks||{}).presentForm);
-  $('subjectWrap').style.display=(getRadio('ptype')==='7')?'block':'none';
-  $('membersWrap').style.display=(getRadio('impl')==='小組學習')?'block':'none';
-  if($('weeks').value){
-    buildScheduleTable(false);
-    (d.schedule||[]).forEach((r,idx)=>{
-      const i=idx+1;
-      const set=(k,v)=>{const el=document.querySelector(`[data-srow="${k}${i}"]`);if(el)el.value=v||'';};
-      set('content',r.content);set('check',r.check);set('teacher',r.teacher);
+/* ---------- 對話框 ---------- */
+function askChoice(title, html, buttons) {
+  return new Promise(resolve => {
+    const d = $('askDlg');
+    $('askTitle').textContent = title;
+    $('askBody').innerHTML = html;
+    const box = $('askBtns'); box.innerHTML = '';
+    let done = false;
+    const finish = v => { if (done) return; done = true; d.close(); resolve(v); };
+    buttons.forEach(b => {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'btn sm ' + (b.style === 'danger' ? 'danger' : b.style === 'plain' ? 'sub' : '');
+      el.textContent = b.label; el.onclick = () => finish(b.value);
+      box.appendChild(el);
     });
-    updateAbcStat();
-    if((d.effect||[]).some(e=>e.effect||e.img) || $('effectTableWrap').innerHTML){
-      buildEffectTable();
-      (d.effect||[]).forEach((r,idx)=>{
-        const i=idx+1;
-        const t=document.querySelector(`[data-erow="effect${i}"]`);if(t)t.value=r.effect||'';
-        if(r.img){const im=document.querySelector(`img[data-eimg="img${i}"]`);if(im){im.src=r.img;im.style.display='block';}}
-      });
-    }
+    d.onclose = () => finish(null);
+    d.showModal();
+  });
+}
+const confirmBox = async (title, html, ok = '確定', style = 'primary') => (await askChoice(title, html, [{ value: 'cancel', label: '取消', style: 'plain' }, { value: 'ok', label: ok, style }])) === 'ok';
+
+/* ---------- 提示列 ---------- */
+function showBanner(html, actions = []) {
+  $('bannerMsg').innerHTML = html;
+  const box = $('bannerBtns'); box.innerHTML = '';
+  actions.forEach(a => { const b = document.createElement('button'); b.type = 'button'; b.className = 'btn sm'; b.textContent = a.label; b.onclick = a.fn; box.appendChild(b); });
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'btn sub sm'; x.textContent = '稍後'; x.onclick = hideBanner; box.appendChild(x);
+  $('banner').classList.add('show');
+}
+function hideBanner() { $('banner').classList.remove('show'); }
+
+function downloadBlob(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast('已複製'); return true; }
+  catch {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch {}
+    ta.remove(); toast(ok ? '已複製' : '複製失敗，請手動選取文字', ok ? '' : 'error'); return ok;
   }
+}
+
+/* =========================================================
+   資料模型
+   ========================================================= */
+let state = { plans: [], currentId: null };
+let prefs = { theme: 'auto', big: false, step: 'basic', welcomeHidden: false };
+let ui = { step: 'basic', lastStep: 'basic' };
+
+const blankWeek = () => ({ content: '', check: '', teacher: '', effect: '', photos: [] });
+function newPlan() {
+  const now = Date.now();
+  return { id: uid('plan'), createdAt: now, updatedAt: now, meta: {}, radios: { ptype: '', impl: '' }, checks: { subjects: [], presentForm: [] }, weeks: [] };
+}
+const cur = () => state.plans.find(p => p.id === state.currentId) || null;
+
+function normalizePlan(p) {
+  if (!p || typeof p !== 'object') return null;
+  const out = newPlan();
+  if (typeof p.id === 'string' && p.id) out.id = p.id;
+  out.createdAt = +p.createdAt || out.createdAt;
+  out.updatedAt = +p.updatedAt || out.createdAt;
+  const m = p.meta && typeof p.meta === 'object' ? p.meta : {};
+  META_FIELDS.forEach(k => { if (m[k] != null) out.meta[k] = str(m[k]); });
+  const r = p.radios || {};
+  out.radios.ptype = TYPE_NAMES[r.ptype] ? str(r.ptype) : '';
+  out.radios.impl = ['個人學習', '小組學習'].includes(r.impl) ? r.impl : '';
+  const c = p.checks || {};
+  out.checks.subjects = Array.isArray(c.subjects) ? c.subjects.filter(s => SUBJECTS.includes(s)) : [];
+  out.checks.presentForm = Array.isArray(c.presentForm) ? c.presentForm.filter(s => PRESENT_VALUES.includes(s)) : [];
+  out.weeks = (Array.isArray(p.weeks) ? p.weeks : []).slice(0, MAX_WEEKS).map(w => ({
+    content: str(w?.content), check: ['A', 'B', 'C'].includes(w?.check) ? w.check : '', teacher: str(w?.teacher), effect: str(w?.effect),
+    photos: Array.isArray(w?.photos) ? w.photos.filter(x => typeof x === 'string') : []
+  }));
+  return out;
+}
+function normalizeData(d) {
+  if (!d || typeof d !== 'object' || !Array.isArray(d.plans)) return null;
+  const plans = d.plans.map(normalizePlan).filter(Boolean);
+  const ids = new Set(); plans.forEach(p => { if (ids.has(p.id)) p.id = uid('plan'); ids.add(p.id); });
+  const currentId = plans.some(p => p.id === d.currentId) ? d.currentId : (plans[0]?.id || null);
+  return { plans, currentId, savedAt: +d.savedAt || 0 };
+}
+/* 舊版（v2）單份資料 → v3 計畫（照片 dataURL 暫放 _img，由呼叫端轉存） */
+function fromV2(d) {
+  if (!d || typeof d !== 'object' || !d.meta) return null;
+  const p = newPlan();
+  META_FIELDS.forEach(k => { if (d.meta[k] != null) p.meta[k] = str(d.meta[k]); });
+  p.radios = { ptype: str(d.radios?.ptype), impl: str(d.radios?.impl) };
+  p.checks = { subjects: d.checks?.subjects || [], presentForm: d.checks?.presentForm || [] };
+  const s = Array.isArray(d.schedule) ? d.schedule : [], e = Array.isArray(d.effect) ? d.effect : [];
+  const n = Math.min(MAX_WEEKS, parseInt(d.meta.weeks) || Math.max(s.length, e.length));
+  for (let i = 0; i < n; i++) {
+    p.weeks.push({ content: str(s[i]?.content), check: str(s[i]?.check), teacher: str(s[i]?.teacher), effect: str(e[i]?.effect), photos: [], _img: (typeof e[i]?.img === 'string' && e[i].img.startsWith('data:image')) ? e[i].img : '' });
+  }
+  return p;
+}
+async function absorbV2Images(p) {
+  for (const w of p.weeks) {
+    if (w._img) { try { const id = await storePhoto(await dataURLToBlob(w._img)); w.photos.push(id); } catch (e) { console.warn('舊照片轉換失敗', e); } }
+    delete w._img;
+  }
+  return p;
+}
+function isEmptyPlan(p) {
+  if (!p) return true;
+  return !Object.values(p.meta).some(v => str(v).trim()) && !p.radios.ptype && !p.radios.impl && !p.weeks.length;
+}
+const planTitle = p => (p?.meta.planName || p?.meta.projectTopic || '').trim() || '（尚未命名的計畫）';
+const countsText = d => { const n = normalizeData(d); if (!n) return '無法讀取'; return `${n.plans.length} 份計畫（${n.plans.map(p => planTitle(p).slice(0, 12)).join('、') || '—'}）`; };
+
+/* =========================================================
+   進度計算
+   ========================================================= */
+function stepStatus(p) {
+  const m = p.meta, r = p.radios, has = k => !!str(m[k]).trim();
+  const basicReq = [has('studentName'), has('projectTopic'), !!r.ptype, !!r.impl, has('planName')];
+  if (r.impl === '小組學習') basicReq.push(has('members'));
+  const planReq = ['motivation', 'resources', 'methods', 'goals'].map(has);
+  const W = p.weeks.length, contents = p.weeks.filter(w => w.content.trim()).length;
+  const effects = p.weeks.filter(w => w.effect.trim() || w.photos.length).length;
+  const checks = p.weeks.filter(w => w.check).length;
+  const sum = a => a.filter(Boolean).length;
+  return {
+    basic: { n: sum(basicReq), t: basicReq.length },
+    plan: { n: sum(planReq), t: planReq.length },
+    schedule: { n: contents, t: W },
+    effect: { n: effects, t: W, checks },
+    pct: Math.round((sum(basicReq) + sum(planReq) + (W ? 1 : 0) + (W ? contents / W : 0) * 2) / (basicReq.length + planReq.length + 3) * 100)
+  };
+}
+function updateProgress() {
+  const p = cur(); if (!p) return;
+  const s = stepStatus(p);
+  $('progFill').style.width = s.pct + '%';
+  $('progLbl').textContent = `計畫書完成 ${s.pct}%` + (s.effect.t ? `　｜　執行紀錄 ${s.effect.n}/${s.effect.t} 週、已檢核 ${s.effect.checks} 週` : '');
+  const set = (k, txt, state) => {
+    const b = document.querySelector(`#stepNav [data-step="${k}"]`); $('sub-' + k).textContent = txt;
+    b.classList.toggle('done', state === 'done'); b.classList.toggle('part', state === 'part');
+  };
+  const st = o => o.t && o.n >= o.t ? 'done' : (o.n ? 'part' : '');
+  set('basic', `${s.basic.n}/${s.basic.t}`, st(s.basic));
+  set('plan', `${s.plan.n}/${s.plan.t}`, st(s.plan));
+  set('schedule', s.schedule.t ? `${s.schedule.n}/${s.schedule.t} 週` : '未設週數', st(s.schedule));
+  set('effect', s.effect.t ? `${s.effect.n}/${s.effect.t} 週` : '—', st(s.effect));
+  set('export', s.pct + '%', s.pct >= 100 ? 'done' : '');
+}
+
+/* =========================================================
+   畫面：表單
+   ========================================================= */
+function setRadio(name, val) { qsa(`input[name="${name}"]`).forEach(r => r.checked = (r.value === val)); }
+function getRadio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+function setChecks(id, arr) { qsa(`#${id} input`).forEach(c => c.checked = (arr || []).includes(c.value)); }
+function getChecks(id) { return qsa(`#${id} input:checked`).map(c => c.value); }
+
+function fillForm() {
+  const p = cur(); if (!p) return;
+  qsa('[data-field]').forEach(el => { el.value = p.meta[el.id] || ''; });
+  setRadio('ptype', p.radios.ptype); setRadio('impl', p.radios.impl);
+  setChecks('subjects', p.checks.subjects); setChecks('presentForm', p.checks.presentForm);
+  $('weeks').value = p.weeks.length ? String(p.weeks.length) : '';
+  syncConditional();
+  qsa('textarea[data-count]').forEach(updateCount);
+  qsa('.ai-result').forEach(b => { b.classList.remove('show'); b.innerHTML = ''; });
+  renderHeader(); renderWelcome();
+  renderStep(ui.step);
   updateProgress();
 }
-function saveData(){
-  const name=($('studentName').value||'').trim();
-  if(!name){toast('請先填寫申請人姓名');goStep('basic');return;}
-  try{
-    localStorage.setItem('slp_'+name,JSON.stringify(gatherData()));
-    refreshStudentList();
-    toast('已儲存：'+name);
-  }catch(e){
-    toast(e.name==='QuotaExceededError'?'儲存空間已滿，請刪除舊資料或減少照片':'儲存失敗');
-  }
+function syncConditional() {
+  const p = cur(); if (!p) return;
+  $('subjectWrap').hidden = p.radios.ptype !== '7';
+  $('membersWrap').hidden = p.radios.impl !== '小組學習';
+  $('presentOtherWrap').hidden = !p.checks.presentForm.includes('其他方式');
 }
-function loadData(){
-  const name=$('savedStudents').value;
-  if(!name){toast('請先選擇學生');return;}
-  try{
-    const raw=localStorage.getItem('slp_'+name);
-    applyData(JSON.parse(raw));
-    toast('已讀取：'+name);
-  }catch(e){toast('讀取失敗，資料可能損壞');}
+function renderHeader() {
+  const p = cur();
+  const name = p ? [p.meta.studentName, planTitle(p)].filter(Boolean).join('｜') : '—';
+  $('curName').textContent = name;
 }
-function deleteData(){
-  const name=$('savedStudents').value;
-  if(!name){toast('請先選擇學生');return;}
-  if(!confirm('確定刪除「'+name+'」的資料？')) return;
-  localStorage.removeItem('slp_'+name);refreshStudentList();toast('已刪除');
+function renderWelcome() { $('welcome').hidden = prefs.welcomeHidden || !isEmptyPlan(cur()); }
+function updateCount(ta) {
+  let el = ta.nextElementSibling;
+  if (!el || !el.classList.contains('count')) { el = document.createElement('div'); el.className = 'count'; ta.after(el); }
+  const [lo, hi] = ta.dataset.count.split('-').map(Number), n = charLen(ta.value);
+  el.textContent = `${n} 字（建議 ${lo}–${hi} 字）`;
+  el.className = 'count ' + (n === 0 ? '' : n < lo ? 'low' : n <= hi * 1.5 ? 'ok' : 'low');
 }
-function clearForm(){
-  if(!confirm('清空目前表單內容？（不會刪除已儲存的學生）'))return;
-  document.querySelectorAll('[data-field]').forEach(el=>el.value='');
-  document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el=>el.checked=false);
-  $('scheduleTableWrap').innerHTML='';$('effectTableWrap').innerHTML='';
-  $('subjectWrap').style.display='none';$('membersWrap').style.display='none';
-  updateAbcStat();updateProgress();toast('已清空表單');
+
+/* ---------- 週進度 ---------- */
+function weekDate(start, idx) {
+  if (!start) return '';
+  const [y, m, d] = start.split('-').map(Number); if (!y) return '';
+  const dt = new Date(y, m - 1, d + idx * 7);
+  return `${dt.getMonth() + 1}/${dt.getDate()}`;
 }
-function refreshStudentList(){
-  const sel=$('savedStudents');const cur=sel.value;
-  sel.innerHTML='<option value="">— 選擇已儲存的學生 —</option>';
-  for(let i=0;i<localStorage.length;i++){
-    const k=localStorage.key(i);
-    if(k.startsWith('slp_')){
-      const n=k.slice(4);const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o);
+function milestonePH(i, W) { return i === W - 2 ? '自主學習成果分享' : i === W - 1 ? '自主學習成果反思' : '本週要完成…'; }
+function renderSchedule() {
+  const p = cur(), box = $('scheduleList'); if (!p) return;
+  const W = p.weeks.length, start = p.meta.startDate;
+  if (!W) { box.innerHTML = '<p class="hint">請先在上方選擇「總週數」。</p>'; return; }
+  box.innerHTML = p.weeks.map((w, i) => `
+    <div class="wrow${i >= W - 2 ? ' milestone' : ''}" data-row="${i}">
+      <div class="head"><div class="wk">第${i + 1}週</div><div class="dt">${esc(weekDate(start, i))}</div></div>
+      <div>
+        <label class="sr" for="wc${i}">第${i + 1}週進度內容</label>
+        <textarea id="wc${i}" data-w="${i}" data-k="content" placeholder="${esc(milestonePH(i, W))}">${esc(w.content)}</textarea>
+        <div class="ops">
+          <button type="button" class="btn icon" data-action="w-up" data-i="${i}" ${i === 0 ? 'disabled' : ''} aria-label="第${i + 1}週上移">↑</button>
+          <button type="button" class="btn icon" data-action="w-down" data-i="${i}" ${i === W - 1 ? 'disabled' : ''} aria-label="第${i + 1}週下移">↓</button>
+          <button type="button" class="btn icon" data-action="w-ins" data-i="${i}" ${W >= MAX_WEEKS ? 'disabled' : ''} title="在下面插入一週">＋插入</button>
+          <button type="button" class="btn icon" data-action="w-del" data-i="${i}" title="刪除這一週">🗑 刪除</button>
+        </div>
+      </div>
+      <div class="side">
+        <select data-w="${i}" data-k="check" aria-label="第${i + 1}週自我反思檢核">
+          <option value="">檢核：—</option>
+          <option value="A" ${w.check === 'A' ? 'selected' : ''}>A 依計畫完成</option>
+          <option value="B" ${w.check === 'B' ? 'selected' : ''}>B 修正後完成</option>
+          <option value="C" ${w.check === 'C' ? 'selected' : ''}>C 部分完成</option>
+        </select>
+        <input type="text" data-w="${i}" data-k="teacher" value="${esc(w.teacher)}" placeholder="指導老師簽名" aria-label="第${i + 1}週指導老師簽名">
+      </div>
+    </div>`).join('');
+}
+function renderEffects() {
+  const p = cur(), box = $('effectList'); if (!p) return;
+  const W = p.weeks.length, start = p.meta.startDate;
+  if (!W) { box.innerHTML = '<p class="hint">請先到「3 預計進度」設定週數。</p>'; renderStats(); return; }
+  box.innerHTML = p.weeks.map((w, i) => `
+    <div class="ecard" data-row="${i}">
+      <div class="eh"><b>第${i + 1}週</b><span class="dt" style="font-size:.78rem;color:var(--muted)">${esc(weekDate(start, i))}</span><span class="abc ${w.check}">${w.check ? '檢核 ' + w.check : '未檢核'}</span></div>
+      <div class="plan">預計：${w.content.trim() ? esc(w.content) : '（尚未填寫預計進度）'}</div>
+      <label class="sr" for="we${i}">第${i + 1}週學習成效</label>
+      <textarea id="we${i}" data-w="${i}" data-k="effect" placeholder="這週實際學到、做到什麼？遇到什麼問題？怎麼解決？">${esc(w.effect)}</textarea>
+      <div class="photos" id="ph${i}">
+        ${w.photos.map(id => `<div class="ph" data-photo="${esc(id)}"><img alt="第${i + 1}週成果照片" data-action="zoom" data-id="${esc(id)}"><button type="button" data-action="ph-del" data-i="${i}" data-id="${esc(id)}" aria-label="刪除這張照片">✕</button></div>`).join('')}
+        <button type="button" class="btn sub sm" data-action="ph-add" data-i="${i}">📷 加照片</button>
+      </div>
+    </div>`).join('');
+  qsa('#effectList img[data-id]').forEach(loadThumb);
+  renderStats();
+}
+function renderStats() {
+  const p = cur(); if (!p) return;
+  const c = { A: 0, B: 0, C: 0, N: 0 }; p.weeks.forEach(w => c[w.check || 'N']++);
+  ['A', 'B', 'C', 'N'].forEach(k => $('cnt' + k).textContent = c[k]);
+}
+function renderChecklist() {
+  const p = cur(); if (!p) return;
+  const m = p.meta, has = k => !!str(m[k]).trim(), s = stepStatus(p);
+  const items = [
+    [has('studentName'), '申請人姓名', 'basic'], [has('projectTopic'), '計畫主題', 'basic'], [!!p.radios.ptype, '計畫類型', 'basic'],
+    [!!p.radios.impl, '實施方式', 'basic'], [has('planName'), '計畫名稱', 'basic'],
+    [has('motivation'), '學習動機', 'plan'], [has('resources'), '資源或工具', 'plan'], [has('methods'), '學習方法', 'plan'], [has('goals'), '預期目標', 'plan'],
+    [s.schedule.t > 0 && s.schedule.n === s.schedule.t, s.schedule.t ? `週進度（已填 ${s.schedule.n}/${s.schedule.t} 週）` : '週進度（尚未設定週數）', 'schedule'],
+    [s.effect.t > 0 && s.effect.n === s.effect.t, s.effect.t ? `學習成效（已填 ${s.effect.n}/${s.effect.t} 週，執行後再填）` : '學習成效（執行後再填）', 'effect', true]
+  ];
+  if (p.radios.impl === '小組學習') items.splice(4, 0, [has('members'), '小組成員', 'basic']);
+  $('checklist').innerHTML = items.map(([ok, label, step, optional]) =>
+    `<li><span class="st">${ok ? '✅' : optional ? '⏳' : '⬜'}</span><span style="flex:1">${esc(label)}</span>${ok ? '' : `<button type="button" class="btn sub sm" data-action="go" data-step="${step}">前往填寫</button>`}</li>`).join('');
+}
+function renderStep(step) {
+  if (step === 'schedule') renderSchedule();
+  if (step === 'effect') renderEffects();
+  if (step === 'export') renderChecklist();
+  if (step === 'settings') renderSettings();
+}
+function goStep(step) {
+  if (!$('step-' + step)) step = 'basic';
+  if (step !== 'settings') ui.lastStep = step;
+  ui.step = step;
+  qsa('.panel').forEach(p => p.classList.toggle('active', p.id === 'step-' + step));
+  qsa('#stepNav button').forEach(b => { const on = b.dataset.step === step; b.classList.toggle('active', on); b.setAttribute('aria-current', on ? 'step' : 'false'); });
+  renderStep(step);
+  prefs.step = step === 'settings' ? prefs.step : step; savePrefs();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- 週數調整（含復原） ---------- */
+function undoable(msg, before) {
+  const id = cur().id;
+  toast(msg, '', { label: '復原', fn: () => { const i = state.plans.findIndex(p => p.id === id); if (i < 0) return; state.plans[i] = before; state.currentId = id; touch(); fillForm(); toast('已復原'); } });
+}
+async function setWeekCount(n) {
+  const p = cur(); n = Math.max(0, Math.min(MAX_WEEKS, n | 0));
+  const W = p.weeks.length; if (n === W) return;
+  if (n < W) {
+    const lost = p.weeks.slice(n).filter(w => w.content.trim() || w.effect.trim() || w.photos.length || w.check || w.teacher.trim());
+    if (lost.length) {
+      const ok = await confirmBox('減少週數？', `<p>第 ${n + 1}～${W} 週裡有 <b>${lost.length}</b> 週已經填了內容，減少週數會刪掉這些週。</p><p>刪除後可以按提示上的「復原」救回。</p>`, `刪除第 ${n + 1}～${W} 週`, 'danger');
+      if (!ok) { $('weeks').value = String(W); return; }
     }
+    const before = clone(p); p.weeks = p.weeks.slice(0, n); touch(); renderStep(ui.step);
+    if (lost.length) undoable(`已刪除第 ${n + 1}～${W} 週`, before);
+  } else {
+    while (p.weeks.length < n) p.weeks.push(blankWeek());
+    touch(); renderStep(ui.step);
   }
-  sel.value=cur;
+  $('weeks').value = n ? String(n) : '';
+}
+function weekOp(op, i) {
+  const p = cur(), before = clone(p), W = p.weeks;
+  if (op === 'up' && i > 0) [W[i - 1], W[i]] = [W[i], W[i - 1]];
+  else if (op === 'down' && i < W.length - 1) [W[i + 1], W[i]] = [W[i], W[i + 1]];
+  else if (op === 'ins' && W.length < MAX_WEEKS) W.splice(i + 1, 0, blankWeek());
+  else if (op === 'del') { W.splice(i, 1); undoable(`已刪除第 ${i + 1} 週`, before); }
+  else return;
+  $('weeks').value = W.length ? String(W.length) : '';
+  touch(); renderSchedule();
+  const focusI = op === 'up' ? i - 1 : op === 'down' ? i + 1 : op === 'ins' ? i + 1 : Math.min(i, W.length - 1);
+  const t = $('wc' + focusI); if (t) t.focus({ preventScroll: false });
 }
 
-/* ============ AI 設定 ============ */
-function loadAiConfig(){
-  try{
-    const c=JSON.parse(localStorage.getItem('slp_aicfg')||'{}');
-    if(c.provider)setRadio('aiprov',c.provider);
-    $('aiApiKey').value=c.key||'';
-    $('aiModel').value=c.model||'';
-    updateAiPill();
-  }catch(e){}
+/* =========================================================
+   照片（IndexedDB 存 Blob，自動壓縮）
+   ========================================================= */
+const photoURL = new Map(), memPhotos = new Map();
+async function compressImage(file, max = 1600, q = 0.85) {
+  let src;
+  try { src = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch {
+    src = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('無法讀取圖片')); im.src = URL.createObjectURL(file); });
+  }
+  const w = src.width, h = src.height, s = Math.min(1, max / Math.max(w, h));
+  const c = document.createElement('canvas'); c.width = Math.round(w * s); c.height = Math.round(h * s);
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(src, 0, 0, c.width, c.height);
+  const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
+  if (!blob) throw new Error('圖片壓縮失敗');
+  return blob;
 }
-function saveAiConfig(){
-  const c={provider:getRadio('aiprov'),key:$('aiApiKey').value.trim(),model:$('aiModel').value.trim()};
-  localStorage.setItem('slp_aicfg',JSON.stringify(c));
-  updateAiPill();toast('AI 設定已儲存');
+async function storePhoto(blob, id = uid('img')) {
+  if (store.mode === 'idb') await idbPut('photos', id, { id, blob, at: Date.now() });
+  else memPhotos.set(id, blob);
+  folder.photoDone.delete(id);
+  return id;
 }
-function clearAiKey(){$('aiApiKey').value='';saveAiConfig();}
-const AI_KEY_LINK={
-  chatgpt:{url:'https://platform.openai.com/api-keys',label:'前往 OpenAI 申請 API 金鑰 →',model:'gpt-4o-mini'},
-  claude:{url:'https://console.anthropic.com/settings/keys',label:'前往 Anthropic Console 申請 API 金鑰 →',model:'claude-3-5-sonnet-latest'},
-  gemini:{url:'https://aistudio.google.com/apikey',label:'前往 Google AI Studio 申請 API 金鑰 →',model:'gemini-2.5-flash'}
+async function getPhotoBlob(id) {
+  if (memPhotos.has(id)) return memPhotos.get(id);
+  if (store.mode !== 'idb') return null;
+  try { const r = await idbGet('photos', id); return r?.blob || null; } catch { return null; }
+}
+async function loadThumb(img) {
+  const id = img.dataset.id;
+  if (!photoURL.has(id)) { const b = await getPhotoBlob(id); if (!b) { img.closest('.ph')?.setAttribute('title', '找不到這張照片'); img.alt = '（照片遺失）'; return; } photoURL.set(id, URL.createObjectURL(b)); }
+  img.src = photoURL.get(id);
+}
+const blobToDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsDataURL(b); });
+async function dataURLToBlob(u) { return (await fetch(u)).blob(); }
+let photoInputWeek = -1;
+const photoInput = document.createElement('input'); photoInput.type = 'file'; photoInput.accept = 'image/*'; photoInput.multiple = true; photoInput.hidden = true;
+photoInput.addEventListener('change', async () => {
+  const files = Array.from(photoInput.files || []), i = photoInputWeek; photoInput.value = '';
+  if (!files.length || i < 0) return;
+  const p = cur(); let n = 0;
+  toast(`照片處理中（${files.length} 張）…`);
+  for (const f of files) {
+    try { const id = await storePhoto(await compressImage(f)); p.weeks[i]?.photos.push(id); n++; }
+    catch (e) { toast(`「${f.name}」無法加入：${e.message || e}`, 'error'); }
+  }
+  if (n) { touch(); renderEffects(); toast(`已加入 ${n} 張照片` + (store.mode === 'idb' ? '' : '（此瀏覽器無法長期保存照片，請記得匯出）')); }
+});
+function photoDel(i, id) {
+  const p = cur(), before = clone(p), w = p.weeks[i]; if (!w) return;
+  w.photos = w.photos.filter(x => x !== id); touch(); renderEffects();
+  undoable('已移除照片', before);
+}
+function referencedPhotos(plans = state.plans) { const s = new Set(); plans.forEach(p => p.weeks.forEach(w => w.photos.forEach(id => s.add(id)))); return s; }
+async function gcPhotos() {
+  if (store.mode !== 'idb') return;
+  try {
+    const keep = referencedPhotos();
+    (await idbAll('snapshots')).forEach(sn => { const d = normalizeData(sn.data); if (d) referencedPhotos(d.plans).forEach(id => keep.add(id)); });
+    const keys = await idbTx('photos', 'readonly', st => st.getAllKeys());
+    for (const k of keys || []) if (!keep.has(k)) await idbDel('photos', k);
+  } catch (e) { console.warn('照片整理失敗', e); }
+}
+
+/* =========================================================
+   儲存層（IndexedDB＋localStorage 鏡像＋資料夾正本）
+   ========================================================= */
+let booted = false;
+const meta = { rev: 0, savedAt: 0 };
+const store = { mode: 'idb', mirrorOk: true, persisted: null, error: '', lastSavedAt: 0, saving: false };
+let dirty = false, saveTimer = null, savingPromise = null, conflictOpen = false;
+const bc = ('BroadcastChannel' in window) ? new BroadcastChannel(IDB_NAME) : null;
+const tabId = uid('tab');
+const currentData = () => ({ plans: state.plans, currentId: state.currentId });
+
+function deviceName() {
+  try {
+    let n = localStorage.getItem(DEVICE_KEY);
+    if (!n) { n = '電腦-' + Math.random().toString(36).slice(2, 6).toUpperCase(); localStorage.setItem(DEVICE_KEY, n); }
+    return n;
+  } catch { return '電腦'; }
+}
+
+/* ---------- IndexedDB ---------- */
+let dbPromise = null;
+function idbOpen() {
+  if (dbPromise) return dbPromise;
+  dbPromise = new Promise((resolve, reject) => {
+    if (typeof indexedDB === 'undefined' || !indexedDB) return reject(new Error('瀏覽器不支援或停用了 IndexedDB'));
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = () => { const db = req.result; ['kv', 'snapshots', 'photos'].forEach(s => { if (!db.objectStoreNames.contains(s)) db.createObjectStore(s); }); };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error('IndexedDB 開啟失敗'));
+    req.onblocked = () => reject(new Error('IndexedDB 被其他分頁鎖住'));
+  });
+  dbPromise.catch(() => { dbPromise = null; });
+  return dbPromise;
+}
+async function idbTx(storeName, mode, fn) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(storeName, mode);
+    const req = fn(tx.objectStore(storeName));
+    let out; if (req) req.onsuccess = () => { out = req.result; };
+    tx.oncomplete = () => resolve(out);
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error || new Error('交易中止'));
+  });
+}
+const idbGet = (s, k) => idbTx(s, 'readonly', st => st.get(k));
+const idbPut = (s, k, v) => idbTx(s, 'readwrite', st => st.put(v, k));
+const idbDel = (s, k) => idbTx(s, 'readwrite', st => st.delete(k));
+const idbAll = s => idbTx(s, 'readonly', st => st.getAll());
+
+async function commitLocal(data, savedAt) {
+  const payload = { ...data, savedAt, rev: meta.rev + 1, appVersion: APP_VERSION, app: APP_ID };
+  let ok = false;
+  if (store.mode === 'idb') {
+    try { await idbPut('kv', 'state', payload); ok = true; dailySnapshot(payload).catch(() => {}); }
+    catch (e) { store.mode = 'ls'; console.warn('IndexedDB 寫入失敗，改用 localStorage 後援', e); }
+  }
+  try { localStorage.setItem(LS_KEY, JSON.stringify(payload)); store.mirrorOk = true; if (store.mode === 'ls') ok = true; }
+  catch { store.mirrorOk = false; }
+  if (!ok) throw new Error('IndexedDB 與 localStorage 都無法寫入');
+  meta.rev = payload.rev; meta.savedAt = savedAt;
+  store.lastSavedAt = Date.now(); store.error = '';
+  if (bc) bc.postMessage({ type: 'saved', rev: meta.rev, from: tabId });
+  return payload;
+}
+function touch() { const p = cur(); if (p) p.updatedAt = Date.now(); saveLocal(); updateProgress(); renderHeader(); }
+function saveLocal() {
+  if (!booted) return;
+  dirty = true; folder.dirty = true;
+  clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 300);
+  renderSaveTag();
+}
+async function flushSave() {
+  clearTimeout(saveTimer);
+  if (!booted || !dirty) return;
+  if (savingPromise) { await savingPromise; return flushSave(); }
+  savingPromise = doSave().finally(() => { savingPromise = null; renderSaveTag(); });
+  return savingPromise;
+}
+async function doSave() {
+  store.saving = true; renderSaveTag();
+  try {
+    if (store.mode === 'idb') {
+      let c = null; try { c = await idbGet('kv', 'state'); } catch {}
+      if (c && (c.rev || 0) > meta.rev) { await handleTabConflict(c); return; }
+    }
+    dirty = false;
+    await commitLocal(currentData(), Date.now());
+    scheduleFolderWrite();
+  } catch (e) {
+    dirty = true; store.error = '儲存失敗';
+    toast('⚠ 儲存失敗：' + (e.message || e) + '　請先下載備份，勿關閉頁面。', 'error');
+  } finally { store.saving = false; }
+}
+async function handleTabConflict(c) {
+  if (conflictOpen) return;
+  conflictOpen = true;
+  const choice = await askChoice('另一個分頁已修改資料',
+    `<p>這台電腦上另一個分頁在 ${esc(fmtTime(c.savedAt))} 儲存過資料，與本頁內容不同。</p><p>另一分頁：${esc(countsText(c))}<br>本頁：${esc(countsText(currentData()))}</p>`,
+    [{ value: 'reload', label: '載入最新資料', style: 'primary' }, { value: 'overwrite', label: '以本頁內容覆蓋', style: 'danger' }, { value: 'download', label: '先下載本頁備份', style: 'plain' }]);
+  conflictOpen = false;
+  if (choice === 'reload') {
+    const d = normalizeData(c); meta.rev = c.rev || 0; meta.savedAt = c.savedAt || 0; dirty = false;
+    if (d) applyData(d); toast('已載入另一分頁的最新資料');
+  } else if (choice === 'overwrite') {
+    await makeSnapshot('被本頁覆蓋前（另一分頁）', c); meta.rev = c.rev || 0; dirty = true; setTimeout(flushSave, 0);
+  } else { await exportBackup(null); dirty = true; }
+}
+async function saveNow() {
+  dirty = true; folder.dirty = true;
+  await flushSave();
+  if (folder.handle && ['ok', 'error'].includes(folder.status)) { clearTimeout(folder.timer); await writeMaster(); }
+  if (!store.error) toast(folder.status === 'ok' ? '已儲存（本機＋資料夾）' : '已儲存到這台電腦');
+}
+function applyData(d) {
+  state = { plans: d.plans, currentId: d.currentId };
+  if (!state.plans.length) { const p = newPlan(); state.plans.push(p); state.currentId = p.id; }
+  fillForm();
+  if ($('plansDlg').open) renderPlans();
+}
+
+/* ---------- 自動還原點 ---------- */
+async function dailySnapshot(payload) {
+  const id = 'day-' + dayStamp();
+  if (!await idbGet('snapshots', id)) await idbPut('snapshots', id, { id, at: Date.now(), reason: '每日自動', data: payload });
+  await pruneSnapshots();
+}
+async function makeSnapshot(reason, data) {
+  if (store.mode !== 'idb' || !booted) return false;
+  try {
+    const id = `evt-${minuteStamp()}-${Date.now() % 100000}`;
+    await idbPut('snapshots', id, { id, at: Date.now(), reason, data: clone(data || currentData()) });
+    await pruneSnapshots();
+    if (ui.step === 'settings') renderSnapshots();
+    return true;
+  } catch { return false; }
+}
+async function pruneSnapshots() {
+  const all = await idbAll('snapshots');
+  const days = all.filter(s => s.id.startsWith('day-')).sort((a, b) => b.id.localeCompare(a.id));
+  const evts = all.filter(s => s.id.startsWith('evt-')).sort((a, b) => b.at - a.at);
+  for (const s of [...days.slice(DAILY_SNAP_KEEP), ...evts.slice(EVENT_SNAP_KEEP)]) await idbDel('snapshots', s.id);
+}
+async function renderSnapshots() {
+  const box = $('snapshotList'); if (!box) return;
+  if (store.mode !== 'idb') { box.innerHTML = '<p class="hint">此瀏覽器目前無法使用 IndexedDB，因此沒有自動還原點。請定期下載備份。</p>'; return; }
+  let list = []; try { list = (await idbAll('snapshots')).sort((a, b) => b.at - a.at); } catch {}
+  if (!list.length) { box.innerHTML = '<p class="hint">目前還沒有還原點。開始使用後每天會自動留一份。</p>'; return; }
+  box.innerHTML = `<div class="snap-wrap"><table class="snap"><thead><tr><th>時間</th><th>原因</th><th>內容</th><th></th></tr></thead><tbody>${list.map(s =>
+    `<tr><td style="white-space:nowrap">${esc(fmtTime(s.at))}</td><td>${esc(s.reason)}</td><td>${esc(countsText(s.data))}</td><td style="white-space:nowrap"><button type="button" class="btn sub sm" data-action="snap-restore" data-snap="${esc(s.id)}">還原</button> <button type="button" class="btn sub sm" data-action="snap-dl" data-snap="${esc(s.id)}">下載</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+async function snapAct(act, id) {
+  let snap = null; try { snap = await idbGet('snapshots', id); } catch {} if (!snap) return;
+  if (act === 'dl') { await exportBackup(null, snap.data, `自主學習計畫_還原點_${snap.id}.json`); return; }
+  if (!await confirmBox('還原這個還原點？', `<p>時間：${esc(fmtTime(snap.at))}（${esc(snap.reason)}）</p><p>還原點：${esc(countsText(snap.data))}<br>目前：${esc(countsText(currentData()))}</p><p>還原前會先把目前資料存成還原點。</p>`, '還原')) return;
+  const d = normalizeData(snap.data); if (!d) { toast('還原點內容無法讀取', 'error'); return; }
+  await makeSnapshot('還原前');
+  applyData(d); saveLocal(); renderSnapshots(); toast('已還原');
+}
+
+/* ---------- 資料夾正本（File System Access API，Chrome／Edge） ---------- */
+const fsSupported = typeof window.showDirectoryPicker === 'function';
+const folder = { handle: null, name: '', status: fsSupported ? 'none' : 'unsupported', known: null, dirty: false, timer: null, writing: null, histCount: 0, errMsg: '', warned: false, lastWrite: 0, photoDone: new Set(), photoCount: 0 };
+async function readMaster(dir) {
+  try {
+    const fh = await dir.getFileHandle(FOLDER_FILE), file = await fh.getFile(), text = await file.text();
+    let obj = null; try { obj = JSON.parse(text); } catch {}
+    return { exists: true, text, obj, lastModified: file.lastModified };
+  } catch (e) { if (e && e.name === 'NotFoundError') return { exists: false }; throw e; }
+}
+async function writeFileSafe(dir, name, data) {
+  const fh = await dir.getFileHandle(name, { create: true }), w = await fh.createWritable();
+  try { await w.write(data); await w.close(); } catch (e) { try { await w.abort(); } catch {} throw e; }
+  return (await fh.getFile()).lastModified;
+}
+const knownOf = (c, lm) => ({ lastModified: lm ?? c.lastModified, rev: c.obj?.rev ?? 0, savedAt: c.obj?.savedAt ?? 0, savedBy: c.obj?.savedBy ?? '' });
+function masterChanged(c) {
+  if (!c.exists) return false;
+  const k = folder.known; if (!k) return true;
+  if (c.lastModified === k.lastModified) return false;
+  return (c.obj?.rev ?? 0) !== k.rev || (c.obj?.savedAt ?? 0) !== k.savedAt || (c.obj?.savedBy ?? '') !== k.savedBy;
+}
+async function rememberKnown(k) { folder.known = k; try { await idbPut('kv', 'folderKnown', k); } catch {} }
+async function ensureDailyHistory(c) {
+  if (!c.exists) return;
+  const hist = await folder.handle.getDirectoryHandle(FOLDER_HIST, { create: true });
+  const name = `自主學習計畫資料_${dayStamp()}.json`;
+  let has = true; try { await hist.getFileHandle(name); } catch { has = false; }
+  if (!has) await writeFileSafe(hist, name, c.text);
+  const names = []; for await (const [n, h] of hist.entries()) if (h.kind === 'file' && FOLDER_HIST_RE.test(n)) names.push(n);
+  names.sort().reverse();
+  for (const n of names.slice(HIST_KEEP)) await hist.removeEntry(n);
+  folder.histCount = Math.min(names.length, HIST_KEEP);
+}
+async function countHistory() {
+  try { const hist = await folder.handle.getDirectoryHandle(FOLDER_HIST); let n = 0; for await (const [name, h] of hist.entries()) if (h.kind === 'file' && FOLDER_HIST_RE.test(name)) n++; folder.histCount = n; }
+  catch { folder.histCount = 0; }
+}
+/* 照片：資料夾內「照片/」每張一個 jpg（只新增不刪除，避免誤刪） */
+async function syncPhotosToFolder() {
+  const ids = referencedPhotos(); if (!ids.size) { folder.photoCount = 0; return; }
+  const dir = await folder.handle.getDirectoryHandle(FOLDER_PHOTOS, { create: true });
+  for (const id of ids) {
+    if (folder.photoDone.has(id)) continue;
+    const name = id + '.jpg';
+    let exists = true; try { await dir.getFileHandle(name); } catch { exists = false; }
+    if (!exists) { const b = await getPhotoBlob(id); if (!b) continue; await writeFileSafe(dir, name, b); }
+    folder.photoDone.add(id);
+  }
+  folder.photoCount = ids.size;
+}
+async function pullPhotosFromFolder(dir, plans) {
+  let dirP = null; try { dirP = await dir.getDirectoryHandle(FOLDER_PHOTOS); } catch { return 0; }
+  let n = 0;
+  for (const id of referencedPhotos(plans)) {
+    if (await getPhotoBlob(id)) continue;
+    try { const f = await (await dirP.getFileHandle(id + '.jpg')).getFile(); await storePhoto(f, id); folder.photoDone.add(id); n++; } catch {}
+  }
+  return n;
+}
+const masterPayload = () => ({ ...currentData(), savedAt: meta.savedAt || Date.now(), rev: meta.rev, savedBy: deviceName(), appVersion: APP_VERSION, app: APP_ID });
+async function writeConflictFile(text, who) {
+  const name = `自主學習計畫資料_衝突_${safeName(who)}_${minuteStamp()}.json`;
+  await writeFileSafe(folder.handle, name, text); return name;
+}
+async function writeMaster({ force = false } = {}) {
+  if (!folder.handle || !['ok', 'error', 'paused'].includes(folder.status)) return;
+  if (folder.status === 'paused' && !force) return;
+  if (folder.writing) { await folder.writing; return writeMaster({ force }); }
+  folder.writing = (async () => {
+    try {
+      const c = await readMaster(folder.handle);
+      if (!force && masterChanged(c)) { await folderConflict(c); return; }
+      await ensureDailyHistory(c);
+      await syncPhotosToFolder();
+      const payload = masterPayload();
+      const lm = await writeFileSafe(folder.handle, FOLDER_FILE, JSON.stringify(payload, null, 2));
+      await rememberKnown({ lastModified: lm, rev: payload.rev, savedAt: payload.savedAt, savedBy: payload.savedBy });
+      Object.assign(folder, { dirty: false, status: 'ok', errMsg: '', warned: false, lastWrite: Date.now() });
+      countHistory().then(renderFolder);
+    } catch (e) {
+      folder.status = 'error'; folder.errMsg = e?.message || String(e);
+      if (!folder.warned) { toast('📁 寫入資料夾失敗，資料仍保存在本機，下次儲存會自動重試', 'error'); folder.warned = true; }
+    }
+  })();
+  try { await folder.writing; } finally { folder.writing = null; renderFolder(); renderSaveTag(); }
+}
+function scheduleFolderWrite() {
+  if (!folder.handle || !['ok', 'error'].includes(folder.status)) return;
+  clearTimeout(folder.timer); folder.timer = setTimeout(() => writeMaster(), 2000); renderFolder();
+}
+async function loadFromMaster(c, reason) {
+  const d = normalizeData(c.obj);
+  if (!d) { toast('資料夾內的資料檔無法讀取', 'error'); return false; }
+  if (state.plans.some(p => !isEmptyPlan(p))) await makeSnapshot(reason || '載入資料夾資料前');
+  await pullPhotosFromFolder(folder.handle, d.plans);
+  applyData(d); dirty = false;
+  await commitLocal(currentData(), d.savedAt || Date.now());
+  await rememberKnown(knownOf(c)); folder.dirty = false;
+  return true;
+}
+function compareTable(fd, ld, lat) {
+  const row = (label, d, at, by) => `<tr><td><b>${label}</b></td><td>${esc(countsText(d))}</td><td>${esc(fmtTime(at))}${by ? '｜' + esc(by) : ''}</td></tr>`;
+  return `<table>${row('資料夾', fd, fd?.savedAt, fd?.savedBy)}${row('這台電腦', ld, lat, deviceName())}</table>`;
+}
+async function folderConflict(c) {
+  if (conflictOpen) return;
+  conflictOpen = true;
+  const other = c.obj || {};
+  const choice = await askChoice('資料夾內的資料已被另一台電腦更新',
+    `<p>「${esc(other.savedBy || '另一台電腦')}」在 ${esc(fmtTime(other.savedAt))} 更新了資料夾內的資料，本頁也有尚未寫入的修改。</p>${compareTable(other, currentData(), meta.savedAt)}`,
+    [{ value: 'load', label: '載入資料夾版本', style: 'primary' }, { value: 'overwrite', label: '以這台覆蓋', style: 'danger' }, { value: 'later', label: '另存衝突檔並暫停同步', style: 'plain' }]);
+  conflictOpen = false; hideBanner();
+  try {
+    if (choice === 'load') { await loadFromMaster(c, '載入資料夾資料前（本頁未寫入的內容）'); folder.status = 'ok'; toast('已載入資料夾內的最新資料；本頁原內容已存成還原點'); }
+    else if (choice === 'overwrite') { const n = await writeConflictFile(c.text, other.savedBy || '另一台電腦'); folder.status = 'ok'; await rememberKnown(knownOf(c)); setTimeout(() => writeMaster({ force: true }), 0); toast(`資料夾原檔已另存為 ${n}`); }
+    else { const n = await writeConflictFile(JSON.stringify(masterPayload(), null, 2), deviceName()); folder.status = 'paused'; toast(`本頁內容已另存為 ${n}，資料夾同步暫停`, 'error'); }
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); }
+  renderFolder(); renderSaveTag();
+}
+async function reconcile(dir, firstLink) {
+  const c = await readMaster(dir);
+  const prevHandle = folder.handle, prevKnown = folder.known;
+  folder.handle = dir; folder.name = dir.name;
+  if (firstLink) { folder.known = null; folder.photoDone.clear(); }
+  const commit = async () => { folder.status = 'ok'; try { await idbPut('kv', 'folderHandle', dir); } catch {} await countHistory(); };
+  if (!c.exists) { await commit(); await writeMaster({ force: true }); if (folder.status === 'ok') toast(`已在資料夾建立「${FOLDER_FILE}」`); return true; }
+  if (!c.obj || !normalizeData(c.obj)) {
+    folder.handle = prevHandle; folder.known = prevKnown;
+    await askChoice('資料夾內的資料檔無法讀取', `<p>${esc(FOLDER_FILE)} 不是本程式可讀的格式。請檢查檔案，或改選其他資料夾。</p>`, [{ value: 'ok', label: '知道了', style: 'primary' }]);
+    return false;
+  }
+  const localEmpty = state.plans.every(isEmptyPlan);
+  const mChanged = masterChanged(c);
+  const lChanged = !folder.known || meta.savedAt > (folder.known.savedAt || 0) || dirty;
+  if (!firstLink && !mChanged) { await commit(); await rememberKnown(knownOf(c)); if (lChanged) await writeMaster(); return true; }
+  if (localEmpty || (!firstLink && !lChanged)) { await commit(); await loadFromMaster(c); toast(`已載入資料夾內的資料（${countsText(c.obj)}）`); return true; }
+  const choice = await askChoice(firstLink ? '資料夾內已有自主學習計畫資料' : '這台電腦與資料夾的資料不同',
+    `<p>${firstLink ? '選擇的資料夾中已經有計畫資料，這台電腦也有資料。' : '上次沒連上資料夾時這台電腦改過資料，資料夾內的資料也被更新過。'}請選擇要使用哪一份：</p>${compareTable(c.obj, currentData(), meta.savedAt)}<p class="hint" style="margin-top:10px">沒被選用的一份不會遺失：本機資料會存成還原點；資料夾資料會另存成衝突檔。</p>`,
+    [{ value: 'folder', label: '使用資料夾內的資料', style: 'primary' }, { value: 'local', label: '用本機資料覆蓋資料夾', style: 'danger' }, { value: 'cancel', label: '取消', style: 'plain' }]);
+  if (choice === 'folder') { await commit(); await loadFromMaster(c, '改用資料夾資料前'); toast('已改用資料夾內的資料；本機原資料已存成還原點'); return true; }
+  if (choice === 'local') { await commit(); const n = await writeConflictFile(c.text, c.obj.savedBy || '資料夾原檔'); await rememberKnown(knownOf(c)); await writeMaster({ force: true }); toast(`已用本機資料覆蓋；資料夾原檔另存為 ${n}`); return true; }
+  if (firstLink) { folder.handle = prevHandle; folder.known = prevKnown; if (!prevHandle) folder.status = 'none'; } else folder.status = 'paused';
+  return false;
+}
+async function pickFolder() {
+  if (!fsSupported) { toast('這個瀏覽器不支援選擇資料夾，請改用電腦版 Chrome 或 Edge', 'error'); return; }
+  let dir;
+  try { dir = await window.showDirectoryPicker({ id: APP_ID, mode: 'readwrite' }); }
+  catch (e) { if (e?.name !== 'AbortError') toast('無法開啟資料夾：' + (e?.message || e), 'error'); return; }
+  try {
+    if (typeof dir.queryPermission === 'function' && (await dir.queryPermission({ mode: 'readwrite' })) !== 'granted') {
+      if ((await dir.requestPermission({ mode: 'readwrite' })) !== 'granted') { toast('沒有取得資料夾寫入權限', 'error'); return; }
+    }
+    await flushSave(); await reconcile(dir, true);
+  } catch (e) { toast('連結資料夾失敗：' + (e?.message || e), 'error'); }
+  hideBanner(); renderFolder(); renderSaveTag();
+}
+async function disconnectFolder() {
+  if (!await confirmBox('中斷資料夾連結？', '<p>資料夾內的檔案不會被刪除，這台電腦的資料也會保留；之後只存在這台電腦的瀏覽器。</p>', '中斷連結', 'danger')) return;
+  clearTimeout(folder.timer);
+  try { await idbDel('kv', 'folderHandle'); await idbDel('kv', 'folderKnown'); } catch {}
+  Object.assign(folder, { handle: null, name: '', status: 'none', known: null, dirty: false, errMsg: '', histCount: 0, lastWrite: 0 });
+  folder.photoDone.clear();
+  hideBanner(); renderFolder(); renderSaveTag(); toast('已中斷資料夾連結');
+}
+async function grantFolder() {
+  if (!folder.handle) return;
+  try {
+    if (typeof folder.handle.requestPermission === 'function' && (await folder.handle.requestPermission({ mode: 'readwrite' })) !== 'granted') { toast('沒有取得資料夾權限，目前仍使用本機資料', 'error'); return; }
+    await flushSave(); await reconcile(folder.handle, false); hideBanner();
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); toast('無法讀取資料夾，目前仍使用本機資料', 'error'); }
+  renderFolder(); renderSaveTag();
+}
+async function reloadFromFolder() {
+  if (!folder.handle) return;
+  try {
+    const c = await readMaster(folder.handle);
+    if (!c.exists) { toast('資料夾內還沒有資料檔'); return; }
+    await loadFromMaster(c, '從資料夾重新載入前'); folder.status = 'ok'; hideBanner(); toast('已從資料夾重新載入');
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); toast('讀取資料夾失敗', 'error'); }
+  renderFolder(); renderSaveTag();
+}
+async function writeNow() { if (!folder.handle) return; folder.dirty = true; clearTimeout(folder.timer); await flushSave(); await writeMaster({ force: folder.status === 'paused' }); toast(folder.status === 'ok' ? '已寫入資料夾' : '寫入失敗，請看狀態說明', folder.status === 'ok' ? '' : 'error'); }
+async function initFolder() {
+  if (!fsSupported || store.mode !== 'idb') { renderFolder(); return; }
+  let dir = null;
+  try { dir = await idbGet('kv', 'folderHandle'); folder.known = (await idbGet('kv', 'folderKnown')) || null; } catch {}
+  if (!dir) { renderFolder(); return; }
+  folder.handle = dir; folder.name = dir.name;
+  let perm = 'granted';
+  if (typeof dir.queryPermission === 'function') { perm = 'prompt'; try { perm = await dir.queryPermission({ mode: 'readwrite' }); } catch {} }
+  if (perm === 'granted') {
+    try { await reconcile(dir, false); }
+    catch (e) {
+      folder.status = 'error'; folder.errMsg = e?.message || String(e);
+      showBanner(`⚠ 無法讀取資料夾「${esc(folder.name)}」（可能已被移動、刪除或雲端硬碟未啟動），目前使用本機資料。`, [{ label: '重試', fn: grantFolder }, { label: '更換資料夾', fn: pickFolder }]);
+    }
+  } else {
+    folder.status = 'needPermission';
+    showBanner(`📁 請點「重新授權」以使用「${esc(folder.name)}」內的資料——授權前畫面顯示的是這台電腦的本機資料，可能不是最新。`, [{ label: '重新授權', fn: grantFolder }]);
+  }
+  renderFolder(); renderSaveTag();
+}
+let checkingFolder = false;
+async function checkFolderUpdate() {
+  if (checkingFolder || folder.status !== 'ok' || !folder.handle || folder.writing || conflictOpen) return;
+  checkingFolder = true;
+  try {
+    const c = await readMaster(folder.handle);
+    if (!masterChanged(c)) return;
+    if (dirty || folder.dirty) { await folderConflict(c); return; }
+    showBanner(`🔄 另一台電腦（${esc(c.obj?.savedBy || '另一台電腦')}）已於 ${esc(fmtTime(c.obj?.savedAt))} 更新了計畫資料。`, [{ label: '載入', fn: reloadFromFolder }]);
+  } catch (e) { folder.status = 'error'; folder.errMsg = e?.message || String(e); renderFolder(); renderSaveTag(); }
+  finally { checkingFolder = false; }
+}
+
+/* ---------- 儲存狀態 ---------- */
+function saveTagInfo() {
+  if (!booted) return ['💾 讀取中…', ''];
+  if (store.error) return ['⚠️ 儲存失敗', 'err'];
+  if (folder.status === 'needPermission') return ['⚠️ 需重新授權', 'warn'];
+  if (folder.status === 'error') return ['⚠️ 資料夾寫入失敗', 'err'];
+  if (folder.status === 'paused') return ['⏸ 資料夾同步暫停', 'warn'];
+  if (store.saving || dirty) return ['💾 儲存中…', ''];
+  const t = store.lastSavedAt ? new Date(store.lastSavedAt) : null, hm = t ? ` ${pad(t.getHours())}:${pad(t.getMinutes())}` : '';
+  if (store.mode === 'ls') return ['💾 已存本機（後援）' + hm, 'warn'];
+  if (folder.status === 'ok') return ['✓ 已存本機＋資料夾' + hm, ''];
+  return ['✓ 已存本機' + hm, ''];
+}
+function renderSaveTag() { const [t, c] = saveTagInfo(), el = $('saveTag'); el.textContent = t; el.className = 'savetag' + (c ? ' ' + c : ''); }
+function renderStoreInfo() {
+  const box = $('storeInfo'); if (!box) return;
+  box.innerHTML = `
+    <dt>本機儲存</dt><dd>${store.mode === 'idb' ? '<span class="pill on">IndexedDB</span>' : '<span class="pill warn">localStorage 後援（照片無法長期保存）</span>'}</dd>
+    <dt>持久儲存</dt><dd>${store.persisted === true ? '<span class="pill on">已啟用</span> 瀏覽器不會自動清除' : store.persisted === false ? '<span class="pill warn">未啟用</span> 空間不足時瀏覽器可能清除資料，建議連接資料夾' : '—'}</dd>
+    <dt>最後儲存</dt><dd>${esc(fmtTime(store.lastSavedAt || meta.savedAt))}</dd>
+    <dt>這台電腦</dt><dd>${esc(deviceName())}</dd>`;
+}
+function renderFolder() {
+  const box = $('folderCard'); if (!box) return;
+  if (folder.status === 'unsupported') { box.innerHTML = '<p class="hint">📁 這個瀏覽器（手機、iPad Safari、Firefox）不支援資料夾儲存。請用「下載完整備份」定期保存，其他功能照常使用。</p>'; return; }
+  if (store.mode !== 'idb') { box.innerHTML = '<p class="hint">📁 IndexedDB 無法使用，資料夾儲存也暫停。請改用下載備份。</p>'; return; }
+  const st = { none: ['未連接', ''], ok: ['同步中', 'on'], error: ['寫入失敗', 'err'], paused: ['同步暫停', 'warn'], needPermission: ['需要重新授權', 'warn'] }[folder.status] || ['—', ''];
+  if (!folder.handle) {
+    box.innerHTML = `<h3>📁 資料夾正本 <span class="pill">未連接</span></h3>
+      <p class="hint">建議選雲端硬碟（Google Drive、OneDrive）裡的一個資料夾，例如「我的自主學習」。會建立：<br>・<code>${esc(FOLDER_FILE)}</code>（全部計畫）<br>・<code>${esc(FOLDER_PHOTOS)}/</code>（成果照片，每張一個 jpg，可以直接拿去做簡報）<br>・<code>${esc(FOLDER_HIST)}/</code>（每天一份歷史備份，留 ${HIST_KEEP} 份）</p>
+      <div class="actions"><button type="button" class="btn sm" data-action="folder-pick">選擇資料夾</button></div>`;
+    return;
+  }
+  box.innerHTML = `<h3>📁 資料夾正本 <span class="pill ${st[1]}">${st[0]}</span></h3>
+    <dl class="kv"><dt>資料夾</dt><dd>${esc(folder.name)}</dd><dt>最後寫入</dt><dd>${esc(fmtTime(folder.lastWrite || folder.known?.savedAt))}</dd>
+    <dt>歷史備份</dt><dd>${folder.histCount} 份</dd><dt>照片</dt><dd>${folder.photoCount} 張</dd>
+    ${folder.errMsg ? `<dt>錯誤</dt><dd style="color:var(--danger)">${esc(folder.errMsg)}</dd>` : ''}</dl>
+    <div class="actions">
+      ${folder.status === 'needPermission' || folder.status === 'error' ? '<button type="button" class="btn sm" data-action="folder-grant">重新授權／重試</button>' : ''}
+      <button type="button" class="btn sub sm" data-action="folder-write">${folder.status === 'paused' ? '恢復同步並寫入' : '立即寫入'}</button>
+      <button type="button" class="btn sub sm" data-action="folder-reload">從資料夾重新載入</button>
+      <button type="button" class="btn sub sm" data-action="folder-pick">更換資料夾</button>
+      <button type="button" class="btn danger sm" data-action="folder-off">中斷連結</button>
+    </div>`;
+}
+function renderSettings() {
+  renderStoreInfo(); renderFolder(); renderSnapshots();
+  setRadio('theme', prefs.theme); $('bigText').checked = !!prefs.big;
+  loadAiConfig();
+}
+
+/* =========================================================
+   備份檔匯出／匯入
+   ========================================================= */
+async function exportBackup(planId, data = null, filename = null) {
+  await flushSave();
+  const src = data ? normalizeData(data) : currentData();
+  if (!src) { toast('資料無法匯出', 'error'); return; }
+  const plans = planId ? src.plans.filter(p => p.id === planId) : src.plans;
+  const photos = {};
+  for (const id of referencedPhotos(plans)) { const b = await getPhotoBlob(id); if (b) photos[id] = await blobToDataURL(b); }
+  const out = { app: APP_ID, version: 3, exportedAt: Date.now(), exportedBy: deviceName(), data: { plans, currentId: planId || src.currentId }, photos };
+  const p1 = plans[0];
+  const name = filename || (planId ? `${safeName(p1?.meta.studentName)}_${safeName(planTitle(p1))}_自主學習計畫備份_${dayStamp()}.json` : `自主學習計畫_完整備份_${dayStamp()}.json`);
+  downloadBlob(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' }), name);
+  toast('已下載備份檔');
+}
+async function importBackup(file) {
+  let obj; try { obj = JSON.parse(await file.text()); } catch { toast('檔案不是正確的 JSON', 'error'); return; }
+  let plans = [], photos = {};
+  if (obj && obj.app === APP_ID && obj.data) { const d = normalizeData(obj.data); if (d) plans = d.plans; photos = obj.photos || {}; }
+  else if (obj && Array.isArray(obj.plans)) { const d = normalizeData(obj); if (d) plans = d.plans; }
+  else if (obj && obj.meta) { const p = fromV2(obj); if (p) plans = [await absorbV2Images(p)]; }
+  if (!plans.length) { toast('看不懂這個檔案的格式', 'error'); return; }
+  const dup = plans.filter(p => state.plans.some(x => x.id === p.id));
+  let mode = 'replace';
+  if (dup.length) {
+    mode = await askChoice('有相同的計畫', `<p>備份檔裡有 ${dup.length} 份計畫和這台電腦上的是同一份（${esc(dup.map(planTitle).join('、'))}）。</p>`,
+      [{ value: 'replace', label: '以備份檔取代', style: 'danger' }, { value: 'copy', label: '另存為新計畫', style: 'primary' }, { value: null, label: '取消', style: 'plain' }]);
+    if (!mode) return;
+  }
+  await makeSnapshot('匯入備份前');
+  for (const [id, u] of Object.entries(photos)) { try { if (typeof u === 'string' && u.startsWith('data:image')) await storePhoto(await dataURLToBlob(u), id); } catch {} }
+  for (const p of plans) {
+    const i = state.plans.findIndex(x => x.id === p.id);
+    if (i >= 0 && mode === 'replace') state.plans[i] = p;
+    else { if (i >= 0) { p.id = uid('plan'); p.meta.planName = (p.meta.planName || '') + '（匯入）'; } state.plans.push(p); }
+  }
+  state.plans = state.plans.filter(p => !isEmptyPlan(p) || p.id === plans[0].id);
+  state.currentId = plans[0].id;
+  touch(); fillForm(); goStep('basic');
+  toast(`已匯入 ${plans.length} 份計畫`);
+}
+
+/* =========================================================
+   我的計畫（切換／新增／複製／刪除／範例）
+   ========================================================= */
+function renderPlans() {
+  const list = [...state.plans].sort((a, b) => b.updatedAt - a.updatedAt);
+  $('plansList').innerHTML = list.map(p => {
+    const s = stepStatus(p), isCur = p.id === state.currentId;
+    return `<div class="plan-item${isCur ? ' cur' : ''}">
+      <div class="pi"><div class="pn">${esc(planTitle(p))}</div>
+      <div class="ps">${esc(p.meta.studentName || '未填姓名')}　｜　完成 ${s.pct}%　｜　${esc(fmtTime(p.updatedAt))}</div></div>
+      ${isCur ? '<span class="pill on">編輯中</span>' : `<button type="button" class="btn sm" data-action="plan-open" data-id="${esc(p.id)}">開啟</button>`}
+      <button type="button" class="btn icon" data-action="plan-dup" data-id="${esc(p.id)}" title="複製一份">複製</button>
+      <button type="button" class="btn icon" data-action="plan-del" data-id="${esc(p.id)}" title="刪除">🗑</button>
+    </div>`;
+  }).join('');
+}
+function openPlans() { renderPlans(); $('plansDlg').showModal(); }
+function switchPlan(id) { if (!state.plans.some(p => p.id === id)) return; state.currentId = id; saveLocal(); fillForm(); $('plansDlg').close(); goStep('basic'); toast('已切換到：' + planTitle(cur())); }
+function addPlan(p) {
+  // 目前這份若是空白就直接取代，避免留下一堆空白計畫
+  const c = cur(); if (c && isEmptyPlan(c)) state.plans = state.plans.filter(x => x.id !== c.id);
+  state.plans.push(p); state.currentId = p.id; touch(); fillForm();
+}
+function dupPlan(id) {
+  const src = state.plans.find(p => p.id === id); if (!src) return;
+  const p = clone(src); p.id = uid('plan'); p.createdAt = p.updatedAt = Date.now(); p.meta.planName = (p.meta.planName || '') + '（複本）';
+  state.plans.push(p); touch(); renderPlans(); toast('已複製一份');
+}
+async function delPlan(id) {
+  const p = state.plans.find(x => x.id === id); if (!p) return;
+  if (!await confirmBox('刪除這份計畫？', `<p>「${esc(planTitle(p))}」（${esc(p.meta.studentName || '未填姓名')}）</p><p>刪除前會自動留一個還原點，可以在「⚙️ 設定 → 自動還原點」救回。</p>`, '刪除', 'danger')) { $('plansDlg').open || openPlans(); return; }
+  await makeSnapshot('刪除計畫前：' + planTitle(p));
+  state.plans = state.plans.filter(x => x.id !== id);
+  if (!state.plans.length) state.plans.push(newPlan());
+  if (state.currentId === id) state.currentId = state.plans[0].id;
+  saveLocal(); fillForm(); openPlans(); toast('已刪除');
+}
+function sampleToPlan(val) {
+  const raw = BUILTIN_SAMPLES[val]; if (!raw) return null;
+  const s = clone(raw), W = 18;
+  s.meta.weeks = W;
+  if (!s.schedule || !s.schedule.length) {
+    const topics = SAMPLE_TOPICS[val] || [];
+    s.schedule = Array.from({ length: W }, (_, i) => ({ content: topics[i] || `第 ${i + 1} 週進度：研讀計畫對應章節與核心觀念`, check: ((i + 1) % 5 === 0) ? 'B' : 'A', teacher: '' }));
+  }
+  if (!s.effect || !s.effect.length) {
+    s.effect = s.schedule.map(r => ({ effect: `實際進度：本週已順利完成「${r.content.split('：').pop()}」的研讀或實作。整理了核心重點，解決了碰到的問題，反思並記錄於自學成果中。` }));
+  }
+  return normalizePlan(fromV2(s));
+}
+function sampleFile(ext) {
+  const v = $('sampleSelect').value; if (!v) { toast('請先選擇一個範例'); return; }
+  const f = BUILTIN_SAMPLES[v].filename.replace(/\.docx$/, '.' + ext);
+  const a = document.createElement('a'); a.href = '自主學習範例/' + encodeURIComponent(f);
+  if (ext === 'docx') a.download = f; else { a.target = '_blank'; a.rel = 'noopener'; }
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* =========================================================
+   AI
+   ========================================================= */
+const AI_INFO = {
+  chatgpt: { site: 'https://chatgpt.com/', key: 'https://platform.openai.com/api-keys', keyLabel: '前往 OpenAI 申請 API 金鑰 →', models: ['gpt-5-mini', 'gpt-4.1-mini', 'gpt-4o-mini'] },
+  claude: { site: 'https://claude.ai/new', key: 'https://console.anthropic.com/settings/keys', keyLabel: '前往 Anthropic Console 申請 API 金鑰 →', models: ['claude-sonnet-5-5', 'claude-haiku-5-5'] },
+  gemini: { site: 'https://gemini.google.com/app', key: 'https://aistudio.google.com/apikey', keyLabel: '前往 Google AI Studio 申請 API 金鑰 →', models: ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash'] }
 };
-function updateAiPill(){
-  const hasKey=!!$('aiApiKey').value.trim();
-  const pill=$('aiModePill');
-  pill.textContent=hasKey?'即時模式':'外部模式';
-  pill.classList.toggle('on',hasKey);
-  const info=AI_KEY_LINK[getRadio('aiprov')]||AI_KEY_LINK.chatgpt;
-  const link=$('aiKeyLink');
-  link.href=info.url;link.textContent=info.label;
-  $('aiModel').placeholder='留空使用預設：'+info.model;
+const AI_NAMES = { chatgpt: 'ChatGPT', claude: 'Claude', gemini: 'Gemini' };
+let aiCfg = { provider: 'chatgpt', key: '', model: '' };
+function loadAiConfig() {
+  try { const c = JSON.parse(localStorage.getItem(AI_KEY) || '{}'); aiCfg = { provider: AI_INFO[c.provider] ? c.provider : 'chatgpt', key: str(c.key), model: str(c.model) }; } catch {}
+  setRadio('aiprov', aiCfg.provider); $('aiApiKey').value = aiCfg.key; $('aiModel').value = aiCfg.model; updateAiPill();
 }
-$('aiApiKey').addEventListener('input',updateAiPill);
-document.querySelectorAll('input[name="aiprov"]').forEach(r=>r.addEventListener('change',updateAiPill));
-
-/* ============ AI 指令產生 ============ */
-function ctx(){
-  return `【主題】${$('projectTopic').value||'(未填)'}\n【計畫名稱】${$('planName').value||'(未填)'}\n【類型】${typeLabel()}`;
+function saveAiConfig() {
+  aiCfg = { provider: getRadio('aiprov') || 'chatgpt', key: $('aiApiKey').value.trim(), model: $('aiModel').value.trim() };
+  try { localStorage.setItem(AI_KEY, JSON.stringify(aiCfg)); } catch {}
+  updateAiPill();
 }
-function typeLabel(){
-  const m={'1':'延伸與預修課程','2':'課外閱讀','3':'線上學習課程','4':'能力檢定','5':'服務學習課程','6':'培訓課程','7':'專題研討'};
-  let t=m[getRadio('ptype')]||'(未選)';
-  if(getRadio('ptype')==='7'){const s=getChecks('subjects');if(s.length)t+='（'+s.join('、')+'）';}
+function updateAiPill() {
+  const has = !!aiCfg.key, pill = $('aiModePill');
+  pill.textContent = has ? '即時模式' : '外部模式'; pill.className = 'pill' + (has ? ' on' : '');
+  const info = AI_INFO[aiCfg.provider];
+  $('aiKeyLink').href = info.key; $('aiKeyLink').textContent = info.keyLabel;
+  $('aiModel').placeholder = '留空使用預設：' + info.models[0];
+}
+function typeLabel(p) {
+  let t = TYPE_NAMES[p.radios.ptype] || '(未選)';
+  if (p.radios.ptype === '7' && p.checks.subjects.length) t += '（' + p.checks.subjects.join('、') + '）';
   return t;
 }
-const PERSONA='你是一位資深的高中自主學習指導老師，擅長引導學生把模糊的想法發展成清楚、可行、可檢核的學習計畫。請用親切、具體、條列的方式給建議，並避免空話。';
-
-function buildPrompt(kind){
-  const c=ctx();
-  switch(kind){
-    case 'topic':
-      return `${PERSONA}\n\n以下是一位高中生的自主學習主題構想：\n${c}\n【詳細說明】${$('detailTopic').value||'(未填)'}\n\n請幫我：\n1. 判斷這個主題是否太大或太小，並給出更聚焦的建議題目（2-3 個版本）。\n2. 指出可探究的核心問題。\n3. 提醒可行性與資源上的注意事項。`;
-    case 'motivation':
-      return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「為什麼想做這個主題（學習動機）」的草稿如下：\n「${$('motivation').value||'(尚未填寫)'}」\n\n請協助補強這段學習動機，讓它更具體、有個人連結與說服力，並以條列＋一段潤稿後完整版呈現。`;
-    case 'resources':
-      return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「需要什麼資源或工具」的草稿如下：\n「${$('resources').value||'(尚未填寫)'}」\n\n請幫我列出更完整的資源清單（書籍/論文/網站/影片/軟體/設備/人力/場地），並標示取得方式與可能花費。`;
-    case 'methods':
-      return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「如何有效學習、用什麼方法」的草稿如下：\n「${$('methods').value||'(尚未填寫)'}」\n\n請提供具體可執行的學習方法與步驟流程，並建議如何檢核自己是否真的學會（自我檢核機制）。`;
-    case 'goals':
-      return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「預期目標」的草稿如下：\n「${$('goals').value||'(尚未填寫)'}」\n\n請把目標改寫得更具體、可衡量（說明學期末會產出什麼、會做到什麼），並提供 2-3 個層次（基本／進階）的目標版本。`;
-    case 'wholeplan':
-      return `${PERSONA}\n\n以下是一位高中生完整的自主學習計畫草稿，請整體檢視一致性與完整度，指出可加強之處，並提供一份潤稿後的「內容概述」。\n\n${c}\n\n1. 學習動機：${$('motivation').value||'(未填)'}\n2. 需要的資源或工具：${$('resources').value||'(未填)'}\n3. 學習方法：${$('methods').value||'(未填)'}\n4. 預期目標：${$('goals').value||'(未填)'}`;
-    case 'schedule':{
-      const w=$('weeks').value||'14';
-      return `${PERSONA}\n\n請依下列計畫，規劃 ${w} 週的每週進度安排，並為每一週設計具體的「自我反思與檢核方式」。最後兩週請安排成果分享與成果反思。請用「第N週：進度內容｜檢核方式」的條列格式呈現。\n\n${c}\n學習動機：${$('motivation').value||'(未填)'}\n學習方法：${$('methods').value||'(未填)'}\n預期目標：${$('goals').value||'(未填)'}`;
-    }
-    case 'effect':{
-      const rows=collectEffect().map((e,i)=>`第${i+1}週：${e.effect||'(空)'}`).join('\n');
-      return `${PERSONA}\n\n以下是學生逐週的學習成效紀錄，請協助潤飾、補充與深化，使其更完整具體，並保留逐週格式呈現。\n\n${c}\n\n${rows||'(尚無紀錄)'}`;
+const PERSONA = '你是一位資深的高中自主學習指導老師，擅長引導學生把模糊的想法發展成清楚、可行、可檢核的學習計畫。請用親切、具體、條列的方式給建議，並避免空話。請使用繁體中文。';
+function buildPrompt(kind) {
+  const p = cur(), m = p.meta, v = k => str(m[k]).trim() || '(未填)';
+  const c = `【主題】${v('projectTopic')}\n【計畫名稱】${v('planName')}\n【類型】${typeLabel(p)}\n【實施方式】${p.radios.impl || '(未選)'}`;
+  const W = p.weeks.length || 18;
+  switch (kind) {
+    case 'topic': return `${PERSONA}\n\n以下是一位高中生的自主學習主題構想：\n${c}\n【詳細說明】${v('detailTopic')}\n\n請幫我：\n1. 判斷這個主題是否太大或太小，並給出更聚焦的建議題目（2-3 個版本）。\n2. 指出可探究的核心問題。\n3. 提醒可行性與資源上的注意事項。\n4. 最後提供一段 100-200 字、可直接放進「詳細主題／簡短說明」欄位的完整文字。`;
+    case 'motivation': return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「為什麼想做這個主題（學習動機）」的草稿如下：\n「${v('motivation')}」\n\n請協助補強這段學習動機，讓它更具體、有個人連結與說服力。先條列建議，最後提供一段潤稿後的完整版（150-400 字）。`;
+    case 'resources': return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「需要什麼資源或工具」的草稿如下：\n「${v('resources')}」\n\n請幫我列出更完整的資源清單（書籍/論文/網站/影片/軟體/設備/人力/場地），並標示取得方式與可能花費。`;
+    case 'methods': return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「如何有效學習、用什麼方法」的草稿如下：\n「${v('methods')}」\n\n請提供具體可執行的學習方法與步驟流程，並建議如何檢核自己是否真的學會（自我檢核機制）。`;
+    case 'goals': return `${PERSONA}\n\n計畫背景：\n${c}\n\n學生對「預期目標」的草稿如下：\n「${v('goals')}」\n\n請把目標改寫得更具體、可衡量（說明學期末會產出什麼、會做到什麼），並提供 2-3 個層次（基本／進階）的目標版本。`;
+    case 'wholeplan': return `${PERSONA}\n\n以下是一位高中生完整的自主學習計畫草稿，請整體檢視一致性與完整度，指出可加強之處，並提供一份潤稿後的「內容概述」。\n\n${c}\n\n1. 學習動機：${v('motivation')}\n2. 需要的資源或工具：${v('resources')}\n3. 學習方法：${v('methods')}\n4. 預期目標：${v('goals')}`;
+    case 'schedule': return `${PERSONA}\n\n請依下列計畫，規劃 ${W} 週的每週進度安排，並為每一週設計具體的「自我反思與檢核方式」。最後兩週請安排成果分享與成果反思。\n\n【輸出格式很重要】每一週只寫一行，格式為：\n第1週：進度內容｜檢核方式\n第2週：進度內容｜檢核方式\n……一直到第${W}週。不要使用表格，不要加粗體或其他符號。\n\n${c}\n學習動機：${v('motivation')}\n學習方法：${v('methods')}\n預期目標：${v('goals')}`;
+    case 'effect': {
+      const rows = p.weeks.map((w, i) => `第${i + 1}週：預計「${w.content.trim() || '(未填)'}」；實際「${w.effect.trim() || '(空)'}」`).join('\n');
+      return `${PERSONA}\n\n以下是學生逐週的預計進度與實際學習成效紀錄。請協助潤飾、補充與深化「實際學習成效」，使其更完整具體，但不要捏造學生沒做過的事；空白的週請保持空白。\n\n【輸出格式很重要】每一週只寫一行，格式為：\n第1週：潤飾後的學習成效\n……不要使用表格或粗體。\n\n${c}\n\n${rows || '(尚無紀錄)'}`;
     }
   }
   return '';
 }
+const AI_TARGET = { topic: 'detailTopic', motivation: 'motivation', resources: 'resources', methods: 'methods', goals: 'goals' };
+const aiText = {};
 
-/* ============ AI 執行（外部 / 即時） ============ */
-const PROVIDER_URL={
-  chatgpt:'https://chatgpt.com/g/g-6a1b78648b3881918a9d365cc5c61e24-bei-shen-mian-shi-xie-zuo/c/6a300a6e-976c-83ee-b6df-83866c7459ec',
-  claude:'https://claude.ai/new',
-  gemini:'https://gemini.google.com/gem/748244d336e3?usp=sharing'
-};
-const TARGET={topic:'detailTopic',motivation:'motivation',resources:'resources',methods:'methods',goals:'goals',wholeplan:null,schedule:null,effect:null};
-
-async function aiAssist(kind){
-  const prompt=buildPrompt(kind);
-  const key=($('aiApiKey').value||'').trim();
-  const box=$('ai-'+kind);
-  if(!key){
-    // 外部模式
-    window._lastPrompt=prompt;
-    try{await navigator.clipboard.writeText(prompt);}catch(e){}
-    const prov=getRadio('aiprov');
-    window.open(PROVIDER_URL[prov]||PROVIDER_URL.chatgpt,'_blank');
-    box.classList.add('show');
-    box.innerHTML=`<div class="head"><b>外部模式：指令已複製</b><button class="btn sub sm" onclick="hideAi('${kind}')">關閉</button></div>
-      <p style="font-size:.85rem;margin:0 0 8px;color:var(--ink-soft)">已開啟 ${prov.toUpperCase()}，到對話框按 <b>Ctrl/⌘+V</b> 貼上即可。指令內容如下：</p>
-      <pre>${escapeHtml(prompt)}</pre>
-      <button class="btn sub sm" onclick="copyText(window._lastPrompt)">再複製一次</button>`;
+function aiApplyButtons(kind) {
+  if (AI_TARGET[kind]) return `<button type="button" class="btn ok sm" data-action="ai-apply" data-kind="${kind}" data-mode="replace">取代欄位內容</button>
+    <button type="button" class="btn sub sm" data-action="ai-apply" data-kind="${kind}" data-mode="append">接在原文後面</button>`;
+  if (kind === 'schedule') return `<button type="button" class="btn ok sm" data-action="ai-apply" data-kind="schedule">填入週進度表</button>`;
+  if (kind === 'effect') return `<button type="button" class="btn ok sm" data-action="ai-apply" data-kind="effect">填回學習成效</button>`;
+  return '';
+}
+async function aiAssist(kind) {
+  const p = cur(); if (!p) return;
+  if (kind === 'schedule' && !p.weeks.length) { toast('請先選擇總週數'); $('weeks').focus(); return; }
+  if (kind === 'effect' && !p.weeks.some(w => w.effect.trim())) { toast('請先寫幾週的學習成效，AI 才有東西可以潤飾'); return; }
+  saveAiConfig();
+  const prompt = buildPrompt(kind), box = $('ai-' + kind), key = aiCfg.key;
+  box.classList.add('show');
+  if (!key) {
+    window._lastPrompt = prompt;
+    let copied = true; try { await navigator.clipboard.writeText(prompt); } catch { copied = false; }
+    window.open(AI_INFO[aiCfg.provider].site, '_blank', 'noopener');
+    box.innerHTML = `<div class="head"><b>外部模式：${copied ? '指令已複製' : '請先按「複製指令」'}</b><button type="button" class="btn sub sm" data-action="ai-hide" data-kind="${kind}">關閉</button></div>
+      <p style="font-size:.86rem;margin:0 0 6px">① 已開啟 ${AI_NAMES[aiCfg.provider]}，在對話框按 <b>Ctrl／⌘＋V</b> 貼上送出。② 把 AI 的回覆複製回來，貼到下面的框。③ 按下方按鈕套用。</p>
+      <details><summary>查看指令內容</summary><pre>${esc(prompt)}</pre></details>
+      <div class="actions" style="margin-bottom:8px"><button type="button" class="btn sub sm" data-action="ai-copyprompt">${copied ? '再複製一次指令' : '複製指令'}</button></div>
+      <label class="sr" for="aipaste-${kind}">貼上 AI 的回覆</label>
+      <textarea id="aipaste-${kind}" placeholder="把 AI 的回覆貼在這裡…"></textarea>
+      <div class="actions">${aiApplyButtons(kind)}</div>`;
     return;
   }
-  // 即時模式
-  box.classList.add('show');
-  box.innerHTML=`<div class="ai-busy">🤖 AI 生成中，請稍候…</div>`;
-  try{
-    const text=await callAI(prompt,key);
-    const tgt=TARGET[kind];
-    box.innerHTML=`<div class="head"><b>AI 建議</b><button class="btn sub sm" onclick="hideAi('${kind}')">關閉</button></div>
-      <pre id="aiout-${kind}">${escapeHtml(text)}</pre>
-      <div class="actions">
-        <button class="btn sm" onclick="copyText(document.getElementById('aiout-${kind}').textContent)">複製</button>
-        ${tgt?`<button class="btn ok sm" onclick="applyAi('${kind}','${tgt}')">套用到欄位</button>`:''}
-      </div>`;
-  }catch(err){
-    const msg=err.message||'未知錯誤';
-    const transient=isTransient(msg);
-    const tip=transient
-      ? '這是 AI 服務「暫時過載」造成的，通常稍等十幾秒就會恢復。可按「重試」，或換一個 AI 服務／改用外部模式。'
-      : (/api key|x-api-key|invalid|unauthor|permission|401|403/i.test(msg)
-          ? '看起來是金鑰或權限問題，請到「AI 輔助設定」確認金鑰正確、且已啟用該服務的 API。'
-          : '可改用外部模式（清空金鑰）或檢查金鑰／模型名稱。');
-    box.innerHTML=`<div class="head"><b style="color:var(--danger)">即時生成失敗</b><button class="btn sub sm" onclick="hideAi('${kind}')">關閉</button></div>
-      <p style="font-size:.85rem;color:var(--ink-soft)">原因：${escapeHtml(msg)}</p>
-      <p style="font-size:.85rem;color:var(--ink-soft)">${tip}</p>
-      <div class="actions">
-        <button class="btn sm" onclick="aiAssist('${kind}')">🔁 重試</button>
-        <button class="btn sub sm" onclick="copyText(window._lastPrompt||'')">複製指令改用外部 AI</button>
-      </div>`;
-    window._lastPrompt=prompt;
+  box.innerHTML = `<div class="ai-busy">🤖 ${AI_NAMES[aiCfg.provider]} 生成中，請稍候…</div>`;
+  try {
+    const text = await callAI(prompt, key);
+    aiText[kind] = text;
+    box.innerHTML = `<div class="head"><b>AI 建議</b><button type="button" class="btn sub sm" data-action="ai-hide" data-kind="${kind}">關閉</button></div>
+      <pre>${esc(text)}</pre>
+      <div class="actions">${aiApplyButtons(kind)}<button type="button" class="btn sub sm" data-action="ai-copy" data-kind="${kind}">複製</button></div>`;
+  } catch (err) {
+    const msg = err.message || '未知錯誤', transient = isTransient(msg);
+    const tip = transient ? '這是 AI 服務「暫時過載」造成的，通常稍等十幾秒就會恢復。可按「重試」，或換一個 AI 服務／改用外部模式。'
+      : (/api key|x-api-key|invalid|unauthor|permission|401|403/i.test(msg) ? '看起來是金鑰或權限問題，請到「⚙️ 設定 → AI 輔助設定」確認金鑰正確、且已啟用該服務的 API。' : '可改用外部模式（清除金鑰）或檢查金鑰／模型名稱。');
+    window._lastPrompt = prompt;
+    box.innerHTML = `<div class="head"><b style="color:var(--danger)">即時生成失敗</b><button type="button" class="btn sub sm" data-action="ai-hide" data-kind="${kind}">關閉</button></div>
+      <p style="font-size:.86rem">原因：${esc(msg)}</p><p style="font-size:.86rem">${tip}</p>
+      <div class="actions"><button type="button" class="btn sm" data-action="ai" data-kind="${kind}">🔁 重試</button><button type="button" class="btn sub sm" data-action="ai-copyprompt">複製指令改用外部 AI</button></div>`;
   }
 }
-function applyAi(kind,tgt){
-  const text=$('aiout-'+kind).textContent;
-  const el=$(tgt);if(!el)return;
-  el.value=el.value.trim()?el.value+'\n\n[AI 建議]\n'+text:text;
-  updateProgress();toast('已套用到欄位');
+function aiResultText(kind) { const ta = $('aipaste-' + kind); return (ta ? ta.value : aiText[kind] || '').trim(); }
+function cleanAiText(t) { return t.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#{1,6}\s*/gm, '').trim(); }
+function parseWeekly(text) {
+  const map = new Map(); let curW = 0;
+  text.split(/\r?\n/).forEach(line => {
+    const l = line.replace(/\*\*/g, '').replace(/^\s*[-*•>|]+\s*/, '').trim();
+    const m = l.match(/^第\s*(\d{1,2})\s*週\s*[:：、.\-|｜]?\s*(.*)$/);
+    if (m) { curW = +m[1]; map.set(curW, m[2].replace(/\s*[|｜]\s*$/, '').trim()); }
+    else if (curW && l && !/^[-=|:\s]+$/.test(l)) map.set(curW, (map.get(curW) + '\n' + l).trim());
+  });
+  return map;
 }
-function hideAi(kind){$('ai-'+kind).classList.remove('show');}
-
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-// 暫時性錯誤（過載 / 流量過高 / 限流 / 連線問題）→ 值得重試或換模型
-function isTransient(msg){return /high demand|overload|unavailable|temporar|rate.?limit|quota|exceed|timed? ?out|資源|忙碌|503|502|504|500|429|fetch|network|failed to fetch/i.test(msg||'');}
-function isModelIssue(msg){return /not found|not supported|no such model|model.*(invalid|unknown)|404/i.test(msg||'');}
-
-// 單次呼叫各家 API；失敗時 throw Error（訊息含原因）
-async function geminiOnce(model,prompt,key){
-  let r;
-  try{
-    r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
-      method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:8192,temperature:0.7}})
-    });
-  }catch(e){throw new Error('網路連線失敗（failed to fetch）');}
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
-  const cand=j.candidates&&j.candidates[0];
-  if(!cand)throw new Error((j.promptFeedback&&j.promptFeedback.blockReason)?('內容被安全機制阻擋：'+j.promptFeedback.blockReason):'AI 無回應');
-  let txt=(cand.content&&cand.content.parts?cand.content.parts.map(p=>p.text||'').join(''):'')||'';
-  if(!txt)throw new Error('AI 無內容回應，請重試或換模型');
-  if(cand.finishReason==='MAX_TOKENS')txt+='\n\n（⚠ 內容較長已達輸出上限，可能未完整；可請 AI「接續上文繼續」或縮小範圍。）';
+function aiApply(kind, mode) {
+  const text = aiResultText(kind); if (!text) { toast('沒有可套用的內容，請先貼上 AI 的回覆'); return; }
+  const p = cur(), before = clone(p);
+  if (AI_TARGET[kind]) {
+    const id = AI_TARGET[kind], t = cleanAiText(text);
+    p.meta[id] = mode === 'append' && str(p.meta[id]).trim() ? p.meta[id].trim() + '\n\n' + t : t;
+    $(id).value = p.meta[id]; updateCount($(id)); touch();
+    undoable(mode === 'append' ? '已接在原文後面' : '已取代欄位內容', before);
+    $(id).focus(); return;
+  }
+  const map = parseWeekly(text);
+  if (!map.size) { toast('找不到「第N週：…」格式的內容，請確認 AI 回覆的格式', 'error'); return; }
+  const maxW = Math.min(MAX_WEEKS, Math.max(...map.keys()));
+  if (kind === 'schedule') {
+    while (p.weeks.length < maxW) p.weeks.push(blankWeek());
+    map.forEach((v, k) => { if (k >= 1 && k <= MAX_WEEKS) p.weeks[k - 1].content = v.replace(/\s*[|｜]\s*/, '\n檢核：'); });
+    $('weeks').value = String(p.weeks.length);
+    touch(); renderSchedule(); undoable(`已填入 ${map.size} 週的進度`, before);
+  } else if (kind === 'effect') {
+    let n = 0; map.forEach((v, k) => { const w = p.weeks[k - 1]; if (w && v && w.effect.trim()) { w.effect = v; n++; } });
+    touch(); renderEffects(); undoable(`已填回 ${n} 週的學習成效`, before);
+  }
+}
+function isTransient(msg) { return /high demand|overload|unavailable|temporar|rate.?limit|quota|exceed|timed? ?out|資源|忙碌|503|502|504|500|429|fetch|network/i.test(msg || ''); }
+function isModelIssue(msg) { return /not found|not supported|does not exist|no such model|model.*(invalid|unknown)|404/i.test(msg || ''); }
+async function postJSON(url, headers, body) {
+  let r; try { r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json', ...headers }, body: JSON.stringify(body) }); }
+  catch { throw new Error('網路連線失敗（failed to fetch）'); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error((j.error && (j.error.message || j.error.type)) || ('HTTP ' + r.status));
+  return j;
+}
+async function geminiOnce(model, prompt, key) {
+  const j = await postJSON(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {}, { contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 8192, temperature: 0.7 } });
+  const cand = j.candidates && j.candidates[0];
+  if (!cand) throw new Error(j.promptFeedback?.blockReason ? '內容被安全機制阻擋：' + j.promptFeedback.blockReason : 'AI 無回應');
+  let txt = (cand.content?.parts || []).map(p => p.text || '').join('');
+  if (!txt) throw new Error('AI 無內容回應，請重試或換模型');
+  if (cand.finishReason === 'MAX_TOKENS') txt += '\n\n（⚠ 內容較長已達輸出上限，可能未完整。）';
   return txt;
 }
-async function claudeOnce(model,prompt,key){
-  let r;
-  try{
-    r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:model||'claude-3-5-sonnet-latest',max_tokens:4096,messages:[{role:'user',content:prompt}]})
-    });
-  }catch(e){throw new Error('網路連線失敗（failed to fetch）');}
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
-  let txt=(j.content||[]).map(b=>b.text||'').join('')||'';
-  if(!txt)throw new Error('AI 無內容回應，請重試或換模型');
-  if(j.stop_reason==='max_tokens')txt+='\n\n（⚠ 內容較長已達輸出上限，可能未完整；可請 AI「接續上文繼續」。）';
+async function claudeOnce(model, prompt, key) {
+  const j = await postJSON('https://api.anthropic.com/v1/messages', { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' }, { model, max_tokens: 4096, messages: [{ role: 'user', content: prompt }] });
+  let txt = (j.content || []).map(b => b.text || '').join('');
+  if (!txt) throw new Error('AI 無內容回應，請重試或換模型');
+  if (j.stop_reason === 'max_tokens') txt += '\n\n（⚠ 內容較長已達輸出上限，可能未完整。）';
   return txt;
 }
-async function openaiOnce(model,prompt,key){
-  let r;
-  try{
-    r=await fetch('https://api.openai.com/v1/chat/completions',{
-      method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+key},
-      body:JSON.stringify({model:model||'gpt-4o-mini',messages:[{role:'user',content:prompt}]})
-    });
-  }catch(e){throw new Error('網路連線失敗（failed to fetch）');}
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
-  return (j.choices&&j.choices[0]&&j.choices[0].message.content)||'(無內容)';
+async function openaiOnce(model, prompt, key) {
+  const j = await postJSON('https://api.openai.com/v1/chat/completions', { authorization: 'Bearer ' + key }, { model, messages: [{ role: 'user', content: prompt }] });
+  const txt = j.choices?.[0]?.message?.content || '';
+  if (!txt) throw new Error('AI 無內容回應，請重試或換模型');
+  return txt;
 }
-
-// 統一入口：自動重試（暫時性錯誤）＋ Gemini 自動換模型
-async function callAI(prompt,key){
-  const prov=getRadio('aiprov');
-  const model=($('aiModel').value||'').trim();
-  const RETRY=2;       // 同一模型最多再重試 2 次
-  const DELAYS=[1000,2500];
-  let lastErr='';
-
-  if(prov==='gemini'){
-    const candidates=model?[model]:['gemini-2.5-flash','gemini-2.0-flash','gemini-flash-latest'];
-    for(const m of candidates){
-      for(let attempt=0;attempt<=RETRY;attempt++){
-        try{return await geminiOnce(m,prompt,key);}
-        catch(e){
-          lastErr=e.message||'';
-          if(isModelIssue(lastErr))break;                 // 換下一個模型
-          if(isTransient(lastErr)&&attempt<RETRY){await sleep(DELAYS[attempt]);continue;} // 重試
-          if(isTransient(lastErr))break;                  // 重試用完→換下一個模型
-          throw e;                                        // 金鑰/權限等→直接報錯
-        }
+/* 統一入口：暫時性錯誤自動重試；模型不存在時自動換下一個預設模型 */
+async function callAI(prompt, key) {
+  const prov = aiCfg.provider, once = { gemini: geminiOnce, claude: claudeOnce, chatgpt: openaiOnce }[prov];
+  const models = aiCfg.model ? [aiCfg.model] : AI_INFO[prov].models;
+  const RETRY = 2, DELAYS = [1000, 2500]; let lastErr = '';
+  for (const m of models) {
+    for (let attempt = 0; attempt <= RETRY; attempt++) {
+      try { return await once(m, prompt, key); }
+      catch (e) {
+        lastErr = e.message || '';
+        if (isModelIssue(lastErr)) break;
+        if (isTransient(lastErr) && attempt < RETRY) { await sleep(DELAYS[attempt]); continue; }
+        if (isTransient(lastErr)) break;
+        throw e;
       }
     }
-    throw new Error((lastErr||'Gemini 呼叫失敗')+'（已自動嘗試備援模型仍失敗，請稍候再試或改用外部模式）');
   }
-
-  const once=prov==='claude'?claudeOnce:openaiOnce;
-  for(let attempt=0;attempt<=RETRY;attempt++){
-    try{return await once(model,prompt,key);}
-    catch(e){
-      lastErr=e.message||'';
-      if(isTransient(lastErr)&&attempt<RETRY){await sleep(DELAYS[attempt]);continue;}
-      throw e;
-    }
-  }
-  throw new Error(lastErr);
+  throw new Error((lastErr || '呼叫失敗') + (models.length > 1 ? '（已自動嘗試備援模型仍失敗）' : ''));
 }
 
-/* ============ 上網查資料 ============ */
-function webSearch(){
-  const q=$('planName').value||$('projectTopic').value;
-  if(!q){toast('請先填主題或計畫名稱');return;}
-  window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank');
+/* =========================================================
+   匯出：列印／Word／純文字
+   ========================================================= */
+function gradeLabel(cls) {
+  const s = str(cls).trim(); let m = s.match(/高\s*([一二三])/); if (m) return '高' + m[1];
+  m = s.match(/^([123])\d{2}/); if (m) return '高' + '一二三'[+m[1] - 1];
+  return '';
 }
-
-/* ============ 工具：複製 / escape ============ */
-function copyText(t){navigator.clipboard.writeText(t).then(()=>toast('已複製'),()=>toast('複製失敗，請手動選取'));}
-function escapeHtml(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
-function escapeBacktick(s){return (s||'').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');}
-
-/* ============ 匯出 ============ */
-function buildPlanHtml(){
-  const v=id=>($(id)?$(id).value:'')||'';
-  const sched=collectSchedule();const eff=collectEffect();
-  const start=v('startDate');
-  let schedRows='';
-  sched.forEach((r,i)=>{
-    schedRows+=`<tr><td style="text-align:center">第${i+1}週</td><td style="text-align:center">${weekDate(start,i)}</td><td>${escapeHtml(r.content)}</td><td style="text-align:center">${r.check||''}</td><td>${escapeHtml(r.teacher)}</td></tr>`;
-  });
-  let effRows='';
-  eff.forEach((r,i)=>{
-    if(!r.effect&&!r.img)return;
-    effRows+=`<tr><td style="text-align:center">第${i+1}週</td><td>${escapeHtml(r.effect)}</td><td>${r.img?`<img src="${r.img}" style="max-width:140px;max-height:140px">`:''}</td></tr>`;
-  });
-  let a=0,b=0,c=0;sched.forEach(r=>{if(r.check==='A')a++;if(r.check==='B')b++;if(r.check==='C')c++;});
-  const present=getChecks('presentForm');
-  const subj=getChecks('subjects');
+async function buildPlanHtml(withImages) {
+  const p = cur(), m = p.meta, v = k => str(m[k]);
+  const start = v('startDate'), W = p.weeks;
+  const schedRows = W.map((w, i) => `<tr><td style="text-align:center;white-space:nowrap">第${i + 1}週</td><td style="text-align:center">${esc(weekDate(start, i))}</td><td>${nl2br(w.content)}</td><td style="text-align:center">${w.check || ''}</td><td>${esc(w.teacher)}</td></tr>`).join('');
+  let effRows = '';
+  for (let i = 0; i < W.length; i++) {
+    const w = W[i]; if (!w.effect.trim() && !w.photos.length) continue;
+    let imgs = '';
+    if (withImages) for (const id of w.photos) { const b = await getPhotoBlob(id); if (b) imgs += `<img src="${await blobToDataURL(b)}" style="max-width:150px;max-height:150px;margin:2px">`; }
+    else if (w.photos.length) imgs = `（${w.photos.length} 張照片）`;
+    effRows += `<tr><td style="text-align:center;white-space:nowrap">第${i + 1}週</td><td>${nl2br(w.effect)}</td><td>${imgs}</td></tr>`;
+  }
+  const c = { A: 0, B: 0, C: 0 }; W.forEach(w => { if (c[w.check] != null) c[w.check]++; });
+  const present = p.checks.presentForm;
   return `
-  <h1 style="text-align:center">臺北市立麗山高級中學　高二自主學習計畫書</h1>
+  <h1 style="text-align:center">臺北市立麗山高級中學　${esc(gradeLabel(v('className')))}自主學習計畫書</h1>
   <table>
-    <tr><th style="width:120px">申請人</th><td>${escapeHtml(v('studentName'))}</td><th style="width:120px">班級座號</th><td>${escapeHtml(v('className'))} ${escapeHtml(v('seatNo'))}</td></tr>
-    <tr><th>計畫主題</th><td colspan="3">${escapeHtml(v('projectTopic'))}</td></tr>
-    <tr><th>計畫類型</th><td colspan="3">${typeLabel()}${subj.length?'':''}</td></tr>
-    <tr><th>實施方式</th><td colspan="3">${getRadio('impl')||''} ${getRadio('impl')==='小組學習'?'　成員：'+escapeHtml(v('members')):''}</td></tr>
-    <tr><th>計畫名稱</th><td colspan="3">${escapeHtml(v('planName'))}</td></tr>
-    <tr><th>詳細主題</th><td colspan="3">${escapeHtml(v('detailTopic')).replace(/\n/g,'<br>')}</td></tr>
+    <tr><th style="width:120px">申請人</th><td>${esc(v('studentName'))}</td><th style="width:120px">班級座號</th><td>${esc(v('className'))} ${esc(v('seatNo'))}</td></tr>
+    <tr><th>計畫主題</th><td colspan="3">${esc(v('projectTopic'))}</td></tr>
+    <tr><th>計畫類型</th><td colspan="3">${esc(typeLabel(p))}</td></tr>
+    <tr><th>實施方式</th><td colspan="3">${esc(p.radios.impl)}${p.radios.impl === '小組學習' ? '　成員：' + esc(v('members')) : ''}</td></tr>
+    <tr><th>計畫名稱</th><td colspan="3">${esc(v('planName'))}</td></tr>
+    <tr><th>詳細主題</th><td colspan="3">${nl2br(v('detailTopic'))}</td></tr>
   </table>
   <h2>內容概述</h2>
   <table>
-    <tr><th style="width:230px">為什麼想做這個主題？(學習動機)</th><td>${escapeHtml(v('motivation')).replace(/\n/g,'<br>')}</td></tr>
-    <tr><th>我需要什麼資源或工具？</th><td>${escapeHtml(v('resources')).replace(/\n/g,'<br>')}</td></tr>
-    <tr><th>我如何有效學習？哪些方法或技巧適合我？</th><td>${escapeHtml(v('methods')).replace(/\n/g,'<br>')}</td></tr>
-    <tr><th>預期目標</th><td>${escapeHtml(v('goals')).replace(/\n/g,'<br>')}</td></tr>
+    <tr><th style="width:230px">為什麼想做這個主題？(學習動機)</th><td>${nl2br(v('motivation'))}</td></tr>
+    <tr><th>我需要什麼資源或工具？</th><td>${nl2br(v('resources'))}</td></tr>
+    <tr><th>我如何有效學習？哪些方法或技巧適合我？</th><td>${nl2br(v('methods'))}</td></tr>
+    <tr><th>預期目標</th><td>${nl2br(v('goals'))}</td></tr>
   </table>
   <h2>預計進度（週計畫）</h2>
   <table>
     <thead><tr><th>週次</th><th>日期</th><th>內容(進度安排)</th><th>自我反思及檢核<br>A.依計畫完成 B.修正後完成 C.部分完成</th><th>指導老師簽名</th></tr></thead>
-    <tbody>${schedRows||'<tr><td colspan="5" style="text-align:center;color:#999">(尚未規劃)</td></tr>'}</tbody>
+    <tbody>${schedRows || '<tr><td colspan="5" style="text-align:center;color:#999">(尚未規劃)</td></tr>'}</tbody>
   </table>
   <h2>學習成效</h2>
   <table>
     <thead><tr><th>週次</th><th>學習成效</th><th>成果影像</th></tr></thead>
-    <tbody>${effRows||'<tr><td colspan="3" style="text-align:center;color:#999">(尚未紀錄)</td></tr>'}</tbody>
+    <tbody>${effRows || '<tr><td colspan="3" style="text-align:center;color:#999">(尚未紀錄)</td></tr>'}</tbody>
   </table>
   <table style="margin-top:10px">
-    <tr><th style="width:200px">家長給學生自主學習的回饋</th><td>${escapeHtml(v('parentFeedback')).replace(/\n/g,'<br>')}</td></tr>
-    <tr><th>家長簽名</th><td>${escapeHtml(v('parentSign'))}</td></tr>
-    <tr><th>成果發表形式</th><td>${present.length?present.map(escapeHtml).join('<br>'):'(未選)'}${getChecks('presentForm').includes('其他方式')&&v('presentOther')?'<br>其他：'+escapeHtml(v('presentOther')):''}</td></tr>
-    <tr><th>自我檢核次數統計</th><td>A 依計畫完成：${a} 次　｜　B 修正後完成：${b} 次　｜　C 部分完成：${c} 次</td></tr>
+    <tr><th style="width:200px">家長給學生自主學習的回饋</th><td>${nl2br(v('parentFeedback'))}</td></tr>
+    <tr><th>家長簽名</th><td>${esc(v('parentSign'))}</td></tr>
+    <tr><th>成果發表形式</th><td>${present.length ? present.map(esc).join('<br>') : '(未選)'}${present.includes('其他方式') && v('presentOther') ? '：' + esc(v('presentOther')) : ''}</td></tr>
+    <tr><th>自我檢核次數統計</th><td>A 依計畫完成：${c.A} 次　｜　B 修正後完成：${c.B} 次　｜　C 部分完成：${c.C} 次</td></tr>
   </table>`;
 }
-function printPlan(){
-  const w=window.open('','_blank');
+async function printPlan() {
+  const w = window.open('', '_blank');
+  if (!w) { toast('瀏覽器擋住了彈出視窗，請允許本頁開啟新視窗後再試', 'error'); return; }
+  w.document.write('<p style="font-family:sans-serif;padding:24px">產生中…</p>');
+  const body = await buildPlanHtml(true);
+  w.document.open();
   w.document.write(`<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>自主學習計畫書</title>
-  <style>
-    body{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:#1f2733;padding:24px;line-height:1.6;}
-    h1{font-size:1.4rem;} h2{font-size:1.1rem;border-left:4px solid #2f5fe0;padding-left:8px;margin-top:22px;}
-    table{width:100%;border-collapse:collapse;margin:8px 0;} th,td{border:1px solid #999;padding:7px;text-align:left;vertical-align:top;font-size:.9rem;}
-    th{background:#eef1f6;}
-    @media print{body{padding:0;}}
-  </style></head><body>${buildPlanHtml()}
+  <style>body{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:#1f2733;padding:24px;line-height:1.6;}
+  h1{font-size:1.4rem;} h2{font-size:1.1rem;border-left:4px solid #2f5fe0;padding-left:8px;margin-top:22px;}
+  table{width:100%;border-collapse:collapse;margin:8px 0;} th,td{border:1px solid #999;padding:7px;text-align:left;vertical-align:top;font-size:.9rem;}
+  th{background:#eef1f6;} tr{page-break-inside:avoid;} @media print{body{padding:0;}}</style></head><body>${body}
   <p style="text-align:center;color:#888;font-size:.8rem;margin-top:24px">本草稿由「AI 輔助自主學習計畫」工具產生，請核對後謄入正式計畫書。</p>
-  </body></html>`);
-  w.document.close();w.focus();setTimeout(()=>w.print(),400);
+  <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);
+  w.document.close();
 }
-function exportWord(){
-  const name=$('studentName').value||'自主學習計畫';
-  const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">
-  <style>body{font-family:"Noto Sans TC",sans-serif;} table{border-collapse:collapse;width:100%;} th,td{border:1px solid #666;padding:6px;} th{background:#eef1f6;} h2{border-left:4px solid #2f5fe0;padding-left:8px;}</style></head><body>${buildPlanHtml()}</body></html>`;
-  const blob=new Blob(['﻿'+html],{type:'application/msword'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'_自主學習計畫書.doc';a.click();
+async function exportWord() {
+  const p = cur(), name = `${safeName(p.meta.studentName || '自主學習計畫')}_自主學習計畫書.doc`;
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">
+  <style>body{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;} table{border-collapse:collapse;width:100%;} th,td{border:1px solid #666;padding:6px;vertical-align:top;} th{background:#eef1f6;} h2{border-left:4px solid #2f5fe0;padding-left:8px;}</style></head><body>${await buildPlanHtml(false)}
+  <p style="color:#888;font-size:9pt">成果照片請另外插入（列印／PDF 版本會包含照片）。</p></body></html>`;
+  downloadBlob(new Blob(['﻿' + html], { type: 'application/msword' }), name);
   toast('已下載 Word 檔');
 }
-function copyAllText(){
-  const v=id=>($(id)?$(id).value:'')||'';
-  const sched=collectSchedule();const eff=collectEffect();
-  let t=`【高二自主學習計畫書】\n申請人：${v('studentName')}　班級座號：${v('className')} ${v('seatNo')}\n計畫主題：${v('projectTopic')}\n計畫類型：${typeLabel()}\n實施方式：${getRadio('impl')}${getRadio('impl')==='小組學習'?'（成員：'+v('members')+'）':''}\n計畫名稱：${v('planName')}\n詳細主題：${v('detailTopic')}\n\n── 內容概述 ──\n1. 學習動機：\n${v('motivation')}\n\n2. 需要的資源或工具：\n${v('resources')}\n\n3. 學習方法：\n${v('methods')}\n\n4. 預期目標：\n${v('goals')}\n\n── 預計進度 ──\n`;
-  sched.forEach((r,i)=>{t+=`第${i+1}週：${r.content}　[檢核:${r.check||'-'}]\n`;});
-  t+=`\n── 學習成效 ──\n`;
-  eff.forEach((r,i)=>{if(r.effect)t+=`第${i+1}週：${r.effect}\n`;});
-  t+=`\n家長回饋：${v('parentFeedback')}\n成果發表形式：${getChecks('presentForm').join('、')}\n`;
+function copyAllText() {
+  const p = cur(), v = k => str(p.meta[k]);
+  let t = `【${gradeLabel(v('className'))}自主學習計畫書】\n申請人：${v('studentName')}　班級座號：${v('className')} ${v('seatNo')}\n計畫主題：${v('projectTopic')}\n計畫類型：${typeLabel(p)}\n實施方式：${p.radios.impl}${p.radios.impl === '小組學習' ? '（成員：' + v('members') + '）' : ''}\n計畫名稱：${v('planName')}\n詳細主題：${v('detailTopic')}\n\n── 內容概述 ──\n1. 學習動機：\n${v('motivation')}\n\n2. 需要的資源或工具：\n${v('resources')}\n\n3. 學習方法：\n${v('methods')}\n\n4. 預期目標：\n${v('goals')}\n\n── 預計進度 ──\n`;
+  p.weeks.forEach((w, i) => { t += `第${i + 1}週${weekDate(v('startDate'), i) ? '（' + weekDate(v('startDate'), i) + '）' : ''}：${w.content}　[檢核:${w.check || '-'}]\n`; });
+  t += `\n── 學習成效 ──\n`;
+  p.weeks.forEach((w, i) => { if (w.effect.trim()) t += `第${i + 1}週：${w.effect}\n`; });
+  t += `\n家長回饋：${v('parentFeedback')}\n成果發表形式：${p.checks.presentForm.join('、')}${p.checks.presentForm.includes('其他方式') && v('presentOther') ? '：' + v('presentOther') : ''}\n`;
   copyText(t);
 }
 
-/* ============ 啟動 ============ */
-document.addEventListener('DOMContentLoaded',()=>{
-  refreshStudentList();
-  loadAiConfig();
-  updateProgress();
-});
+/* =========================================================
+   偏好設定
+   ========================================================= */
+function loadPrefs() { try { Object.assign(prefs, JSON.parse(localStorage.getItem(UI_KEY) || '{}')); } catch {} }
+function savePrefs() { try { localStorage.setItem(UI_KEY, JSON.stringify(prefs)); } catch {} }
+function applyPrefs() {
+  const r = document.documentElement;
+  if (prefs.theme === 'light' || prefs.theme === 'dark') r.dataset.theme = prefs.theme; else delete r.dataset.theme;
+  r.classList.toggle('big', !!prefs.big);
+}
+
+/* =========================================================
+   事件
+   ========================================================= */
+function bindEvents() {
+  $('subjects').innerHTML = SUBJECTS.map(s => `<label><input type="checkbox" value="${esc(s)}"><span>${esc(s)}</span></label>`).join('');
+  const sel = $('weeks'); for (let i = 1; i <= MAX_WEEKS; i++) sel.insertAdjacentHTML('beforeend', `<option value="${i}">${i} 週</option>`);
+  document.body.appendChild(photoInput);
+
+  document.addEventListener('input', e => {
+    const el = e.target, p = cur(); if (!p || !booted) return;
+    if (el.matches('[data-field]')) {
+      p.meta[el.id] = el.value;
+      if (el.dataset.count) updateCount(el);
+      if (el.id === 'startDate') { if (ui.step === 'schedule') renderSchedule(); }
+      touch(); if (!prefs.welcomeHidden && !$('welcome').hidden) renderWelcome();
+    } else if (el.matches('[data-w][data-k]') && el.tagName !== 'SELECT') {
+      const w = p.weeks[+el.dataset.w]; if (w) { w[el.dataset.k] = el.value; touch(); }
+    } else if (el.id === 'aiApiKey' || el.id === 'aiModel') saveAiConfig();
+  });
+  document.addEventListener('change', e => {
+    const el = e.target, p = cur(); if (!p || !booted) return;
+    if (el.name === 'ptype' || el.name === 'impl') { p.radios[el.name] = el.value; syncConditional(); touch(); }
+    else if (el.closest('#subjects')) { p.checks.subjects = getChecks('subjects'); touch(); }
+    else if (el.closest('#presentForm')) { p.checks.presentForm = getChecks('presentForm'); syncConditional(); touch(); }
+    else if (el.id === 'weeks') setWeekCount(parseInt(el.value) || 0);
+    else if (el.matches('select[data-w][data-k="check"]')) { const w = p.weeks[+el.dataset.w]; if (w) { w.check = el.value; touch(); renderStats(); } }
+    else if (el.name === 'aiprov') saveAiConfig();
+    else if (el.name === 'theme') { prefs.theme = el.value; savePrefs(); applyPrefs(); }
+    else if (el.id === 'bigText') { prefs.big = el.checked; savePrefs(); applyPrefs(); }
+    else if (el.id === 'importInput') { const f = el.files[0]; el.value = ''; if (f) importBackup(f); }
+  });
+  document.addEventListener('click', async e => {
+    const el = e.target.closest('[data-action]'); if (!el || el.disabled) return;
+    const a = el.dataset.action, i = +el.dataset.i, kind = el.dataset.kind;
+    switch (a) {
+      case 'go': if ($('plansDlg').open) $('plansDlg').close(); goStep(el.dataset.step); break;
+      case 'go-back': goStep(ui.lastStep || 'basic'); break;
+      case 'plans': openPlans(); break;
+      case 'dlg-close': el.closest('dialog').close(); break;
+      case 'welcome-close': prefs.welcomeHidden = true; savePrefs(); renderWelcome(); $('studentName').focus(); break;
+      case 'plan-open': switchPlan(el.dataset.id); break;
+      case 'plan-new': addPlan(newPlan()); $('plansDlg').close(); goStep('basic'); toast('已建立新的空白計畫'); break;
+      case 'plan-dup': dupPlan(el.dataset.id); break;
+      case 'plan-del': $('plansDlg').close(); delPlan(el.dataset.id); break;
+      case 'sample-create': {
+        const v = $('sampleSelect').value; if (!v) { toast('請先選擇一個範例'); return; }
+        const p = sampleToPlan(v); if (!p) return; addPlan(p); $('plansDlg').close(); goStep('basic');
+        toast(`已用範例建立「${planTitle(p)}」`); break;
+      }
+      case 'sample-file': sampleFile(el.dataset.ext); break;
+      case 'w-up': weekOp('up', i); break;
+      case 'w-down': weekOp('down', i); break;
+      case 'w-ins': weekOp('ins', i); break;
+      case 'w-del': weekOp('del', i); break;
+      case 'ph-add': photoInputWeek = i; photoInput.click(); break;
+      case 'ph-del': photoDel(i, el.dataset.id); break;
+      case 'zoom': if (el.src) { $('lightImg').src = el.src; $('lightbox').showModal(); } break;
+      case 'ai': aiAssist(kind); break;
+      case 'ai-hide': $('ai-' + kind).classList.remove('show'); break;
+      case 'ai-apply': aiApply(kind, el.dataset.mode); break;
+      case 'ai-copy': copyText(aiText[kind] || ''); break;
+      case 'ai-copyprompt': copyText(window._lastPrompt || ''); break;
+      case 'ai-clearkey': $('aiApiKey').value = ''; saveAiConfig(); toast('已清除金鑰，改用外部模式'); break;
+      case 'websearch': { const p = cur(), q = p.meta.planName || p.meta.projectTopic; if (!q) { toast('請先填主題或計畫名稱'); return; } window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener'); break; }
+      case 'print': printPlan(); break;
+      case 'word': exportWord(); break;
+      case 'copytext': copyAllText(); break;
+      case 'export-one': exportBackup(state.currentId); break;
+      case 'export-all': exportBackup(null); break;
+      case 'import': $('importInput').click(); break;
+      case 'savenow': saveNow(); break;
+      case 'snap-restore': snapAct('restore', el.dataset.snap); break;
+      case 'snap-dl': snapAct('dl', el.dataset.snap); break;
+      case 'folder-pick': pickFolder(); break;
+      case 'folder-grant': grantFolder(); break;
+      case 'folder-write': writeNow(); break;
+      case 'folder-reload': reloadFromFolder(); break;
+      case 'folder-off': disconnectFolder(); break;
+      case 'clear-all': {
+        if (!await confirmBox('清除這台電腦的全部資料？', `<p>目前有 ${state.plans.length} 份計畫。清除前會留一個還原點${folder.handle ? '；資料夾內的檔案不會被刪除，但之後會被空白資料覆蓋，建議先「中斷連結」' : ''}。</p>`, '全部清除', 'danger')) return;
+        await makeSnapshot('清除全部資料前');
+        state.plans = [newPlan()]; state.currentId = state.plans[0].id; saveLocal(); fillForm(); goStep('basic'); toast('已清除');
+        break;
+      }
+    }
+  });
+  $('lightbox').addEventListener('click', () => $('lightbox').close());
+  $('plansDlg').addEventListener('click', e => { if (e.target === $('plansDlg')) $('plansDlg').close(); });
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveNow(); } });
+
+  function flushOnHide() {
+    if (!booted) return;
+    if (dirty) { try { localStorage.setItem(LS_KEY, JSON.stringify({ ...currentData(), savedAt: Date.now(), rev: meta.rev, appVersion: APP_VERSION, app: APP_ID })); } catch {} flushSave(); }
+    if (folder.dirty && folder.status === 'ok') { clearTimeout(folder.timer); writeMaster(); }
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushOnHide(); else checkFolderUpdate(); });
+  window.addEventListener('pagehide', flushOnHide);
+  window.addEventListener('beforeunload', flushOnHide);
+  window.addEventListener('focus', checkFolderUpdate);
+  setInterval(checkFolderUpdate, 60000);
+  setInterval(renderSaveTag, 30000);
+  if (bc) bc.onmessage = ev => {
+    const m = ev.data || {};
+    if (m.type === 'saved' && m.from !== tabId && m.rev > meta.rev) {
+      const load = async () => { try { const c = await idbGet('kv', 'state'), d = normalizeData(c); if (d) { meta.rev = c.rev || 0; meta.savedAt = c.savedAt || 0; dirty = false; applyData(d); renderSaveTag(); } } catch {} };
+      if (!dirty) { load().then(() => toast('另一個分頁更新了資料，已同步')); return; }
+      showBanner('🔄 另一個分頁剛儲存了計畫資料。', [{ label: '載入最新資料', fn: async () => { await load(); hideBanner(); toast('已載入最新資料'); } }]);
+    }
+  };
+}
+
+/* =========================================================
+   舊版（v2）資料搬移：localStorage 的 slp_<姓名>
+   ========================================================= */
+async function readOldLocal() {
+  const plans = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k || !k.startsWith('slp_') || k === AI_KEY) continue;
+    try { const p = fromV2(JSON.parse(localStorage.getItem(k))); if (p) { if (!p.meta.studentName) p.meta.studentName = k.slice(4); plans.push(p); } } catch {}
+  }
+  if (!plans.length) return null;
+  for (const p of plans) await absorbV2Images(p);
+  const d = normalizeData({ plans, currentId: plans[0].id });
+  d.__migration = { plans: plans.length, names: plans.map(p => p.meta.studentName) };
+  return d;
+}
+
+/* =========================================================
+   啟動
+   ========================================================= */
+async function boot() {
+  loadPrefs(); applyPrefs();
+  bindEvents(); loadAiConfig();
+  let idbData = null, lsData = null;
+  try { await idbOpen(); idbData = await idbGet('kv', 'state'); store.mode = 'idb'; }
+  catch (e) { store.mode = 'ls'; console.warn('IndexedDB 不可用，改用 localStorage', e); }
+  try { const raw = localStorage.getItem(LS_KEY); if (raw) lsData = JSON.parse(raw); } catch {}
+  const nIdb = idbData ? normalizeData(idbData) : null, nLs = lsData ? normalizeData(lsData) : null;
+  let chosen = null, from = '';
+  if (nIdb && nLs) { if ((nLs.savedAt || 0) > (nIdb.savedAt || 0)) { chosen = nLs; from = 'ls'; } else { chosen = nIdb; from = 'idb'; } }
+  else if (nIdb) { chosen = nIdb; from = 'idb'; } else if (nLs) { chosen = nLs; from = 'ls'; }
+  let migrated = null;
+  if (!chosen) { try { const d = await readOldLocal(); if (d) { chosen = d; from = 'v2'; migrated = d.__migration; } } catch (e) { console.warn('舊版資料轉換失敗', e); } }
+  meta.rev = Math.max(idbData?.rev || 0, lsData?.rev || 0);
+  if (chosen && chosen.plans.length) { state = { plans: chosen.plans, currentId: chosen.currentId }; meta.savedAt = chosen.savedAt || 0; }
+  else { const p = newPlan(); state = { plans: [p], currentId: p.id }; }
+  booted = true;
+  if (from === 'ls' || from === 'v2') {
+    try {
+      const before = countsText(currentData());
+      await commitLocal(currentData(), chosen.savedAt || Date.now());
+      if (store.mode === 'idb') {
+        const back = await idbGet('kv', 'state');
+        if (!back || countsText(back) !== before) { toast('⚠ 搬移到 IndexedDB 後比對不一致，暫用 localStorage', 'error'); store.mode = 'ls'; }
+      }
+    } catch { store.mode = 'ls'; }
+  }
+  try { if (navigator.storage && navigator.storage.persist) store.persisted = await navigator.storage.persist(); } catch {}
+  $('boot').remove();
+  ui.step = STEPS.includes(prefs.step) ? prefs.step : 'basic';
+  fillForm(); goStep(ui.step); renderSaveTag();
+  if (migrated) {
+    await askChoice('已帶入舊版的資料',
+      `<p>已把舊版儲存的 <b>${migrated.plans}</b> 份計畫（${esc(migrated.names.join('、'))}）轉入新版，照片也一起搬過來了。舊資料仍保留在瀏覽器中不動。</p>
+       <p>v3.0 起內容會<b>自動儲存</b>，不用再按「儲存」。也可以到「⚙️ 設定」選一個雲端硬碟資料夾長期保存。</p><p>其他計畫可以從右上角「📂 我的計畫」切換。</p>`,
+      [{ value: 'ok', label: '知道了', style: 'primary' }]);
+  }
+  await initFolder();
+  gcPhotos();
+}
+window.addEventListener('error', e => console.warn('頁面錯誤：', e.message));
+boot();
 </script>
 </body>
 </html>

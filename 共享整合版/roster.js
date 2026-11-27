@@ -11,7 +11,7 @@ async function run(fn){try{await fn()}catch(e){message(e.message,true)}}
 $('create-form').onsubmit=e=>{e.preventDefault();run(async()=>{if(dirty&&!confirm('名冊尚未儲存，建立班級會放棄表格修改。確定繼續？'))return;const id=$('class-select').value;const result=await ClassDB.createContext($('class-name').value,$('year').value,$('semester').value,id==='new'?null:id,$('carry').value||null,data.revision);current=null;history.replaceState(null,'',location.pathname);await load();message('已建立班級學期，可開始輸入共用名冊。')})};
 $('class-select').onchange=updateCarry;
 $('scope-select').onchange=()=>run(async()=>{const id=$('scope-select').value;if(dirty&&!confirm('尚未儲存名冊，確定放棄修改並切換？')){$('scope-select').value=current.id;return}await ClassDB.setActive(id,data.revision);current=null;history.replaceState(null,'',location.pathname);await load()});
-const toolNames=[['roles','幹部與小老師'],['seats','班級座位'],['cleaning','打掃分配'],['account','班費收支'],['fair','園遊會分工'],['comments','導師評語']];let launchBusy=false;
+const toolNames=[['students','學生資料'],['roles','幹部與小老師'],['seats','班級座位'],['cleaning','打掃分配'],['account','班費收支'],['fair','園遊會分工'],['comments','導師評語']];let launchBusy=false;
 function renderToolLinks(){
  $('tool-links').replaceChildren();for(const [module,name] of toolNames){const a=text('a',name+' →');a.className='button';a.href=module+'.html?scope='+encodeURIComponent(current.id)+(['roles','seats'].includes(module)?'&v=latest-tools-20261010':'');a.dataset.tool=module;a.onclick=e=>launchTool(e,a);$('tool-links').append(a)}
  $('roles-link').onclick=e=>launchTool(e,$('roles-link'));
